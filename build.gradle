@@ -1,0 +1,24 @@
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
+
+plugins {
+    id 'io.spring.dependency-management' version '1.0.0.RC2'
+}
+
+group = "ui"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+}
+dependencyManagement {
+    imports {
+        mavenBom 'org.apache.logging.log4j:log4j-bom:2.8'
+    }
+}
+
+dependencies {
+//    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.8'
+//    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8'
+}
+
+ant.importBuild 'build.xml'
