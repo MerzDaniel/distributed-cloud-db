@@ -9,14 +9,14 @@ import java.io.InputStreamReader;
 
 public class Application {
     Logger logger = LogManager.getLogger(Application.class);
-    boolean stopRequested = false;
+    ApplicationState state = new ApplicationState();
 
     public Application() {
         logger.info("Start application");
         while (true) {
             System.out.print("EchoClient> ");
             processInput();
-            if (stopRequested)
+            if (state.stopRequested)
                 break;
         }
         logger.info("Stop application");
@@ -24,7 +24,7 @@ public class Application {
 
     private void processInput() {
         BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
-        String command;
+        String command = "";
         try {
             command = consoleInput.readLine();
         } catch (IOException e) {
