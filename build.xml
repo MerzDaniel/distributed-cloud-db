@@ -18,7 +18,7 @@
 
   <path id="external.jars">
     <!--<fileset dir="${lib.dir}" includes="**/*.jar"/>-->
-      <fileset dir="${lib.dir}" includes="jars/*.jar"/>
+      <fileset dir="${lib.dir}" includes="*.jar"/>
   </path>
 
   <path id="project.classpath">
@@ -81,6 +81,8 @@
   
   <target name="run" >  
     <java classname="${main.class}" classpathref="class.path"/>  
-  </target> 
-    
+  </target>
+
+
+  <echo>Classpath is ${mf.classpath}</echo>
 </project>
