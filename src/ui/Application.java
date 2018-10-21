@@ -7,6 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * A simple echo client that can establish a connection to the echo server.
+ */
 public class Application {
     Logger logger = LogManager.getLogger(Application.class);
     ApplicationState state = new ApplicationState();
@@ -17,7 +20,6 @@ public class Application {
         while (!state.stopRequested) {
             System.out.print("EchoClient> ");
             processInput();
-            System.out.print("\n");
         }
         logger.info("Stop application");
     }

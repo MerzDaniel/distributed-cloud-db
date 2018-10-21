@@ -2,6 +2,8 @@ package ui;
 
 import communication.Connection;
 
+import static ui.Util.writeLine;
+
 public class ConnectCommand implements Command{
     private String url;
     private int port;
@@ -15,6 +17,6 @@ public class ConnectCommand implements Command{
     public void execute(ApplicationState state) {
         state.connection = new Connection();
         String msg = state.connection.connect(this.url, this.port);
-        System.out.println(msg);
+        writeLine(msg);
     }
 }
