@@ -79,8 +79,8 @@
     <path refid="external.jars" />
   </path>
   
-  <target name="run" >  
-    <java classname="${main.class}" classpathref="class.path"/>  
+  <target name="run" >
+    <java fork="yes" classname="${main.class}" classpathref="class.path"/>
   </target>
 
 
