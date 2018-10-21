@@ -37,7 +37,7 @@ public class Connection {
     public void disconnect() {
         logger.info(
                 String.format(
-                        "Closing connection from %s:%d failed: %s",
+                        "Closing connection from %s:%d",
                         socket.getInetAddress(), socket.getPort()
                 )
         );
