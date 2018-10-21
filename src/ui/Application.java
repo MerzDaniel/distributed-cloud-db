@@ -10,14 +10,14 @@ import java.io.InputStreamReader;
 public class Application {
     Logger logger = LogManager.getLogger(Application.class);
     ApplicationState state = new ApplicationState();
+    CommandParser commandParser = new CommandParser();
 
     public Application() {
         logger.info("Start application");
-        while (true) {
+        while (!state.stopRequested) {
             System.out.print("EchoClient> ");
             processInput();
-            if (state.stopRequested)
-                break;
+            System.out.print("\n");
         }
         logger.info("Stop application");
     }
@@ -31,6 +31,8 @@ public class Application {
             logger.warn("EXCEPTION: " + e.getMessage());
             logger.warn(e.getStackTrace());
         }
+        Command c = commandParser.parseCommand(command);
+        c.execute(state);
     }
 
     static {
