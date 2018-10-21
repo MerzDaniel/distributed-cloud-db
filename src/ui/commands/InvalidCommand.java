@@ -1,4 +1,7 @@
-package ui;
+package ui.commands;
+
+import ui.ApplicationState;
+import ui.Command;
 
 import static ui.Util.writeLine;
 

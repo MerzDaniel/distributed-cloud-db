@@ -1,8 +1,11 @@
-package ui;
+package ui.commands;
+
+import ui.ApplicationState;
+import ui.Command;
 
 import static ui.Util.writeLine;
 
-public class ConnectCommand implements Command{
+public class ConnectCommand implements Command {
     private String url;
     private int port;
 
