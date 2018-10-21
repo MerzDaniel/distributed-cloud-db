@@ -1,6 +1,6 @@
 package ui;
 
-public class ExitCommand implements Command {
+public class QuitCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
