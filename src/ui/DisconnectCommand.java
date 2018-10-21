@@ -1,12 +1,16 @@
 package ui;
 
+import static ui.Util.writeLine;
+
 public class DisconnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        if (state.connection != null) {
-            state.connection.disconnect();
-            //send the confirmation to the console
+        if (!state.connection.isConnected()) {
+            writeLine("Currently not connected to a server");
+            return;
         }
+        state.connection.disconnect();
+        writeLine("Disconnected");
     }
 }
