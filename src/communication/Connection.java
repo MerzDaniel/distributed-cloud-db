@@ -72,6 +72,8 @@ public class Connection {
                 logger.warn(e.getStackTrace());
             }
         }
-        return buffer.toString();
+        String msg = buffer.toString();
+        logger.info("Received a message from the server: " + msg);
+        return msg;
     }
 }
