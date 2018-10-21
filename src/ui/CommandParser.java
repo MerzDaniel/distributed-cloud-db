@@ -10,6 +10,8 @@ public class CommandParser {
             return new HelpCommand();
         if (commandName.equals("exit"))
             return new ExitCommand();
+        if (commandName.equals("connect"))
+            return new ConnectCommand(tokens[1], Integer.valueOf(tokens[2]));
         return new InvalidCommand();
     }
 }
