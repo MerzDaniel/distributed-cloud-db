@@ -73,6 +73,7 @@ public class Connection {
             } catch (IOException e) {
                 logger.warn("Exception occured while reading message: " + e.getMessage());
                 logger.warn(e.getStackTrace());
+                break;
             }
         }
         String msg = buffer.toString();
