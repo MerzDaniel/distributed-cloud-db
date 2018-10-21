@@ -15,7 +15,7 @@ public class Application {
     ApplicationState state = new ApplicationState();
     CommandParser commandParser = new CommandParser();
 
-    public Application() {
+    public void run() {
         logger.info("Start application");
         while (!state.stopRequested) {
             System.out.print("EchoClient> ");
@@ -45,6 +45,6 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        new Application();
+        new Application().run();
     }
 }
