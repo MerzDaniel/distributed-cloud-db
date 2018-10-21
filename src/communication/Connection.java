@@ -9,12 +9,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * Manages a TCP connection. All functions are save to use without caring about Exceptions
+ */
 public class Connection {
     Logger logger = LogManager.getLogger(Connection.class);
     Socket socket;
     InputStream in;
     OutputStream out;
 
+    /**
+     * Connects to a host and port.
+     * @return False if connection could not be established. True Otherwise
+     */
     public boolean connect(String host, int port) {
         logger.info(String.format("Connect to %s:%d", host, port));
 
@@ -30,10 +37,16 @@ public class Connection {
         return true;
     }
 
+    /**
+     * Checks if the connection is still active.
+     */
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
 
+    /**
+     * Disconnects the current connection
+     */
     public void disconnect() {
         logger.info(
                 String.format(
@@ -51,8 +64,6 @@ public class Connection {
 
     /**
      * Reads a message from the connection
-     * <p>
-     * Handles all errors gracefully and returns empty string on errors.
      */
     public String readMessage() {
         if (!isConnected()) return "";
@@ -79,6 +90,9 @@ public class Connection {
         return msg;
     }
 
+    /**
+     * Sends a message to the connected server
+     */
     public void sendMessage(String message) {
         if (!isConnected()) return;
 
@@ -92,6 +106,10 @@ public class Connection {
         }
     }
 
+    /**
+     * Tries to close a closeable.
+     * @param closeable
+     */
     private void tryClose(Closeable closeable) {
         try {
             if (closeable != null)
