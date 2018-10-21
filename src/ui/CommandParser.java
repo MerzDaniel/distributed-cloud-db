@@ -21,7 +21,7 @@ public class CommandParser {
                 && tokens[2].chars().allMatch( Character::isDigit ))
             return new ConnectCommand(tokens[1], Integer.valueOf(tokens[2]));
         if (commandName.equals("disconnect"))
-            return new DisconnectCommand();
+            return new DisconnectCommand(true);
         if (commandName.equals("send")
                 && tokens.length > 1) {
             String message = Arrays.asList(tokens).stream().skip(1).collect(Collectors.joining(" "));
