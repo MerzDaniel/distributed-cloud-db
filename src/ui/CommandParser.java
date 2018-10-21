@@ -1,7 +1,5 @@
 package ui;
 
-import java.util.Dictionary;
-
 public class CommandParser {
     public Command parseCommand(String command) {
         String[] tokens = command.split(" ");
