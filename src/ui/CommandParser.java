@@ -14,6 +14,8 @@ public class CommandParser {
             return new DisconnectCommand();
         if (commandName.equals("send"))
             return new SendCommand(tokens[1]);
+        if (commandName.equals("logLevel"))
+            return new LogCommand(tokens[1]);
         return new InvalidCommand();
     }
 }
