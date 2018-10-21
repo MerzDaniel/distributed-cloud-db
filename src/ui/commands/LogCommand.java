@@ -1,13 +1,19 @@
 package ui.commands;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import ui.ApplicationState;
 import ui.Command;
 import ui.Util;
 
 public class LogCommand implements Command {
     private String logLevel;
+
+    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+    Configuration conf = ctx.getConfiguration();
 
     public LogCommand(String logLevel){
         this.logLevel = logLevel;
@@ -18,25 +24,32 @@ public class LogCommand implements Command {
 
         switch (logLevel) {
             case "ALL":
-                Logger.getRootLogger().setLevel(Level.ALL);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.ALL);
+                ctx.updateLoggers(conf);
                 break;
             case "DEBUG":
-                Logger.getRootLogger().setLevel(Level.DEBUG);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
+                ctx.updateLoggers(conf);
                 break;
             case "INFO":
-                Logger.getRootLogger().setLevel(Level.INFO);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.INFO);
+                ctx.updateLoggers(conf);
                 break;
             case "WARN":
-                Logger.getRootLogger().setLevel(Level.WARN);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.WARN);
+                ctx.updateLoggers(conf);
                 break;
             case "ERROR":
-                Logger.getRootLogger().setLevel(Level.ERROR);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.ERROR);
+                ctx.updateLoggers(conf);
                 break;
             case "FATAL":
-                Logger.getRootLogger().setLevel(Level.FATAL);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.FATAL);
+                ctx.updateLoggers(conf);
                 break;
             case "OFF":
-                Logger.getRootLogger().setLevel(Level.OFF);
+                conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.OFF);
+                ctx.updateLoggers(conf);
                 break;
             default:
                 Util.writeLine("Unsupported log level specified. Please use 'help' to check supported logLevels");
