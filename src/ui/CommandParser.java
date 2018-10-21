@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class CommandParser {
     public Command parseCommand(String command) {
         String[] tokens = command.split(" ");
-        String commandName = tokens.length > 0 ? tokens[0] : "";
+        String commandName = tokens.length > 0 ? tokens[0].toLowerCase() : "";
         if (commandName.equals("help"))
             return new HelpCommand();
         if (commandName.equals("quit"))
@@ -24,7 +24,7 @@ public class CommandParser {
             String message = Arrays.asList(tokens).stream().skip(1).collect(Collectors.joining(" "));
             return new SendCommand(message);
         }
-        if (commandName.equals("logLevel"))
+        if (commandName.equals("loglevel"))
             return new LogCommand(tokens[1]);
         return new InvalidCommand();
     }
