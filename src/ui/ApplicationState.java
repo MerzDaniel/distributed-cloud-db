@@ -4,5 +4,5 @@ import communication.Connection;
 
 public class ApplicationState {
     public boolean stopRequested = false;
-    public Connection connection;
+    public Connection connection = new Connection();
 }

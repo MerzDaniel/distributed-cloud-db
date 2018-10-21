@@ -1,7 +1,5 @@
 package ui;
 
-import communication.Connection;
-
 import static ui.Util.writeLine;
 
 public class ConnectCommand implements Command{
@@ -15,7 +13,6 @@ public class ConnectCommand implements Command{
 
     @Override
     public void execute(ApplicationState state) {
-        state.connection = new Connection();
         String msg = state.connection.connect(this.url, this.port);
         writeLine(msg);
     }
