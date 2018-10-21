@@ -14,6 +14,7 @@ public class ConnectCommand implements Command{
     @Override
     public void execute(ApplicationState state) {
         state.connection = new Connection();
-        state.connection.connect(this.url, this.port);
+        String msg = state.connection.connect(this.url, this.port);
+        System.out.println(msg);
     }
 }

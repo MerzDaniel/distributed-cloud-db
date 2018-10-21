@@ -12,21 +12,21 @@ public class Connection {
     Socket socket;
     InputStream in;
 
-    public boolean connect(String host, int port) {
+    public String connect(String host, int port) {
         logger.info(String.format("Connect to %s:%d", host, port));
+        String message = "";
         try {
             socket = new Socket(host, port);
             in = socket.getInputStream();
 
-            String message = readMessage();
-            System.out.println("Message from server:");
-            System.out.println(message);
+            message = readMessage();
+
         } catch (IOException e) {
             logger.warn(String.format("Connecting to %s:%d failed: %s", host, port, e.getMessage()));
             logger.warn(e.getStackTrace());
-            return false;
+            return "";
         }
-        return true;
+        return message;
     }
 
     public boolean isConnected() {
