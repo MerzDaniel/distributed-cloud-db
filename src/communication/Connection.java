@@ -5,12 +5,14 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 public class Connection {
     Logger logger = LogManager.getLogger(Connection.class);
     Socket socket;
     InputStream in;
+    OutputStream out;
 
     public String connect(String host, int port) {
         logger.info(String.format("Connect to %s:%d", host, port));
@@ -18,6 +20,7 @@ public class Connection {
         try {
             socket = new Socket(host, port);
             in = socket.getInputStream();
+            out = socket.getOutputStream();
 
             message = readMessage();
 
@@ -50,7 +53,7 @@ public class Connection {
 
     /**
      * Reads a message from the connection
-     *
+     * <p>
      * Handles all errors gracefully and returns empty string on errors.
      */
     public String readMessage() {
@@ -68,12 +71,25 @@ public class Connection {
                 if (c == '\r') break;
                 buffer.append(c);
             } catch (IOException e) {
-                logger.warn("Exception occured while reading message: "+ e.getMessage());
+                logger.warn("Exception occured while reading message: " + e.getMessage());
                 logger.warn(e.getStackTrace());
             }
         }
         String msg = buffer.toString();
         logger.info("Received a message from the server: " + msg);
         return msg;
+    }
+
+    public void sendMessage(String message) {
+        if (!isConnected()) return;
+
+        try {
+            for (char c : message.toCharArray()) {
+                out.write((byte) c);
+            }
+            out.write('\r');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
