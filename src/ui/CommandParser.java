@@ -12,6 +12,8 @@ public class CommandParser {
             return new ConnectCommand(tokens[1], Integer.valueOf(tokens[2]));
         if (commandName.equals("disconnect"))
             return new DisconnectCommand();
+        if (commandName.equals("send"))
+            return new SendCommand(tokens[1]);
         return new InvalidCommand();
     }
 }
