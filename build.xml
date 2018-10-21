@@ -58,7 +58,7 @@
     </javac>
   </target>
 
-  <target name="build-jar" depends="build">
+  <target name="build-jar" depends="clean,build">
     <delete file="${jar.file}" />
     <delete file="${manifest.file}" />
 
