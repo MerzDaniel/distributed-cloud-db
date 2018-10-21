@@ -5,6 +5,9 @@ import ui.commands.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * The CommandParser parses input from the user and returns the correct Command to execute
+ */
 public class CommandParser {
     public Command parseCommand(String command) {
         String[] tokens = command.split(" ");

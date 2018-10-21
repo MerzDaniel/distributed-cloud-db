@@ -24,6 +24,9 @@ public class Application {
         logger.info("Stop application");
     }
 
+    /**
+     * Reads a line form System.in and calls CommandParser to parse the content. The resulting command will be executed.
+     */
     private void processInput() {
         BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
         String command = "";
