@@ -1,5 +1,7 @@
 package ui;
 
+import static ui.Util.writeLine;
+
 public class SendCommand implements Command {
     private String message;
 
@@ -9,9 +11,12 @@ public class SendCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        if (state.connection != null) {
-            //send the message
-            //send the confirmation to the console
+        if (!state.connection.isConnected()) {
+            writeLine("Currently not connected to a server");
+            return;
         }
+        state.connection.sendMessage(message);
+        String receivedMessage = state.connection.readMessage();
+        writeLine(receivedMessage);
     }
 }
