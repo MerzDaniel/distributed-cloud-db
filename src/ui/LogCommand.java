@@ -36,10 +36,10 @@ public class LogCommand implements Command {
                 Logger.getRootLogger().setLevel(Level.OFF);
                 break;
             default:
-                Util.writeLine("Unsupported log level specified");
+                Util.writeLine("Unsupported log level specified. Please use 'help' to check supported logLevels");
                 break;
         }
 
-        Util.writeLine("current log level " + Logger.getRootLogger().getLevel().toString());
+        Util.writeLine("current log level is " + Logger.getRootLogger().getLevel().toString());
     }
 }
