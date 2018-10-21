@@ -15,22 +15,19 @@ public class Connection {
     InputStream in;
     OutputStream out;
 
-    public String connect(String host, int port) {
+    public boolean connect(String host, int port) {
         logger.info(String.format("Connect to %s:%d", host, port));
-        String message = "";
+
         try {
             socket = new Socket(host, port);
             in = socket.getInputStream();
             out = socket.getOutputStream();
-
-            message = readMessage();
-
         } catch (IOException e) {
             logger.warn(String.format("Connecting to %s:%d failed: %s", host, port, e.getMessage()));
             logger.warn(e.getStackTrace());
-            return "";
+            return false;
         }
-        return message;
+        return true;
     }
 
     public boolean isConnected() {

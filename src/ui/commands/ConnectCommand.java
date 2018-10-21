@@ -16,7 +16,13 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        String msg = state.connection.connect(this.url, this.port);
-        writeLine(msg);
+        boolean connected = state.connection.connect(this.url, this.port);
+
+        if (connected){
+            writeLine(state.connection.readMessage());
+        }
+        else{
+            writeLine("Could not connect to the server " + url + ":" + port);
+        }
     }
 }
