@@ -3,6 +3,7 @@ package communication;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,18 +38,18 @@ public class Connection {
     }
 
     public void disconnect() {
-        if (!isConnected()) return;
-        try {
-            socket.close();
-        } catch (IOException e) {
-            logger.warn(
-                    String.format(
-                            "Closing connection failed for %s:%d failed: %s",
-                            socket.getInetAddress(), socket.getPort(), e.getMessage()
-                    )
-            );
-            logger.warn(e.getStackTrace());
-        }
+        logger.info(
+                String.format(
+                        "Closing connection from %s:%d failed: %s",
+                        socket.getInetAddress(), socket.getPort()
+                )
+        );
+        tryClose(in);
+        tryClose(out);
+        tryClose(socket);
+        in = null;
+        out = null;
+        socket = null;
     }
 
     /**
@@ -91,6 +92,16 @@ public class Connection {
             out.write('\r');
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void tryClose(Closeable closeable) {
+        try {
+            if (closeable != null)
+                closeable.close();
+        } catch (IOException e) {
+            logger.warn("Error on closing "+ closeable.getClass()+ ": " + e.getMessage());
+            logger.warn(e.getStackTrace());
         }
     }
 }
