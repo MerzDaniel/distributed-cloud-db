@@ -2,6 +2,7 @@ package ui;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import ui.commands.ErrorCommand;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,8 +37,12 @@ public class Application {
             logger.warn("EXCEPTION: " + e.getMessage());
             logger.warn(e.getStackTrace());
         }
-        Command c = commandParser.parseCommand(command);
-        c.execute(state);
+        try {
+            Command c = commandParser.parseCommand(command);
+            c.execute(state);
+        } catch (Exception ex) {
+            new ErrorCommand(ex).execute(state);
+        }
     }
 
     static {
