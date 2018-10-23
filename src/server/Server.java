@@ -1,18 +1,22 @@
 package server;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
-    public static void main(String[] args) {
-        System.out.println("Server started");
+public class Server implements Runnable{
+    final Logger logger = LogManager.getLogger(Server.class);
+    final int port;
 
+    public Server(int port) {
+        this.port = port;
+    }
 
-        int port;
-        if (args.length >0) port = Integer.parseInt(args[0]);
-        else port = 50000;
-
+    @Override
+    public void run() {
         ServerSocket s;
         try {
             s = new ServerSocket(port);
@@ -23,6 +27,16 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Server started");
+
+        int port;
+        if (args.length >0) port = Integer.parseInt(args[0]);
+        else port = 50000;
+
+        new Server(port).run();
     }
 
 }
