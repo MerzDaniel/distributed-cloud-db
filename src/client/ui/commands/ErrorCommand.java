@@ -1,12 +1,12 @@
-package ui.commands;
+package client.ui.commands;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import ui.ApplicationState;
-import ui.Command;
+import client.ui.ApplicationState;
+import client.ui.Command;
 
 
-import static ui.Util.writeLine;
+import static client.ui.Util.writeLine;
 
 public class ErrorCommand implements Command {
     private final Exception ex;

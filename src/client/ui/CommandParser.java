@@ -1,6 +1,6 @@
-package ui;
+package client.ui;
 
-import ui.commands.*;
+import client.ui.commands.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

@@ -1,13 +1,13 @@
-package ui.commands;
+package client.ui.commands;
 
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import ui.ApplicationState;
-import ui.Command;
-import ui.Util;
+import client.ui.ApplicationState;
+import client.ui.Command;
+import client.ui.Util;
 
 public class LogCommand implements Command {
     private String logLevel;

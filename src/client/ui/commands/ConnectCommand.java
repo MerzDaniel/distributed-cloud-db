@@ -1,9 +1,9 @@
-package ui.commands;
+package client.ui.commands;
 
-import ui.ApplicationState;
-import ui.Command;
+import client.ui.ApplicationState;
+import client.ui.Command;
 
-import static ui.Util.writeLine;
+import static client.ui.Util.writeLine;
 
 public class ConnectCommand implements Command {
     private String url;

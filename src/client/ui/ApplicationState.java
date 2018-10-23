@@ -1,6 +1,6 @@
-package ui;
+package client.ui;
 
-import communication.Connection;
+import client.communication.Connection;
 
 /**
  * Contains the application state.
