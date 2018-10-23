@@ -3,11 +3,12 @@ package client.communication;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import static lib.SocketUtil.tryClose;
 
 /**
  * Manages a TCP connection. All functions are save to use without caring about Exceptions
@@ -106,17 +107,4 @@ public class Connection {
         }
     }
 
-    /**
-     * Tries to close a closeable.
-     * @param closeable
-     */
-    private void tryClose(Closeable closeable) {
-        try {
-            if (closeable != null)
-                closeable.close();
-        } catch (IOException e) {
-            logger.warn("Error on closing "+ closeable.getClass()+ ": " + e.getMessage());
-            logger.warn(e.getStackTrace());
-        }
-    }
 }
