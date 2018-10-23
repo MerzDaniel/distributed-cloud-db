@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import lib.KVMessage;
 import lib.KVMessageImpl;
 import lib.KVMessageMarshaller;
-import lib.KVMessageUnmarshaller;
 import org.junit.Test;
 
 
@@ -16,7 +15,16 @@ public class KVMarshallerTest extends TestCase {
         KVMessageMarshaller kvMessageMarshaller = new KVMessageMarshaller();
         String unmarshalledMessage = kvMessageMarshaller.marshall(kvMessage);
 
-        assertEquals(unmarshalledMessage, "GET<Name,TUM>");
+        assertEquals(unmarshalledMessage, "PUT<Name,TUM>");
+    }
+
+    @Test
+    public void testMarshallSpecialCharacters() {
+        KVMessage kvMessage = new KVMessageImpl("<N<ame/", ",T/UM>", KVMessage.StatusType.PUT);
+        KVMessageMarshaller kvMessageMarshaller = new KVMessageMarshaller();
+        String unmarshalledMessage = kvMessageMarshaller.marshall(kvMessage);
+
+        assertEquals(unmarshalledMessage, "PUT</<N/<ame//,/,T//UM/>>");
     }
 
 }
