@@ -42,7 +42,7 @@ public class Connection {
      * Checks if the connection is still active.
      */
     public boolean isConnected() {
-        return socket != null && socket.isConnected() && !socket.isClosed();
+        return lib.SocketUtil.isConnected(socket);
     }
 
     /**

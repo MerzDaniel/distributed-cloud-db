@@ -5,9 +5,17 @@ import org.apache.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.Socket;
 
 public class SocketUtil {
     final static Logger logger = LogManager.getLogger(SocketUtil.class);
+
+    /**
+     * Checks if the connection is still active.
+     */
+    public static boolean isConnected(Socket socket) {
+        return socket != null && socket.isConnected() && !socket.isClosed();
+    }
 
     /**
      * Tries to close a closeable.
