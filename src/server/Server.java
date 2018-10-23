@@ -39,4 +39,7 @@ public class Server implements Runnable{
         new Server(port).run();
     }
 
+    static {
+        System.setProperty("log4j.configurationFile", "log4j2-server.properties.xml");
+    }
 }
