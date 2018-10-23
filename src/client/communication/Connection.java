@@ -1,5 +1,6 @@
 package client.communication;
 
+import lib.SocketUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,6 +22,7 @@ public class Connection {
 
     /**
      * Connects to a host and port.
+     *
      * @return False if connection could not be established. True Otherwise
      */
     public boolean connect(String host, int port) {
@@ -68,27 +70,7 @@ public class Connection {
      */
     public String readMessage() {
         if (!isConnected()) return "";
-        StringBuffer buffer = new StringBuffer();
-        while (true) {
-            try {
-                int val = in.read();
-                if (val == -1) {
-                    logger.info("readLine(): end of stream reached");
-                    break;
-                }
-                char c = (char) val;
-                if (c == '\n') continue;
-                if (c == '\r') break;
-                buffer.append(c);
-            } catch (IOException e) {
-                logger.warn("Exception occured while reading message: " + e.getMessage());
-                logger.warn(e.getStackTrace());
-                break;
-            }
-        }
-        String msg = buffer.toString();
-        logger.info("Received a message from the server: " + msg);
-        return msg;
+        return SocketUtil.readMessage(in);
     }
 
     /**
@@ -96,15 +78,7 @@ public class Connection {
      */
     public void sendMessage(String message) {
         if (!isConnected()) return;
-
-        try {
-            for (char c : message.toCharArray()) {
-                out.write((byte) c);
-            }
-            out.write('\r');
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SocketUtil.sendMessage(out, message);
     }
 
 }
