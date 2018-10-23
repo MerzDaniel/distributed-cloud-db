@@ -5,6 +5,12 @@ public class KVMessageImpl implements KVMessage {
     private String value;
     private KVMessage.StatusType statusType;
 
+    public KVMessageImpl(String key, String value, KVMessage.StatusType statusType) {
+        this.key = key;
+        this.value = value;
+        this.statusType = statusType;
+    }
+
     @Override
     public String getKey() {
         return key;
