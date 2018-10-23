@@ -17,11 +17,13 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
+        logger.info("Start server");
         ServerSocket s;
         try {
             s = new ServerSocket(port);
             while(true) {
                 Socket clientSocket = s.accept();
+                logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 new Thread(new ConnectionHandler(clientSocket)).start();
             }
         } catch (IOException e) {
@@ -30,8 +32,6 @@ public class Server implements Runnable{
     }
 
     public static void main(String[] args) {
-        System.out.println("Server started");
-
         int port;
         if (args.length >0) port = Integer.parseInt(args[0]);
         else port = 50000;
