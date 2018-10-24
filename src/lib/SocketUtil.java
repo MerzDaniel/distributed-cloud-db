@@ -49,7 +49,8 @@ public class SocketUtil {
             }
             out.write('\r');
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Error in sendMessage(): " + e.getMessage());
+            logger.warn(e.getStackTrace());
         }
     }
 
