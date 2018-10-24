@@ -1,4 +1,4 @@
-package lib;
+package lib.message;
 
 
 public interface KVMessage {

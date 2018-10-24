@@ -1,10 +1,8 @@
 package test;
 
 import junit.framework.TestCase;
-import lib.KVMessage;
-import lib.KVMessageImpl;
-import lib.KVMessageMarshaller;
-import lib.KVMessageUnmarshaller;
+import lib.message.KVMessage;
+import lib.message.KVMessageUnmarshaller;
 import org.junit.Test;
 
 public class KVUnmarshallerTest extends TestCase {
