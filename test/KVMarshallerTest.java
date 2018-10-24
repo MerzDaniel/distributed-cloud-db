@@ -15,16 +15,16 @@ public class KVMarshallerTest extends TestCase {
         KVMessageMarshaller kvMessageMarshaller = new KVMessageMarshaller();
         String unmarshalledMessage = kvMessageMarshaller.marshall(kvMessage);
 
-        assertEquals(unmarshalledMessage, "PUT<Name,TUM>");
+        assertEquals("PUT<Name,TUM>", unmarshalledMessage);
     }
 
     @Test
     public void testMarshallSpecialCharacters() {
-        KVMessage kvMessage = new KVMessageImpl("<N<ame/", ",T/UM>", KVMessage.StatusType.PUT);
+        KVMessage kvMessage = new KVMessageImpl("<N<ame/,", ",T/UM>", KVMessage.StatusType.PUT);
         KVMessageMarshaller kvMessageMarshaller = new KVMessageMarshaller();
         String unmarshalledMessage = kvMessageMarshaller.marshall(kvMessage);
 
-        assertEquals(unmarshalledMessage, "PUT</<N/<ame//,/,T//UM/>>");
+        assertEquals("PUT</<N/<ame///,,/,T//UM/>>", unmarshalledMessage);
     }
 
 }

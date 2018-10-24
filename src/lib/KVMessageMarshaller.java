@@ -5,9 +5,13 @@ public class KVMessageMarshaller {
     public String marshall(KVMessage kvMessage){
         return kvMessage.getStatus().name()
                 + "<"
-                + kvMessage.getKey().replaceAll("/", "//").replaceAll("<", "/<").replaceAll(",", "/,")
+                + escapeSpecialCharacters(kvMessage.getKey())
                 + ","
-                + kvMessage.getValue().replaceAll("/", "//").replaceAll(">", "/>").replaceAll(",", "/,")
+                + escapeSpecialCharacters(kvMessage.getValue())
                 + ">";
+    }
+
+    private String escapeSpecialCharacters(String string){
+        return string.replaceAll("/", "//").replaceAll("<", "/<").replaceAll(",", "/,").replaceAll(">", "/>");
     }
 }
