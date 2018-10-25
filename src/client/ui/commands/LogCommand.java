@@ -9,6 +9,8 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import client.ui.Util;
 
+import static client.ui.Util.writeLine;
+
 public class LogCommand implements Command {
     private String logLevel;
 
@@ -21,6 +23,8 @@ public class LogCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
+
+        boolean unsupportedLogLevel = false;
 
         switch (logLevel) {
             case "ALL":
@@ -53,9 +57,18 @@ public class LogCommand implements Command {
                 break;
             default:
                 Util.writeLine("Unsupported log level specified. Please use 'help' to check supported logLevels");
+                unsupportedLogLevel = true;
                 break;
         }
 
-        Util.writeLine("current log level is " + Logger.getRootLogger().getLevel().toString());
+        if (!state.connection.isConnected()) {
+            writeLine("Currently not connected to a server");
+            return;
+        }
+        if (!unsupportedLogLevel){
+            state.connection.sendMessage("logLevel " + logLevel);
+            String receivedMessage = state.connection.readMessage();
+            Util.writeLine("current log level is " + receivedMessage);
+        }
     }
 }
