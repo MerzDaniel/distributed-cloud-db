@@ -26,7 +26,7 @@ public class GetCommand implements Command {
 
         state.connection.sendMessage(KVMessage.StatusType.GET.name() + "<" + key + ">");
         String receivedMessage = state.connection.readMessage();
-        KVMessage kVMessageResponse = new KVMessageUnmarshaller().unmarshall(receivedMessage);
+        KVMessage kVMessageResponse = KVMessageUnmarshaller.getInstance().unmarshall(receivedMessage);
 
         if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the GET");
