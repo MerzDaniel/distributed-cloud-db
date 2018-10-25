@@ -9,6 +9,7 @@
   <property name="build.dir" value="bin"/>
   <property name="src.dir" value="src"/>
   <property name="lib.dir" value="libs"/>
+  <property name="test.dir" value="test"/>
 
   <!-- Configuration for client application -->
   <property name="clientjar.file" value="ms2-client.jar"/>
@@ -67,6 +68,16 @@
     </javac>
   </target>
 
+  <!-- build complete project -->
+  <target name="build-tests" depends="build">
+    <echo message="${ant.project.name}: ${ant.file}"/>
+    <javac debug="true" debuglevel="${debuglevel}" destdir="bin"
+           source="${source}" target="${target}"
+           classpathref="project.classpath" includeantruntime="false">
+      <src path="${test.dir}"/>
+    </javac>
+  </target>
+
   <!-- build client jar -->
   <target name="build-client-jar" depends="build">
     <delete file="${clientjar.file}"/>
@@ -107,11 +118,11 @@
   <target name="build-jar" depends="build-client-jar, build-server-jar"/>
 
   <!-- run test cases -->
-  <target name="test" depends="build">
+  <target name="test" depends="build-tests">
     <junit>
       <classpath refid="project.classpath"/>
       <formatter type="brief" usefile="false"/>
-      <test name="testing.AllTests"/>
+      <test name="AllTests"/>
     </junit>
   </target>
 
