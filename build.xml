@@ -122,7 +122,12 @@
     <junit>
       <classpath refid="project.classpath"/>
       <formatter type="brief" usefile="false"/>
-      <test name="AllTests"/>
+      <!--<test name="AllTests"/>-->
+      <batchtest>
+        <fileset dir="${test.dir}">
+          <include name="**/*Test*" />
+        </fileset>
+      </batchtest>
     </junit>
   </target>
 
