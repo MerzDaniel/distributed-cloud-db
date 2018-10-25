@@ -3,7 +3,7 @@ import client.InteractionTest;
 import integration.ConnectionTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import server.CacheType;
+import server.kv.CacheType;
 import server.Server;
 
 public class AllTests {

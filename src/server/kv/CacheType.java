@@ -1,4 +1,4 @@
-package server;
+package server.kv;
 
 public enum  CacheType {
     FIFO,

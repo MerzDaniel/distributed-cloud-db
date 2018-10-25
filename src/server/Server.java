@@ -2,6 +2,7 @@ package server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import server.kv.CacheType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
