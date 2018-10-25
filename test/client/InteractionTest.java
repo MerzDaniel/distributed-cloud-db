@@ -1,17 +1,16 @@
 package client;
 
-import client.KVStore;
+import client.store.KvStore;
 import junit.framework.TestCase;
 import lib.KVMessage;
 import org.junit.Test;
 
-
 public class InteractionTest extends TestCase {
 
-    private KVStore kvClient;
+    private KvStore kvClient;
 
     public void setUp() {
-        kvClient = new KVStore("localhost", 50000);
+        kvClient = new KvStore("localhost", 50000);
         try {
             kvClient.connect();
         } catch (Exception e) {
@@ -72,7 +71,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == StatusType.PUT_UPDATE
+        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.PUT_UPDATE
                 && response.getValue().equals(updatedValue));
     }
 
@@ -92,7 +91,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == StatusType.DELETE_SUCCESS);
+        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.DELETE_SUCCESS);
     }
 
     @Test
@@ -124,7 +123,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == StatusType.GET_ERROR);
+        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.GET_ERROR);
     }
 
 }
