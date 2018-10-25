@@ -4,6 +4,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KVMessageUnmarshaller {
+    private static KVMessageUnmarshaller instance;
+
+    private KVMessageUnmarshaller(){}
+
+    public static KVMessageUnmarshaller getInstance() {
+        if (instance != null) {
+            instance = new KVMessageUnmarshaller();
+        }
+        return instance;
+    }
 
     public KVMessage unmarshall(String kvMessageString) {
         KVMessage.StatusType status = null;
