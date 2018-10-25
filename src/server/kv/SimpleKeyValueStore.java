@@ -1,6 +1,5 @@
 package server.kv;
 
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -15,20 +14,29 @@ public class SimpleKeyValueStore implements KeyValueStore {
     final static File DB_DIRECTORY = new File(Paths.get(".", "db").toUri());
     final static File DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
 
-    final Reader reader;
-    final Writer writer;
+    Reader reader;
+    Writer writer;
 
-    public SimpleKeyValueStore() throws IOException {
-        DB_DIRECTORY.mkdirs();
-        if (!DB_FILE.createNewFile()) {
-        }
-        reader = new FileReader(DB_FILE);
-        writer = new FileWriter(DB_FILE);
+    public SimpleKeyValueStore() {
+
     }
 
     public SimpleKeyValueStore(Reader reader, Writer writer) {
         this.reader = reader;
         this.writer = writer;
+    }
+
+    @Override
+    public void init() throws IOException {
+        DB_DIRECTORY.mkdirs();
+        try {
+            DB_FILE.createNewFile();
+            reader = new FileReader(DB_FILE);
+            writer = new FileWriter(DB_FILE);
+        } catch (IOException e) {
+            logger.error(e);
+            throw e;
+        }
     }
 
     @Override
