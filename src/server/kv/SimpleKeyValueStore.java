@@ -32,7 +32,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public String get(String key) throws DbError,KeyNotFoundException {
+    public String get(String key) throws DbError, KeyNotFoundException {
         try {
             return ioGet(key);
         } catch (IOException e) {
@@ -57,16 +57,32 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void put(String key) {
+    public void put(String key, String value) throws DbError {
+        try {
+            ioPut(key, value);
+        } catch (IOException e) {
+            throw new DbError(e);
+        }
     }
-//    private void ioPut(String key, String value) {
-//        String line = bufferedReader.readLine();
-//        while (line != null) {
-//            String[] split = line.split("=");
-//            if (split[0].equals(key)) {
-//                return split[1];
-//            }
-//        }
-//        throw new KeyNotFoundException();
-//    }
+    private void ioPut(String key, String value) throws IOException {
+        writer.append(key + "=" + value + "\n");
+    }
+
+    @Override
+    public boolean hasKey(String key) throws DbError {
+        try {
+            get(key);
+        } catch (KeyNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteKey() throws DbError {
+
+
+        return false;
+    }
+
 }
