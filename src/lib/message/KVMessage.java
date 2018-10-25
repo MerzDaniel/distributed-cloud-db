@@ -34,4 +34,17 @@ public interface KVMessage {
      */
     public StatusType getStatus();
 
+    /**
+     *
+     * @return a boolean if this message has an error status
+     */
+    public boolean isError();
+
+
+    /**
+     *
+     * @return a boolean if this message has an success status
+     */
+    public boolean isSuccess();
+
 }
