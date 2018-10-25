@@ -1,19 +1,18 @@
 package server.kv;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
 
 public abstract class CachedKeyValueStore implements KeyValueStore {
 
     private KeyValueStore store;
-    private int cacheSize;
+    int cacheSize;
 
     public CachedKeyValueStore(int cacheSize) {
         this.cacheSize = cacheSize;
         store = new SimpleKeyValueStore();
     }
+
     public CachedKeyValueStore(int cacheSize, KeyValueStore store) {
         this.cacheSize = cacheSize;
         this.store = store;
@@ -26,7 +25,11 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     @Override
     public String get(String key) throws KeyNotFoundException, DbError {
-        return store.get(key);
+        if (isCached(key)) return getFromCache(key);
+
+        String value = store.get(key);
+        addToCache(key, value);
+        return value;
     }
 
     @Override
@@ -36,15 +39,16 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     @Override
     public boolean hasKey(String key) throws DbError {
+        if (isCached(key)) return true;
         return store.hasKey(key);
     }
 
     @Override
     public boolean deleteKey() throws DbError {
-        return store.deleteKey();
+        throw new NotImplementedException();
     }
 
     protected abstract void addToCache(String key, String value);
     protected abstract boolean isCached(String key);
-    protected abstract String getFromCache(String key);
+    protected abstract String getFromCache(String key) throws KeyNotFoundException;
 }
