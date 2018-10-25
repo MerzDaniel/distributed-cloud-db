@@ -17,7 +17,7 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
-        logger.info("Start server");
+        logger.info("Start server on port " + port);
         ServerSocket s;
         try {
             s = new ServerSocket(port);
