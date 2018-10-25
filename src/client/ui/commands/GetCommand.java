@@ -30,12 +30,12 @@ public class GetCommand implements Command {
         String receivedMessage = state.connection.readMessage();
         KVMessage kVMessageResponse = new KVMessageUnmarshaller().unmarshall(receivedMessage);
 
-        if(kVMessageResponse.isError()){
+        if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the GET");
-            logger.error("An error occurred while executing the GET, error=" + statusType);
+            logger.error("An error occurred while executing the GET, error=" + kVMessageResponse.getStatus());
         }
-        if(kVMessageResponse.isSuccess()){
-            writeLine(receivedMessage);
+        if (kVMessageResponse.isSuccess()) {
+            writeLine(kVMessageResponse.getValue());
         }
     }
 }
