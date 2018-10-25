@@ -42,7 +42,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     private String ioGet(String key) throws IOException, KeyNotFoundException {
-        reader.reset();
+        if (reader.markSupported()) reader.reset();
         final BufferedReader bufferedReader = new BufferedReader(reader);
         for (Iterator<String> it = bufferedReader.lines().iterator(); it.hasNext(); ) {
             String line = it.next();

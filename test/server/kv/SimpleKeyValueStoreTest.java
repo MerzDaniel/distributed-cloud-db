@@ -2,10 +2,7 @@ package server.kv;
 
 import org.junit.Test;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -57,5 +54,18 @@ public class SimpleKeyValueStoreTest {
 
         sv.put("key", "value");
         assertEquals("key=value\n", ((StringWriter) writer).getBuffer().toString());
+    }
+
+    @Test
+    public void readWrites() throws DbError, KeyNotFoundException {
+        StringBuffer buf = new StringBuffer();
+        Reader reader = new StringBufferReader(buf);
+        StringWriter writer = new StringWriter();
+        KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
+
+        sv.put("key", "value");
+        buf.append(writer.getBuffer());
+
+        assertEquals("value", sv.get("key"));
     }
 }
