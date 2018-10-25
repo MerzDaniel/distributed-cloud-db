@@ -25,4 +25,32 @@ public class KVMessageImpl implements KVMessage {
     public StatusType getStatus() {
         return statusType;
     }
+
+    @Override
+    public boolean isError() {
+        switch (this.statusType) {
+            case GET_ERROR:
+                return true;
+            case PUT_ERROR:
+                return true;
+            case DELETE_ERROR:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public boolean isSuccess() {
+        switch (this.statusType) {
+            case GET_SUCCESS:
+                return true;
+            case PUT_SUCCESS:
+                return true;
+            case DELETE_SUCCESS:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
