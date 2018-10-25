@@ -1,9 +1,9 @@
-package server.kv;
+package util;
 
 import java.io.IOException;
 import java.io.Reader;
 
-class StringBufferReader extends Reader {
+public class StringBufferReader extends Reader {
 
     private StringBuffer buf;
     private int offset = 0;
