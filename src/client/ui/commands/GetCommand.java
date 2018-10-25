@@ -11,11 +11,9 @@ import static client.ui.Util.writeLine;
 
 public class GetCommand implements Command {
     private String key;
-    private String statusType;
     private final Logger logger = LogManager.getLogger(GetCommand.class);
 
-    public GetCommand(String statusType, String key){
-        this.statusType = statusType;
+    public GetCommand(String key){
         this.key = key;
     }
 
@@ -26,7 +24,7 @@ public class GetCommand implements Command {
             return;
         }
 
-        state.connection.sendMessage(statusType + "<" + key + ">");
+        state.connection.sendMessage(KVMessage.StatusType.GET.name() + "<" + key + ">");
         String receivedMessage = state.connection.readMessage();
         KVMessage kVMessageResponse = new KVMessageUnmarshaller().unmarshall(receivedMessage);
 
