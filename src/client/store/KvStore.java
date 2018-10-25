@@ -1,6 +1,6 @@
 package client.store;
 
-import lib.KVMessage;
+import lib.message.KVMessage;
 
 public class KvStore {
     final String host;

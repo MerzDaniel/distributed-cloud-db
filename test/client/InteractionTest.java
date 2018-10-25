@@ -2,7 +2,7 @@ package client;
 
 import client.store.KvStore;
 import junit.framework.TestCase;
-import lib.KVMessage;
+import lib.message.KVMessage;
 import org.junit.Test;
 
 public class InteractionTest extends TestCase {

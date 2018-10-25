@@ -1,4 +1,4 @@
-package lib;
+package lib.message;
 
 import junit.framework.TestCase;
 import org.junit.Test;
