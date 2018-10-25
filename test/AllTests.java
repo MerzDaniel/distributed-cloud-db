@@ -1,6 +1,8 @@
 package testing;
 
 import app_kvServer.KVServer;
+import client.InteractionTest;
+import integration.ConnectionTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

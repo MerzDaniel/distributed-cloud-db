@@ -1,4 +1,4 @@
-package test;
+package lib;
 
 import junit.framework.TestCase;
 import lib.KVMessage;

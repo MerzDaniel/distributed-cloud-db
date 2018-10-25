@@ -1,9 +1,6 @@
-package test;
+package lib;
 
 import junit.framework.TestCase;
-import lib.KVMessage;
-import lib.KVMessageImpl;
-import lib.KVMessageMarshaller;
 import org.junit.Test;
 
 

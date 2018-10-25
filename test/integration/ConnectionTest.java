@@ -1,4 +1,4 @@
-package testing;
+package integration;
 
 import client.KVStore;
 import junit.framework.TestCase;
