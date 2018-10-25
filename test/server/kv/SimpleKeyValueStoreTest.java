@@ -29,4 +29,13 @@ public class SimpleKeyValueStoreTest {
         assertEquals("ha", sv.get("a"));
         assertEquals("c", sv.get("ab"));
     }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void shouldThrowKeyNotFound() throws KeyNotFoundException, DbError {
+        Reader reader = new StringReader("ab=c\nde=fg\na=ha");
+        Writer writer = new StringWriter();
+        KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
+
+        sv.get("non-existing-key");
+    }
 }
