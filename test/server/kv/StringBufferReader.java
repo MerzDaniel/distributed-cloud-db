@@ -27,5 +27,15 @@ class StringBufferReader extends Reader {
     public void close() throws IOException {
 
     }
+
+    @Override
+    public boolean markSupported() {
+        return true;
+    }
+
+    @Override
+    public void reset() throws IOException {
+        offset = 0;
+    }
 }
 

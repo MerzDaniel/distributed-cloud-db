@@ -68,4 +68,19 @@ public class SimpleKeyValueStoreTest {
 
         assertEquals("value", sv.get("key"));
     }
+
+    @Test
+    public void readMultipleWrites() throws DbError, KeyNotFoundException {
+        StringBuffer buf = new StringBuffer();
+        Reader reader = new StringBufferReader(buf);
+        StringWriter writer = new StringWriter();
+        KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
+
+        sv.put("key", "value");
+        sv.put("another-key", "another-value");
+        buf.append(writer.getBuffer());
+
+        assertEquals("value", sv.get("key"));
+        assertEquals("another-value", sv.get("another-key"));
+    }
 }
