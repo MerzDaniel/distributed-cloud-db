@@ -10,9 +10,19 @@ import java.net.Socket;
 public class Server implements Runnable{
     final Logger logger = LogManager.getLogger(Server.class);
     final int port;
+    private final int cacheSize;
+    private final CacheType cacheType;
 
     public Server(int port) {
         this.port = port;
+        cacheSize = 1000;
+        cacheType = CacheType.FIFO;
+    }
+
+    public Server(int port, int cacheSize, CacheType cacheType) {
+        this.port = port;
+        this.cacheSize = cacheSize;
+        this.cacheType = cacheType;
     }
 
     @Override
