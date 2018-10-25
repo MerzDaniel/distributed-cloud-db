@@ -14,8 +14,8 @@ public class KVUnmarshallerTest extends TestCase {
         KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals("GET",kvMessage.getStatus().name());
-        assertEquals("Name,",kvMessage.getKey());
-        assertEquals("TUM",kvMessage.getStatus().name());
+        assertEquals("Name",kvMessage.getKey());
+        assertEquals("TUM",kvMessage.getValue());
     }
 
     @Test
