@@ -4,6 +4,7 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.message.KVMessage;
 import lib.message.KVMessageUnmarshaller;
+import lib.message.UnmarshallException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,14 @@ public class GetCommand implements Command {
 
         state.connection.sendMessage(KVMessage.StatusType.GET.name() + "<" + key + ">");
         String receivedMessage = state.connection.readMessage();
-        KVMessage kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
+        KVMessage kVMessageResponse = null;
+        try {
+            kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
+        } catch (UnmarshallException e) {
+            logger.warn("Invalid response from the server.");
+            writeLine("Response from the server was invalid.");
+            return;
+        }
 
         if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the GET");

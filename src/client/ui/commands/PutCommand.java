@@ -2,10 +2,7 @@ package client.ui.commands;
 
 import client.ui.ApplicationState;
 import client.ui.Command;
-import lib.message.KVMessage;
-import lib.message.KVMessageImpl;
-import lib.message.KVMessageMarshaller;
-import lib.message.KVMessageUnmarshaller;
+import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -31,7 +28,14 @@ public class PutCommand implements Command {
         KVMessage kvMessageRequest = new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
         state.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String receivedMessage = state.connection.readMessage();
-        KVMessage kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
+        KVMessage kVMessageResponse = null;
+        try {
+            kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
+        } catch (UnmarshallException e) {
+            logger.warn("Got an invalid message.");
+            writeLine("The response of the server was invalid");
+            return;
+        }
 
         if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the command PUT");

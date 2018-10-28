@@ -11,7 +11,7 @@ public class KVMessageUnmarshaller {
 
     private KVMessageUnmarshaller(){}
 
-    public static KVMessage unmarshall(String kvMessageString) {
+    public static KVMessage unmarshall(String kvMessageString) throws UnmarshallException{
         KVMessage.StatusType status = null;
         String key = null;
         String value = null;
