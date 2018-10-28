@@ -26,11 +26,6 @@ public class CommandParser {
             return new ConnectCommand(tokens[1], Integer.valueOf(tokens[2]));
         if (commandName.equals("disconnect"))
             return new DisconnectCommand(true);
-        if (commandName.equals("send")
-                && tokens.length > 1) {
-            String message = Arrays.asList(tokens).stream().skip(1).collect(Collectors.joining(" "));
-            return new SendCommand(message);
-        }
         if (commandName.equals("loglevel"))
             return new LogCommand(tokens[1]);
         return new InvalidCommand();
