@@ -10,8 +10,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshall() {
         String kvMessageString = "GET<Name,TUM>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals("GET",kvMessage.getStatus().name());
         assertEquals("Name",kvMessage.getKey());
@@ -21,8 +20,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters1() {
         String kvMessageString = "GET</<N/<ame,/<T/>UM/>>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("<N<ame", kvMessage.getKey());
@@ -32,8 +30,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters2() {
         String kvMessageString = "GET<Name,TU/,M>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name", kvMessage.getKey());
@@ -43,8 +40,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters3() {
         String kvMessageString = "GET<Name,TU///,M>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name", kvMessage.getKey());
@@ -54,8 +50,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters4() {
         String kvMessageString = "GET<Name//,TU///,M>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name/", kvMessage.getKey());
@@ -65,8 +60,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters5() {
         String kvMessageString = "GET<N///,ame/,,TU///,M>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("N/,ame,", kvMessage.getKey());
@@ -76,8 +70,7 @@ public class KVUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallScpecialCharacters6() {
         String kvMessageString = "GET<N///,ame/,,///,TU///,M>";
-        KVMessageUnmarshaller kvMessageUnmarshaller = new KVMessageUnmarshaller();
-        KVMessage kvMessage = kvMessageUnmarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("N/,ame,", kvMessage.getKey());
