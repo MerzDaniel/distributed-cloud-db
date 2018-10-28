@@ -77,5 +77,15 @@ public class KVUnmarshallerTest extends TestCase {
         assertEquals("/,TU/,M", kvMessage.getValue());
     }
 
+    @Test
+    public void testInvalidMessage() {
+        String kvMessageString = "INVALID<key,value>";
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
+
+        assertEquals(KVMessage.StatusType.INVALID_MESSAGE, kvMessage.getStatus());
+        assertEquals(null, kvMessage.getKey());
+        assertEquals(null, kvMessage.getValue());
+    }
+
 }
 
