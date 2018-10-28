@@ -11,7 +11,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
 
     final Logger logger = LogManager.getLogger(SimpleKeyValueStore.class);
 
-    final static File DB_DIRECTORY = new File(Paths.get(".", "db").toUri());
+    final static File DB_DIRECTORY = new File(Paths.get("db").toUri());
     final static File DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
 
     Reader reader;
@@ -30,7 +30,10 @@ public class SimpleKeyValueStore implements KeyValueStore {
     public void init() throws IOException {
         DB_DIRECTORY.mkdirs();
         try {
-            DB_FILE.createNewFile();
+            if (!DB_FILE.exists()) {
+                logger.info("Creating db file: " + DB_FILE.getAbsolutePath());
+                DB_FILE.createNewFile();
+            }
             reader = new FileReader(DB_FILE);
             writer = new FileWriter(DB_FILE);
         } catch (IOException e) {
@@ -72,8 +75,10 @@ public class SimpleKeyValueStore implements KeyValueStore {
             throw new DbError(e);
         }
     }
+
     private void ioPut(String key, String value) throws IOException {
         writer.append(key + "=" + value + "\n");
+        writer.flush();
     }
 
     @Override
