@@ -21,8 +21,6 @@ public class PutCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-
-        KVMessage kvMessageRequest = new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
         KVMessage kVMessageResponse = state.kvStore.put(key, value);
 
         if (kVMessageResponse.isError()) {
