@@ -14,6 +14,7 @@ public class KVMessageMarshaller {
     }
 
     private static String escapeSpecialCharacters(String string){
+        if (string == null || string.equals("")) return "";
         return string.replaceAll("/", "//").replaceAll("<", "/<").replaceAll(",", "/,").replaceAll(">", "/>");
     }
 }
