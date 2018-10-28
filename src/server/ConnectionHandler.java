@@ -1,6 +1,7 @@
 package server;
 
 import lib.SocketUtil;
+import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -28,11 +29,35 @@ public class ConnectionHandler implements Runnable {
             i = s.getInputStream();
             o = s.getOutputStream();
 
-            SocketUtil.sendMessage(o, "Successfully connected.");
-
             while (SocketUtil.isConnected(s)) {
                 String msg = SocketUtil.readMessage(i);
-                SocketUtil.sendMessage(o, "ECHO: " + msg);
+                try {
+                    KVMessage kvMessage = null;
+                    kvMessage = KVMessageUnmarshaller.unmarshall(msg);
+                    logger.debug("Got a message: " + kvMessage.getStatus());
+
+                    KVMessage response;
+                    switch (kvMessage.getStatus()) {
+                        case GET:
+                            response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), "value");
+                            break;
+                        case PUT:
+                            response = MessageFactory.createPutSuccessMessage();
+                            break;
+                        case DELETE:
+                            response = MessageFactory.createDeleteSuccessMessage();
+                            break;
+                        default:
+                            response = MessageFactory.createInvalidMessage();
+                            break;
+                    }
+
+                    SocketUtil.sendMessage(o, KVMessageMarshaller.marshall(response));
+
+                } catch (UnmarshallException e) {
+                    logger.info("Got invalid message");
+                    new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+                }
             }
         } catch (IOException e) {
             logger.warn("Error during communication with an open connection:" + e.getMessage());
