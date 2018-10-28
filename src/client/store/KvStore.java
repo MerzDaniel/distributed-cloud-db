@@ -22,8 +22,8 @@ public class KvStore {
         this.connection = new Connection();
     }
 
-    public boolean connect() {
-        return this.connection.connect(host, port);
+    public void connect() throws IOException {
+        this.connection.connect(host, port);
     }
 
     public void disconnect() {
