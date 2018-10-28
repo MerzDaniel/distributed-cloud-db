@@ -41,7 +41,10 @@ public class ConnectionHandler implements Runnable {
                 try {
                     KVMessage kvMessage = null;
                     kvMessage = KVMessageUnmarshaller.unmarshall(msg);
-                    logger.debug("Got a message: %s <%s,%s>" + kvMessage.getStatus());
+                    logger.debug(String.format(
+                            "Got a message: %s <%s,%s>",
+                            kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
+                    ));
 
                     KVMessage response;
                     switch (kvMessage.getStatus()) {
