@@ -31,4 +31,8 @@ public class MessageFactory {
     public static KVMessage createInvalidMessage() {
         return new KVMessageImpl(KVMessage.StatusType.INVALID_MESSAGE);
     }
+
+    public static KVMessage creatConnectionSuccessful() {
+        return new KVMessageImpl(KVMessage.StatusType.CONNECT_SUCCESSFUL);
+    }
 }
