@@ -38,6 +38,6 @@ public class PutCommand implements Command {
             return;
         }
 
-        writeLine(kVMessageResponse.getStatus().name());
+        writeLine(String.format("Succesfully saved <%s,%s> in the database", key, value));
     }
 }

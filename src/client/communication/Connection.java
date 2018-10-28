@@ -22,22 +22,13 @@ public class Connection {
 
     /**
      * Connects to a host and port.
-     *
-     * @return False if connection could not be established. True Otherwise
      */
-    public boolean connect(String host, int port) {
+    public void connect(String host, int port) throws IOException {
         logger.info(String.format("Connect to %s:%d", host, port));
 
-        try {
-            socket = new Socket(host, port);
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
-        } catch (IOException e) {
-            logger.warn(String.format("Connecting to %s:%d failed: %s", host, port, e.getMessage()));
-            logger.warn(e.getStackTrace());
-            return false;
-        }
-        return true;
+        socket = new Socket(host, port);
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
     }
 
     /**

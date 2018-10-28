@@ -3,11 +3,10 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
-- COMMUNICATION: Message ids for parallel GET requests
-- Client: Send messages GET/PUT
-- Server: Accept messages GET/PUT
 - Client: Follow client-protocol 
 - Server: Follow server-protocol 
+- DB: Serializing of data before save (because of =,\n signs)
+  - or just prohibit non-printable characters
 - DB: Caching
   - FIFO
   - LRU (least reacently used)
@@ -16,6 +15,7 @@ A distributed key-value database for the master praktikum "Cloud Databases"
 - JavaDoc comments everywhere
 
 ## Optimizations
+- COMMUNICATION: Message ids for parallel GET requests
 - DB: seperated KEY file for managing keys 
   - Tuple: <KEY,bytePosition>
 - DB: Keep keys in memory 

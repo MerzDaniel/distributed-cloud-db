@@ -22,8 +22,21 @@ public class KvStore {
         this.connection = new Connection();
     }
 
-    public boolean connect() {
-        return this.connection.connect(host, port);
+    public boolean connect() throws IOException {
+        this.connection.connect(host, port);
+
+        boolean success = true;
+        String message = connection.readMessage();
+        try {
+            KVMessage kvM = KVMessageUnmarshaller.unmarshall(message);
+            success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+        } catch (UnmarshallException e) {
+            logger.warn(String.format("Server %s:%d returned an invalid response: '%s'", host, port, message));
+            disconnect();
+            success = false;
+        }
+        if (!success) disconnect();
+        return success;
     }
 
     public void disconnect() {
