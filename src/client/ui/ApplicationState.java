@@ -1,11 +1,11 @@
 package client.ui;
 
-import client.communication.Connection;
+import client.store.KvStore;
 
 /**
  * Contains the application state.
  */
 public class ApplicationState {
     public boolean stopRequested = false;
-    public Connection connection = new Connection();
+    public KvStore kvStore;
 }
