@@ -15,7 +15,7 @@ public class SocketUtil {
     /**
      * Reads a message from the connection
      */
-    public static String readMessage(InputStream in) {
+    public static String readMessage(InputStream in) throws IOException {
         StringBuffer buffer = new StringBuffer();
         while (true) {
             try {
@@ -31,7 +31,7 @@ public class SocketUtil {
             } catch (IOException e) {
                 logger.warn("Exception occured while reading message: " + e.getMessage());
                 logger.warn(e.getStackTrace());
-                break;
+                throw e;
             }
         }
         String msg = buffer.toString();
@@ -42,7 +42,7 @@ public class SocketUtil {
     /**
      * Sends a message to the connected server
      */
-    public static void sendMessage(OutputStream out, String message) {
+    public static void sendMessage(OutputStream out, String message) throws IOException {
         try {
             for (char c : message.toCharArray()) {
                 out.write((byte) c);
@@ -51,6 +51,7 @@ public class SocketUtil {
         } catch (IOException e) {
             logger.warn("Error in sendMessage(): " + e.getMessage());
             logger.warn(e.getStackTrace());
+            throw e;
         }
     }
 
@@ -58,7 +59,9 @@ public class SocketUtil {
      * Checks if the connection is still active.
      */
     public static boolean isConnected(Socket socket) {
-        return socket != null && socket.isConnected() && !socket.isClosed();
+        return socket != null
+                && socket.isConnected() && !socket.isClosed()
+                && !socket.isInputShutdown() && !socket.isOutputShutdown();
     }
 
     /**

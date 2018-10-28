@@ -6,26 +6,35 @@ import lib.message.KVMessage;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 import static client.ui.Util.writeLine;
 
 public class GetCommand implements Command {
     private String key;
     private final Logger logger = LogManager.getLogger(GetCommand.class);
 
-    public GetCommand(String key){
+    public GetCommand(String key) {
         this.key = key;
     }
 
     @Override
     public void execute(ApplicationState state) {
-        KVMessage kVMessageResponse = state.kvStore.get(key);
+        boolean success = true;
+        KVMessage kVMessageResponse = null;
+        try {
+            kVMessageResponse = state.kvStore.get(key);
+        } catch (IOException e) {
+            logger.warn("error", e);
+            success = false;
+        }
 
-        if (kVMessageResponse.isError()) {
+        if (!success || kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the GET");
             logger.error("An error occurred while executing the GET, error=" + kVMessageResponse.getStatus());
+            return;
         }
-        if (kVMessageResponse.isSuccess()) {
-            writeLine(kVMessageResponse.getValue());
-        }
+
+        writeLine(kVMessageResponse.getValue());
     }
 }

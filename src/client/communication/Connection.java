@@ -68,7 +68,7 @@ public class Connection {
     /**
      * Reads a message from the connection
      */
-    public String readMessage() {
+    public String readMessage() throws IOException {
         if (!isConnected()) return "";
         return SocketUtil.readMessage(in);
     }
@@ -76,7 +76,7 @@ public class Connection {
     /**
      * Sends a message to the connected server
      */
-    public void sendMessage(String message) {
+    public void sendMessage(String message) throws IOException {
         if (!isConnected()) return;
         SocketUtil.sendMessage(out, message);
     }

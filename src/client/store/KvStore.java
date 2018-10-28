@@ -5,6 +5,8 @@ import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 import static client.ui.Util.writeLine;
 
 public class KvStore {
@@ -32,7 +34,7 @@ public class KvStore {
         this.connection.disconnect();
     }
 
-    public KVMessage get(String key) {
+    public KVMessage get(String key) throws IOException {
         if (!connection.isConnected()) {
             writeLine("Currently not connected to a server");
             return MessageFactory.createGetErrorMessage();
@@ -50,7 +52,7 @@ public class KvStore {
         }
     }
 
-    public KVMessage put(String key, String value) {
+    public KVMessage put(String key, String value) throws IOException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
