@@ -4,18 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KVMessageUnmarshaller {
-    private static KVMessageUnmarshaller instance;
 
     private KVMessageUnmarshaller(){}
 
-    public static KVMessageUnmarshaller getInstance() {
-        if (instance != null) {
-            instance = new KVMessageUnmarshaller();
-        }
-        return instance;
-    }
-
-    public KVMessage unmarshall(String kvMessageString) {
+    public static KVMessage unmarshall(String kvMessageString) {
         KVMessage.StatusType status = null;
         String key = null;
         String value = null;
@@ -50,7 +42,7 @@ public class KVMessageUnmarshaller {
         return new KVMessageImpl(removeEscapeCharacters(key), removeEscapeCharacters(value), status);
     }
 
-    private String removeEscapeCharacters(String string) {
+    private static String removeEscapeCharacters(String string) {
         return string.replaceAll("//", "/").replaceAll("/<", "<").replaceAll("/,", ",").replaceAll("/>", ">");
     }
 }
