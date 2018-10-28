@@ -15,6 +15,7 @@ public interface KVMessage {
         DELETE_SUCCESS, /* Delete - request successful */
         DELETE_ERROR, 	/* Delete - request successful */
         INVALID_MESSAGE,/* Invalid message */
+        CONNECT_SUCCESSFUL, /* Connection successful message */
     }
 
     /**
