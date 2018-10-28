@@ -35,6 +35,6 @@ public class GetCommand implements Command {
             return;
         }
 
-        writeLine(kVMessageResponse.getValue());
+        writeLine(String.format("Value of %s is: '%s'", key, kVMessageResponse.getValue()));
     }
 }
