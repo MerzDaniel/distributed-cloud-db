@@ -1,13 +1,18 @@
 package lib.message;
 
 public class KVMessageImpl implements KVMessage {
-    private String key;
-    private String value;
-    private KVMessage.StatusType statusType;
+    private final String key;
+    private final String value;
+    private final KVMessage.StatusType statusType;
 
     public KVMessageImpl(String key, String value, KVMessage.StatusType statusType) {
         this.key = key;
         this.value = value;
+        this.statusType = statusType;
+    }
+    public KVMessageImpl(KVMessage.StatusType statusType) {
+        this.key = null;
+        this.value = null;
         this.statusType = statusType;
     }
 
