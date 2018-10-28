@@ -52,6 +52,9 @@ public class KVMessageUnmarshaller {
     }
 
     private static String removeEscapeCharacters(String string) {
+        if(string == null || string.length() == 0){
+            return null;
+        }
         return string.replaceAll("//", "/").replaceAll("/<", "<").replaceAll("/,", ",").replaceAll("/>", ">");
     }
 }
