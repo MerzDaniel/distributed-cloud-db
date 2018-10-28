@@ -29,9 +29,9 @@ public class PutCommand implements Command {
             return;
         }
         KVMessage kvMessageRequest = new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
-        state.connection.sendMessage(KVMessageMarshaller.getInstance().marshall(kvMessageRequest));
+        state.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String receivedMessage = state.connection.readMessage();
-        KVMessage kVMessageResponse = KVMessageUnmarshaller.getInstance().unmarshall(receivedMessage);
+        KVMessage kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
 
         if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the command PUT");
