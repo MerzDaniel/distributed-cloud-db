@@ -1,5 +1,6 @@
 package client.ui.commands;
 
+import client.store.KvStore;
 import client.ui.ApplicationState;
 import client.ui.Command;
 
@@ -16,13 +17,7 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        boolean connected = state.connection.connect(this.url, this.port);
-
-        if (connected){
-            writeLine(state.connection.readMessage());
-        }
-        else{
-            writeLine("Could not connect to the server " + url + ":" + port);
-        }
+        state.kvStore = new KvStore(this.url, this.port);
+        boolean connected = state.kvStore.connect();
     }
 }

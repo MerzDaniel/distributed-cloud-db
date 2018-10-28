@@ -21,21 +21,9 @@ public class PutCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        if (!state.connection.isConnected()) {
-            writeLine("Currently not connected to a server");
-            return;
-        }
+
         KVMessage kvMessageRequest = new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
-        state.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
-        String receivedMessage = state.connection.readMessage();
-        KVMessage kVMessageResponse = null;
-        try {
-            kVMessageResponse = KVMessageUnmarshaller.unmarshall(receivedMessage);
-        } catch (UnmarshallException e) {
-            logger.warn("Got an invalid message.");
-            writeLine("The response of the server was invalid");
-            return;
-        }
+        KVMessage kVMessageResponse = state.kvStore.put(key, value);
 
         if (kVMessageResponse.isError()) {
             writeLine("An error occurred while executing the command PUT");
