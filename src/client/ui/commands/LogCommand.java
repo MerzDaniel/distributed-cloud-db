@@ -61,14 +61,8 @@ public class LogCommand implements Command {
                 break;
         }
 
-        if (!state.connection.isConnected()) {
-            writeLine("Currently not connected to a server");
-            return;
-        }
         if (!unsupportedLogLevel){
-            state.connection.sendMessage("logLevel " + logLevel);
-            String receivedMessage = state.connection.readMessage();
-            Util.writeLine("current log level is " + receivedMessage);
+            Util.writeLine("current log level is " + logLevel);
         }
     }
 }
