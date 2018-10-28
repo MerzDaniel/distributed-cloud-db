@@ -86,5 +86,24 @@ public class KVUnmarshallerTest extends TestCase {
         assertTrue("UnmarshallException expected", false);
     }
 
+    @Test
+    public void testEmptyMessage() throws UnmarshallException {
+        String kvMessageString = "GET<,>";
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
+
+        assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
+        assertEquals(null, kvMessage.getKey());
+        assertEquals(null, kvMessage.getValue());
+    }
+
+    @Test
+    public void testMessageWithSpaces() throws UnmarshallException {
+        String kvMessageString = "GET< , >";
+        KVMessage kvMessage = KVMessageUnmarshaller.unmarshall(kvMessageString);
+
+        assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
+        assertEquals(" ", kvMessage.getKey());
+        assertEquals(" ", kvMessage.getValue());
+    }
 }
 
