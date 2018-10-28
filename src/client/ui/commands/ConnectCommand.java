@@ -24,10 +24,14 @@ public class ConnectCommand implements Command {
     @Override
     public void execute(ApplicationState state) {
         state.kvStore = new KvStore(this.url, this.port);
+        boolean success;
         try {
-            state.kvStore.connect();
+            success = state.kvStore.connect();
         } catch (IOException e) {
             logger.warn("Error while connecting", e);
+            success = false;
+        }
+        if (!success) {
             writeLine("There was an error while connecting to the server :(");
             return;
         }

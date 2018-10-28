@@ -22,8 +22,6 @@ public class Connection {
 
     /**
      * Connects to a host and port.
-     *
-     * @return False if connection could not be established. True Otherwise
      */
     public void connect(String host, int port) throws IOException {
         logger.info(String.format("Connect to %s:%d", host, port));
@@ -31,7 +29,6 @@ public class Connection {
         socket = new Socket(host, port);
         in = socket.getInputStream();
         out = socket.getOutputStream();
-
     }
 
     /**
