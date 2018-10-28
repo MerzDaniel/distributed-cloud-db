@@ -47,7 +47,7 @@ public class KVMessageUnmarshaller {
             return new KVMessageImpl(removeEscapeCharacters(key), removeEscapeCharacters(value), status);
         } catch (Exception e) {
             logger.warn("Exception while parsing message: '" + kvMessageString + "'", e);
-            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+            throw new UnmarshallException(e);
         }
     }
 
