@@ -35,10 +35,10 @@ public class KvStore {
     public KVMessage get(String key) {
         if (!connection.isConnected()) {
             writeLine("Currently not connected to a server");
-            return new KVMessageImpl("", "", KVMessage.StatusType.GET_ERROR);
+            return MessageFactory.createGetErrorMessage();
         }
 
-        KVMessage kvMessageRequest = new KVMessageImpl(key, null, KVMessage.StatusType.GET);
+        KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
         try {
@@ -46,13 +46,12 @@ public class KvStore {
         } catch (UnmarshallException e) {
             logger.warn("Invalid response from the server.");
             writeLine("Response from the server was invalid.");
-            //todo
-            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+            return MessageFactory.createInvalidMessage();
         }
     }
 
     public KVMessage put(String key, String value) {
-        KVMessage kvMessageRequest = new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
+        KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
         try {
@@ -60,8 +59,7 @@ public class KvStore {
         } catch (UnmarshallException e) {
             logger.warn("Got an invalid message.");
             writeLine("The response of the server was invalid");
-            //todo
-            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+            return MessageFactory.createInvalidMessage();
         }
     }
 }
