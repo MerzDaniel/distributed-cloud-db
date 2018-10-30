@@ -2,6 +2,7 @@ package client.ui.commands;
 
 import client.ui.ApplicationState;
 import client.ui.Command;
+import lib.TimeWatch;
 import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,6 +26,7 @@ public class PutCommand implements Command {
     public void execute(ApplicationState state) {
         boolean success = true;
         KVMessage kVMessageResponse = null;
+        TimeWatch t = TimeWatch.start();
         try {
             kVMessageResponse = state.kvStore.put(key, value);
         } catch (IOException e) {
@@ -33,11 +35,11 @@ public class PutCommand implements Command {
         }
 
         if (!success || kVMessageResponse.isError()) {
-            writeLine("An error occurred while executing the command PUT");
+            writeLine(String.format("An error occurred while executing the command PUT (%d ms)", t.time()));
             logger.error("An error occurred while executing the command GET, error=" + kVMessageResponse.getStatus());
             return;
         }
 
-        writeLine(String.format("Succesfully saved <%s,%s> in the database", key, value));
+        writeLine(String.format("Succesfully saved <%s,%s> in the database (%d ms)", key, value, t.time()));
     }
 }
