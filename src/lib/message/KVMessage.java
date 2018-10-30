@@ -5,7 +5,8 @@ public interface KVMessage {
 
     public enum StatusType {
         GET, 			/* Get - request */
-        GET_ERROR, 		/* requested tuple (i.e. value) not found */
+        GET_NOT_FOUND, 	/* requested tuple (i.e. value) not found */
+        GET_ERROR, 		/* generic Get error */
         GET_SUCCESS, 	/* requested tuple (i.e. value) found */
         PUT, 			/* Put - request */
         PUT_SUCCESS, 	/* Put - request successful, tuple inserted */
