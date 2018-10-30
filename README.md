@@ -9,6 +9,7 @@ A distributed key-value database for the master praktikum "Cloud Databases"
 - JavaDoc comments everywhere
 - CLIENT: Check max key/value length! ( 20bytes / 120kb)
 - SERVER: Reject wrong key/value!  
+- Fix provided tests
 
 ## Optimizations
 - COMMUNICATION: Message ids for parallel GET requests
