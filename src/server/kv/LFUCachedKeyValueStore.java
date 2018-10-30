@@ -48,7 +48,7 @@ public class LFUCachedKeyValueStore extends CachedKeyValueStore {
 
     @Override
     protected boolean isCached(String key) {
-        return cache.get(key) == null;
+        return cache.get(key) != null;
     }
 
     @Override
