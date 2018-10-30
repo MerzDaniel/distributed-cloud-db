@@ -17,7 +17,7 @@ public class FifoCachedKeyValueStore extends CachedKeyValueStore {
     }
 
     List<String> cachePriority = new LinkedList<>();
-    Dictionary<String, CacheEntry> cache = new Hashtable<>();
+    Hashtable<String, CacheEntry> cache = new Hashtable<>();
 
     public FifoCachedKeyValueStore(int cacheSize) {
         super(cacheSize);
@@ -40,7 +40,7 @@ public class FifoCachedKeyValueStore extends CachedKeyValueStore {
 
     @Override
     protected boolean isCached(String key) {
-        return cache.get(key) == null;
+        return cache.get(key) != null;
     }
 
     @Override
