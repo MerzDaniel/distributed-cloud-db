@@ -1,13 +1,17 @@
 package server;
 
-public class Main {
-    public static void main(String[] args) {
-        int port;
-        if (args.length >0) {
-            port = Integer.parseInt(args[0]);
-        }
-        else port = 50000;
+import org.apache.commons.cli.*;
 
+public class Main {
+    public static void main(String[] args) throws ParseException {
+        CommandLineParser c = new DefaultParser();
+        Options options = new Options();
+        options.addOption(new Option("help", "show help text"));
+        options.addOption(new Option("p", "port", true, "port of the server"));
+
+        CommandLine cmd = c.parse(options, args);
+
+        int port = Integer.parseInt(cmd.getOptionValue("p", "50000"));;
         new Server(port).run();
     }
 
