@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <!--<Console name="Console" target="SYSTEM_OUT">-->
-            <!--<PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} %l - %msg%n"/>-->
-        <!--</Console>-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} %l - %msg%n"/>
+        </Console>
         <File name="RollingFile" filename="logs/server.log">
             <PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} %l - %msg%n"/>
         </File>
     </Appenders>
     <Loggers>
         <Root level="debug">
-            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="Console" level="warn"/>
             <AppenderRef ref="RollingFile" />
         </Root>
     </Loggers>
