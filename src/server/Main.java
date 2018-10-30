@@ -3,15 +3,28 @@ package server;
 import org.apache.commons.cli.*;
 
 public class Main {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         CommandLineParser c = new DefaultParser();
         Options options = new Options();
-        options.addOption(new Option("help", "show help text"));
+        options.addOption(new Option("h", "help", false, "show help text"));
         options.addOption(new Option("p", "port", true, "port of the server"));
 
-        CommandLine cmd = c.parse(options, args);
+        CommandLine cmd = null;
+        boolean showHelp = false;
+        try {
+            cmd = c.parse(options, args);
+        } catch (ParseException e) {
+            showHelp = true;
+            System.out.println("Wrong argument.");
+        }
 
-        int port = Integer.parseInt(cmd.getOptionValue("p", "50000"));;
+        if (showHelp || cmd.hasOption("h")) {
+            new HelpFormatter().printHelp("java -jar server.jar", options);
+            System.exit(0);
+        }
+
+        int port = Integer.parseInt(cmd.getOptionValue("p", "50000"));
+        ;
         new Server(port).run();
     }
 
