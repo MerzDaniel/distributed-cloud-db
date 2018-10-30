@@ -33,8 +33,16 @@ public class GetCommand implements Command {
         }
 
         if (!success || kVMessageResponse.isError()) {
-            writeLine(String.format("An error occurred while executing the GET (%d ms)",t.time()));
-            logger.error("An error occurred while executing the GET, error=" + kVMessageResponse.getStatus());
+            if (kVMessageResponse.getStatus() == KVMessage.StatusType.GET_NOT_FOUND) {
+                writeLine(String.format("The key<%s> not found in the database", key));
+                logger.error(kVMessageResponse.getStatus() + String.format(": The requested key<%s> is not found in the database", key));
+            }
+            else {
+                writeLine(String.format("An error occurred while executing the GET (%d ms)",t.time()));
+                logger.error("An error occurred while executing the GET, error=" + kVMessageResponse.getStatus());
+                return;
+            }
+
             return;
         }
 
