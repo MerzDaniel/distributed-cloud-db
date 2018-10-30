@@ -31,7 +31,7 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
     protected void addToCache(String key, String value) {
         if (isCached(key)) return;
         if (cache.size() >= this.cacheSize) {
-            String leastRecentlyUsedKey = cachePriority.get(this.cacheSize - 1);
+            String leastRecentlyUsedKey = cachePriority.get(0);
             cachePriority.remove(leastRecentlyUsedKey);
             cache.remove(leastRecentlyUsedKey);
         }
