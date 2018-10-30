@@ -40,6 +40,8 @@ public class KVMessageImpl implements KVMessage {
                 return true;
             case DELETE_ERROR:
                 return true;
+            case GET_NOT_FOUND:
+                return true;
             default:
                 return false;
         }
