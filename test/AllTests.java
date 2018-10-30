@@ -10,7 +10,8 @@ public class AllTests {
 
     static {
         try {
-            new Server(50000, 10, CacheType.FIFO);
+            Server s = new Server(50000, 10, CacheType.FIFO);
+            new Thread(s).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
