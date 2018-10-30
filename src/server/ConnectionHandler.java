@@ -54,7 +54,7 @@ public class ConnectionHandler implements Runnable {
                                 response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
                             } catch (KeyNotFoundException e) {
                                 logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
-                                response = MessageFactory.createGetErrorMessage();
+                                response = MessageFactory.createGetNotFoundMessage();
                             } catch (DbError e) {
                                 logger.warn("Some error occured at database level", e);
                                 response = MessageFactory.createGetErrorMessage();
