@@ -2,27 +2,22 @@ package server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import server.kv.CacheType;
-import server.kv.KeyValueStore;
-import server.kv.SimpleKeyValueStore;
+import server.kv.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 
-public class Server implements Runnable{
+public class Server implements Runnable {
     final Logger logger = LogManager.getLogger(Server.class);
     final int port;
-    private final int cacheSize;
-    private final CacheType cacheType;
+    private int cacheSize = 10;
+    private CacheType cacheType = CacheType.NONE;
 
-    private final KeyValueStore db = new SimpleKeyValueStore();
+    private KeyValueStore db;
 
     public Server(int port) {
         this.port = port;
-        cacheSize = 1000;
-        cacheType = CacheType.FIFO;
     }
 
     public Server(int port, int cacheSize, CacheType cacheType) {
@@ -34,22 +29,43 @@ public class Server implements Runnable{
     @Override
     public void run() {
         logger.info("Start server on port " + port);
+
+        initDb();
+
         try {
-            db.init();
-        } catch (IOException e) {
-            logger.error("Error while initializing database", e);
-            System.exit(1);
-        }
-        ServerSocket s;
-        try {
+            ServerSocket s;
             s = new ServerSocket(port);
-            while(true) {
+            while (true) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 new Thread(new ConnectionHandler(clientSocket, db)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void initDb() {
+        try {
+            db = new SimpleKeyValueStore();
+            db.init();
+            switch (cacheType) {
+                case FIFO:
+                    logger.info("Setting up FIFO caching");
+                    db = new FifoCachedKeyValueStore(cacheSize, db);
+                    break;
+                case LRU:
+                    logger.info("Setting up LRU caching");
+                    db = new LRUCachedKeyValueStore(cacheSize, db);
+                    break;
+                case LFU:
+                    logger.info("Setting up LFU caching");
+                    db = new LFUCachedKeyValueStore(cacheSize, db);
+                    break;
+            }
+        } catch (IOException e) {
+            logger.error("Error while initializing database", e);
+            System.exit(1);
         }
     }
 

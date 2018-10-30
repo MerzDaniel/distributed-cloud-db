@@ -4,4 +4,5 @@ public enum  CacheType {
     FIFO,
     LRU,
     LFU,
+    NONE,
 }
