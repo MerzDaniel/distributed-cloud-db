@@ -10,6 +10,9 @@ public class MessageFactory {
     public static KVMessage createGetErrorMessage() {
         return new KVMessageImpl(KVMessage.StatusType.GET_ERROR);
     }
+    public static KVMessage createGetNotFoundMessage() {
+        return new KVMessageImpl(KVMessage.StatusType.GET_NOT_FOUND);
+    }
     public static KVMessage createPutMessage(String key, String value) {
         return new KVMessageImpl(key, value, KVMessage.StatusType.PUT);
     }
