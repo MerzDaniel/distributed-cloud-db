@@ -21,12 +21,12 @@ public class LFUCacheTest {
 
     @Before
     public void initCache() {
-        lfuCache = new LFUCachedKeyValueStore(100);
+        lfuCache = new LFUCachedKeyValueStore(3);
         this.populateCache();
     }
 
     private void populateCache() {
-        for (int i = 1; i < 50; i++) {
+        for (int i = 0; i < 2; i++) {
             lfuCache.addToCache("key" + i, "value" + i);
         }
     }
@@ -43,11 +43,11 @@ public class LFUCacheTest {
 
     @Test
     public void getFromCacheForExistingKeyTest() throws KeyNotFoundException{
-        String key = "key45";
+        String key = "key1";
 
         String value = lfuCache.getFromCache(key);
 
-        assertEquals("value45", value);
+        assertEquals("value1", value);
     }
 
     @Test(expected = KeyNotFoundException.class)
@@ -55,5 +55,26 @@ public class LFUCacheTest {
         String key = "key68";
 
         String value = lfuCache.getFromCache(key);
+    }
+
+    @Test
+    public void addToCacheReplaceTest() throws KeyNotFoundException{
+        lfuCache.addToCache("key2", "value2");//cache is full
+
+        //set the hit count of the cached entries
+        for (int i = 0; i < 2; i++) {
+            lfuCache.getFromCache("key2");
+        }
+
+        lfuCache.getFromCache("key0");
+
+
+        String key = "testKey";
+        String value = "testValue";
+
+        lfuCache.addToCache(key, value);
+
+        assertTrue(lfuCache.cache.containsKey(key));
+        assertTrue(!lfuCache.cache.containsKey("key1"));
     }
 }
