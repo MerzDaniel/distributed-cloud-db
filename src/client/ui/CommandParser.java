@@ -24,6 +24,8 @@ public class CommandParser {
                 && tokens.length == 3
                 && tokens[2].chars().allMatch( Character::isDigit ))
             return new ConnectCommand(tokens[1], Integer.valueOf(tokens[2]));
+        if (commandName.equals("c"))
+            return new ConnectCommand("localhost", 50000);
         if (commandName.equals("disconnect"))
             return new DisconnectCommand();
         if (commandName.equals("loglevel"))
