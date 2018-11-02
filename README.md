@@ -5,7 +5,6 @@ A distributed key-value database for the master praktikum "Cloud Databases"
 ## Todo List
 - DB: Serializing of data before save (because of =,\n signs)
   - or just prohibit non-printable characters
-- PDF: Compiled short test description of TestCases implemented
 - JavaDoc comments everywhere
 - CLIENT: Check max key/value length! ( 20bytes / 120kb)
 - SERVER: Reject wrong key/value!  
