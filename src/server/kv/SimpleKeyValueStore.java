@@ -99,7 +99,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     private void ioPut(String key, String value) throws IOException {
-        writer.write(key + "=" + value + "\n");
+        writer.write(key + "=" + value + System.getProperty("line.separator"));
         writer.flush();
     }
 
@@ -143,7 +143,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
                 String[] split = line.split("=");
                 if (split.length != 2) continue;
                 if (!split[0].equals(key)) {
-                    bufferedWriter.write(line + "\n");
+                    bufferedWriter.write(line + System.getProperty("line.separator"));
                 } else {
                     keyFound = true;
                 }
