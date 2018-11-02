@@ -51,11 +51,7 @@ public class FifoCacheTest {
     public void addToCacheReplaceTest() throws KeyNotFoundException{
         fifoCache.addToCache("key2", "value2");//cache is full
 
-        //set the hit count of the cached entries
-        for (int i = 0; i < 2; i++) {
-            fifoCache.getFromCache("key2");
-        }
-
+        fifoCache.getFromCache("key2");
         fifoCache.getFromCache("key0");
 
 
