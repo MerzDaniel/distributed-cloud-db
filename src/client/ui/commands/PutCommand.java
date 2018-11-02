@@ -40,6 +40,9 @@ public class PutCommand implements Command {
             return;
         }
 
-        writeLine(String.format("Succesfully saved <%s,%s> in the database (%d ms)", key, value, t.time()));
+        if (value.equals(""))
+            writeLine(String.format("Succesfully deleted the entry with key <%s> in the database (%d ms)", key, t.time()));
+        else
+            writeLine(String.format("Succesfully saved <%s,%s> in the database (%d ms)", key, value, t.time()));
     }
 }

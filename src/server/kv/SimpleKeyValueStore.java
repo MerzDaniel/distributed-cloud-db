@@ -89,7 +89,10 @@ public class SimpleKeyValueStore implements KeyValueStore {
             logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
             throw new DbError(e);
         }
-
+        //when the value is null or empty, just delete any existing record and return
+        if (value == "" || value == null)     {
+            return;
+        }
         try {
             ioPut(key, value);
         } catch (IOException e) {
