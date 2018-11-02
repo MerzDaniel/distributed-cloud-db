@@ -10,5 +10,5 @@ public interface KeyValueStore {
 
     boolean hasKey(String key) throws DbError;
 
-    boolean deleteKey() throws DbError;
+    boolean deleteKey(String key) throws DbError;
 }
