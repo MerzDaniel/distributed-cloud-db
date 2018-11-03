@@ -44,7 +44,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public boolean deleteKey() throws DbError {
+    public boolean deleteKey(String key) throws DbError {
         throw new NotImplementedException();
     }
 

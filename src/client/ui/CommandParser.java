@@ -18,8 +18,8 @@ public class CommandParser {
             return new QuitCommand();
         if (commandName.equals("get") && tokens.length == 2)
             return new GetCommand(tokens[1]);
-        if (commandName.equals("put") && tokens.length == 3)
-            return new PutCommand(tokens[1], tokens[2]);
+        if (commandName.equals("put") && tokens.length >= 2)
+            return new PutCommand(tokens[1], Arrays.asList(tokens).subList(2, tokens.length).stream().collect(Collectors.joining(" ")));
         if (commandName.equals("connect")
                 && tokens.length == 3
                 && tokens[2].chars().allMatch( Character::isDigit ))
