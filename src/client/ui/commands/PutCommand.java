@@ -51,21 +51,15 @@ public class PutCommand implements Command {
             return;
         }
 
-        if (!Arrays.asList(
-                KVMessage.StatusType.PUT_SUCCESS,
-                KVMessage.StatusType.PUT_UPDATE,
-                KVMessage.StatusType.PUT_ERROR)
-                .contains(kVMessageResponse.getStatus())) {
-            writeLine("PUT was not successful: Response from server was invalid.");
+        if (kVMessageResponse.getStatus() == KVMessage.StatusType.DELETE_SUCCESS
+                && (value == null || value.equals(""))) {
+            writeLine(String.format("Succesfully deleted the entry with key <%s> from database (%d ms)", key, t.time()));
             return;
         }
 
         switch (kVMessageResponse.getStatus()) {
             case PUT_SUCCESS:
-                if (value.equals(""))
-                    writeLine(String.format("Succesfully deleted the entry with key <%s> in the database (%d ms)", key, t.time()));
-                else
-                    writeLine(String.format("Succesfully saved <%s,%s> in the database (%d ms)", key, value, t.time()));
+                writeLine(String.format("Succesfully saved <%s,%s> in the database (%d ms)", key, value, t.time()));
                 break;
             case PUT_UPDATE:
                 writeLine(String.format("Succesfully updated <%s,%s> in the database (%d ms)", key, value, t.time()));
@@ -73,6 +67,8 @@ public class PutCommand implements Command {
             case PUT_ERROR:
                 writeLine("PUT was not successful: The db returned an error.");
                 break;
+            default:
+                writeLine(String.format("Got unexpected response from server: %s", kVMessageResponse.getStatus()));
         }
     }
 }
