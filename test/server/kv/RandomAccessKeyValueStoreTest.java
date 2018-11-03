@@ -81,6 +81,15 @@ public class RandomAccessKeyValueStoreTest {
     }
 
     @Test
+    public void shouldDeleteValueAndReadOthers() throws DbError {
+        kvStore.put("abc", "abc");
+        kvStore.put("a", "a");
+        kvStore.deleteKey("abc");
+        assertFalse(kvStore.hasKey("abc"));
+        assertTrue("Other key was not found anymore", kvStore.hasKey("a"));
+    }
+
+    @Test
     public void shouldUpdateValue() throws DbError, KeyNotFoundException {
         kvStore.put("a", "a");
         boolean result = kvStore.put("a", "b");
