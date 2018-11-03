@@ -21,12 +21,21 @@ public class Server implements Runnable {
 
     public Server(int port) {
         this.port = port;
+        db = new RandomAccessKeyValueStore();
     }
 
     public Server(int port, int cacheSize, CacheType cacheType) {
         this.port = port;
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
+        db = new RandomAccessKeyValueStore();
+    }
+
+    public Server(int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
+        this.port = port;
+        this.cacheSize = cacheSize;
+        this.cacheType = cacheType;
+        this.db = db;
     }
 
     @Override
@@ -50,7 +59,6 @@ public class Server implements Runnable {
 
     private void initDb() {
         try {
-            db = new RandomAccessKeyValueStore();
             db.init();
             switch (cacheType) {
                 case FIFO:
