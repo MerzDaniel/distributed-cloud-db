@@ -7,8 +7,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static client.ui.Util.writeLine;
-
 public class KvStore {
     final String host;
     final int port;
@@ -54,16 +52,11 @@ public class KvStore {
         return KVMessageUnmarshaller.unmarshall(response);
     }
 
-    public KVMessage put(String key, String value) throws IOException {
+    public KVMessage put(String key, String value) throws IOException, UnmarshallException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
-        try {
-            return KVMessageUnmarshaller.unmarshall(response);
-        } catch (UnmarshallException e) {
-            logger.warn("Got an invalid message.");
-            writeLine("The response of the server was invalid");
-            return MessageFactory.createInvalidMessage();
-        }
+
+        return KVMessageUnmarshaller.unmarshall(response);
     }
 }
