@@ -47,7 +47,7 @@ public class Server implements Runnable {
 
     private void initDb() {
         try {
-            db = new SimpleKeyValueStore();
+            db = new RandomAccessKeyValueStore();
             db.init();
             switch (cacheType) {
                 case FIFO:
