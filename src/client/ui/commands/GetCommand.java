@@ -4,6 +4,7 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.KVMessage;
+import lib.message.UnmarshallException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,9 @@ public class GetCommand implements Command {
         } catch (IOException e) {
             logger.warn("error", e);
             success = false;
+        } catch (UnmarshallException e) {
+            writeLine("Response from the server was invalid.");
+            return;
         }
 
         if (!success || kVMessageResponse.isError()) {

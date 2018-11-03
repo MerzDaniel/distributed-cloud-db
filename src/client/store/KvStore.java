@@ -39,23 +39,19 @@ public class KvStore {
         return success;
     }
 
-    public boolean isConnected() { return connection.isConnected(); }
+    public boolean isConnected() {
+        return connection.isConnected();
+    }
 
     public void disconnect() {
         this.connection.disconnect();
     }
 
-    public KVMessage get(String key) throws IOException {
+    public KVMessage get(String key) throws IOException, UnmarshallException {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
-        try {
-            return KVMessageUnmarshaller.unmarshall(response);
-        } catch (UnmarshallException e) {
-            logger.warn("Invalid response from the server.");
-            writeLine("Response from the server was invalid.");
-            return MessageFactory.createInvalidMessage();
-        }
+        return KVMessageUnmarshaller.unmarshall(response);
     }
 
     public KVMessage put(String key, String value) throws IOException {
