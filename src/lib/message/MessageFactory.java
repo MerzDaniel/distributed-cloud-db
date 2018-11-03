@@ -19,6 +19,9 @@ public class MessageFactory {
     public static KVMessage createPutSuccessMessage() {
         return new KVMessageImpl(KVMessage.StatusType.PUT_SUCCESS);
     }
+    public static KVMessage createPutUpdateMessage() {
+        return new KVMessageImpl(KVMessage.StatusType.PUT_UPDATE);
+    }
     public static KVMessage createPutErrorMessage() {
         return new KVMessageImpl(KVMessage.StatusType.PUT_ERROR);
     }

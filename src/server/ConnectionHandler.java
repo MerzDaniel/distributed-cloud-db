@@ -63,8 +63,11 @@ public class ConnectionHandler implements Runnable {
                         case PUT:
                             logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
                             try {
-                                db.put(kvMessage.getKey(), kvMessage.getValue());
-                                response = MessageFactory.createPutSuccessMessage();
+                                boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
+                                if (updated)
+                                    response = MessageFactory.createPutUpdateMessage();
+                                else
+                                    response = MessageFactory.createPutSuccessMessage();
                             } catch (DbError e) {
                                 logger.warn("PUT: Databaseerror!", e);
                                 response = MessageFactory.createPutErrorMessage();
