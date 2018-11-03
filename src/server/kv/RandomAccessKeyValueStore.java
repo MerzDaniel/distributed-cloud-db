@@ -18,6 +18,9 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     public RandomAccessKeyValueStore() {
         DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
     }
+    public RandomAccessKeyValueStore(File dbFile) {
+        DB_FILE = dbFile;
+    }
 
     @Override
     public void init() throws IOException {
