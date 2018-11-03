@@ -71,8 +71,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.PUT_UPDATE
-                && response.getValue().equals(updatedValue));
+        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.PUT_UPDATE);
     }
 
     @Test
@@ -85,7 +84,7 @@ public class InteractionTest extends TestCase {
 
         try {
             kvClient.put(key, value);
-            response = kvClient.put(key, "null");
+            response = kvClient.put(key, "");
 
         } catch (Exception e) {
             ex = e;
