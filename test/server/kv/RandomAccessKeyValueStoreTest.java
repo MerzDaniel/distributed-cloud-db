@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomAccessKeyValueStoreTest {
-    File dbFile = new File(Paths.get("test_files", "TEST_DB").toUri());
+    File dbFile = new File(Paths.get("tmp", "TEST_DB").toUri());
     RandomAccessKeyValueStore kvStore;
     @Before
     public void setup() throws IOException {

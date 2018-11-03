@@ -10,6 +10,7 @@
   <property name="src.dir" value="src"/>
   <property name="lib.dir" value="libs"/>
   <property name="test.dir" value="test"/>
+  <property name="tmp.dir" value="tmp"/>
 
   <!-- Configuration for client application -->
   <property name="clientjar.file" value="ms2-client.jar"/>
@@ -50,6 +51,7 @@
 
   <target name="clean">
     <delete dir="${build.dir}"/>
+    <delete dir="${tmp.dir}"/>
     <delete file="${clientjar.file}"/>
     <delete file="${clientmanifest.file}"/>
     <delete file="${serverjar.file}"/>
