@@ -1,5 +1,6 @@
+package integration;
 
-import client.InteractionTest;
+import integration.InteractionTest;
 import integration.ConnectionTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
