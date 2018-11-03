@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.sql.Time;
 
+import static client.ui.Util.isValidKey;
 import static client.ui.Util.writeLine;
 
 public class GetCommand implements Command {
@@ -23,8 +24,14 @@ public class GetCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
+        if (!isValidKey(key)) {
+            writeLine("Key is too long. Only 20characters are allowed.");
+            return;
+        }
+
         if (!state.kvStore.isConnected()) {
             writeLine("Currently not connected to a server!");
+            return;
         }
 
         KVMessage kVMessageResponse = null;

@@ -11,4 +11,11 @@ public class Util {
         System.out.print("EchoClient> ");
         System.out.println(line.replaceAll("\n", ""));
     }
+    public static boolean isValidKey(String key) {
+        if (key == null) return false;
+        return key.length() <= 20;
+    }
+    public static boolean isValidValue(String value) {
+        return value.length() <= 120000;
+    }
 }

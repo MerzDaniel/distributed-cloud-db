@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static client.ui.Util.isValidKey;
+import static client.ui.Util.isValidValue;
 import static client.ui.Util.writeLine;
 
 public class PutCommand implements Command {
@@ -25,6 +27,16 @@ public class PutCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
+        if (!(isValidKey(key) && isValidValue(value))) {
+            writeLine("Key or Value are too long. Only a size for key/value of 20/120kb is allowed.");
+            return;
+        }
+
+        if (!state.kvStore.isConnected()) {
+            writeLine("Currently not connected to a server.");
+            return;
+        }
+
         KVMessage kVMessageResponse;
         TimeWatch t = TimeWatch.start();
         try {
