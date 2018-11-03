@@ -43,6 +43,12 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     @Override
+    public void shutdown() throws IOException {
+        reader.close();
+        writer.close();
+    }
+
+    @Override
     public String get(String key) throws DbError, KeyNotFoundException {
         try {
             return ioGet(key);

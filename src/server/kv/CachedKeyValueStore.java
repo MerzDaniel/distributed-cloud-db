@@ -48,6 +48,11 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
         throw new NotImplementedException();
     }
 
+    @Override
+    public void shutdown() throws IOException {
+        store.shutdown();
+    }
+
     protected abstract void addToCache(String key, String value);
     protected abstract boolean isCached(String key);
     protected abstract String getFromCache(String key) throws KeyNotFoundException;

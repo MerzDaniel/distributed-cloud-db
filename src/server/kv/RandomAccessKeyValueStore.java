@@ -24,13 +24,18 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     @Override
     public void init() throws IOException {
-        DB_DIRECTORY.mkdirs();
         try {
+            DB_FILE.getParentFile().mkdirs();
             db = new RandomAccessFile(DB_FILE, "rw");
         } catch (IOException e) {
             logger.error("Error while initializing database", e);
             throw e;
         }
+    }
+
+    @Override
+    public void shutdown() throws IOException {
+        db.close();
     }
 
     @Override

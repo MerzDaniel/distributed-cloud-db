@@ -5,6 +5,8 @@ import java.io.IOException;
 public interface KeyValueStore {
     void init() throws IOException;
 
+    void shutdown() throws IOException;
+
     /**
      *Returns the value associated with the {@code key} in the database
      * @param key for which the value is required
