@@ -21,6 +21,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     public RandomAccessKeyValueStore() {
         DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
     }
+
     public RandomAccessKeyValueStore(File dbFile) {
         DB_FILE = dbFile;
     }
@@ -56,7 +57,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         db.seek(0);
 
         int rows = 0;
-        while(true) {
+        while (true) {
             String nextLine = db.readLine();
             rows++;
             if (nextLine == null) break;
@@ -74,24 +75,22 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     @Override
     public boolean put(String key, String value) throws DbError {
-//        try {
-//            ioDelete(key);
-//        } catch (KeyNotFoundException e) {
-//            logger.debug(String.format("Key %s is not present in the database", key));
-//        } catch (IOException e) {
-//            logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
-//            throw new DbError(e);
-//        }
-        //when the value is null or empty, just delete any existing record and return
-//        if (value == "" || value == null) {
-//            return;
-//        }
+        boolean deleted;
         try {
-            return ioPut(key, value);
+            deleted = ioDelete(key);
+        } catch (IOException e) {
+            logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
+            throw new DbError(e);
+        }
+        try {
+            if (value != null && !value.equals("")) {
+                ioPut(key, value);
+            }
         } catch (IOException e) {
             logger.error("IO Exception during PUT", e);
             throw new DbError(e);
         }
+        return deleted;
     }
 
     private boolean ioPut(String key, String value) throws IOException {
@@ -118,13 +117,13 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         try {
             ioDelete(key);
             return true;
-        } catch (IOException | KeyNotFoundException e) {
+        } catch (IOException e) {
             logger.error("IO Exception during DELETE", e);
             throw new DbError(e);
         }
     }
 
-    private boolean ioDelete(String key) throws IOException, KeyNotFoundException {
+    private boolean ioDelete(String key) throws IOException {
         try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
             long linePosition = 0;
             String nextLine;
