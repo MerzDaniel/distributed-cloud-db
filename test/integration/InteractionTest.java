@@ -3,20 +3,23 @@ package integration;
 import client.store.KvStore;
 import junit.framework.TestCase;
 import lib.message.KVMessage;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
 
 public class InteractionTest extends TestCase {
 
     private KvStore kvClient;
 
-    public void setUp() {
+    @Before
+    public void setUp() throws IOException {
         kvClient = new KvStore("localhost", 50000);
-        try {
-            kvClient.connect();
-        } catch (Exception e) {
-        }
+        kvClient.connect();
     }
 
+    @After
     public void tearDown() {
         kvClient.disconnect();
     }
@@ -85,7 +88,6 @@ public class InteractionTest extends TestCase {
         try {
             kvClient.put(key, value);
             response = kvClient.put(key, "");
-
         } catch (Exception e) {
             ex = e;
         }
@@ -122,7 +124,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertEquals( KVMessage.StatusType.GET_NOT_FOUND, response.getStatus());
+        assertEquals(KVMessage.StatusType.GET_NOT_FOUND, response.getStatus());
     }
 
 }
