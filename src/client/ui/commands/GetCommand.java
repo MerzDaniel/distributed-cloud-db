@@ -22,6 +22,10 @@ public class GetCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
+        if (!state.kvStore.isConnected()) {
+            writeLine("Currently not connected to a server!");
+        }
+
         boolean success = true;
         KVMessage kVMessageResponse = null;
         TimeWatch t = TimeWatch.start();

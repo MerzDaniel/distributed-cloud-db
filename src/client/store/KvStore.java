@@ -46,11 +46,6 @@ public class KvStore {
     }
 
     public KVMessage get(String key) throws IOException {
-        if (!connection.isConnected()) {
-            writeLine("Currently not connected to a server");
-            return MessageFactory.createGetErrorMessage();
-        }
-
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
