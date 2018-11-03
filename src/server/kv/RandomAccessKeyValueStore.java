@@ -137,8 +137,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
                 if (split.length != 2) continue;
                 if (split[0].equals(key)) {
                     db.seek(linePosition);
-                    byte[] emptyLine = new byte[nextLine.length() * 2]; // chars are represented with two bytes
-                    Arrays.fill(emptyLine, (byte) Character.getNumericValue(' '));
+                    byte[] emptyLine = new byte[nextLine.length()];
+                    Arrays.fill(emptyLine, (byte) 0);
                     db.write(emptyLine);
                     return true;
                 }
