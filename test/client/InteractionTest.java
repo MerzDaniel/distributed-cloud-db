@@ -123,7 +123,7 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.GET_ERROR);
+        assertEquals( KVMessage.StatusType.GET_NOT_FOUND, response.getStatus());
     }
 
 }
