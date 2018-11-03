@@ -1,11 +1,13 @@
-package server.kv;
+package server.kv.cache;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import server.kv.KeyNotFoundException;
+import server.kv.KeyValueStore;
 
-public class LRUCachedKeyValueStore extends CachedKeyValueStore {
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+
+public class FifoCachedKeyValueStore extends CachedKeyValueStore {
     class CacheEntry {
         public CacheEntry(String key, String value) {
             this.key = key;
@@ -17,13 +19,13 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
     }
 
     List<String> cachePriority = new LinkedList<>();
-    Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
+    Hashtable<String, CacheEntry> cache = new Hashtable<>();
 
-    public LRUCachedKeyValueStore(int cacheSize) {
+    public FifoCachedKeyValueStore(int cacheSize) {
         super(cacheSize);
     }
 
-    public LRUCachedKeyValueStore(int cacheSize, KeyValueStore store) {
+    public FifoCachedKeyValueStore(int cacheSize, KeyValueStore store) {
         super(cacheSize, store);
     }
 
@@ -31,9 +33,8 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
     protected void addToCache(String key, String value) {
         if (isCached(key)) return;
         if (cache.size() >= this.cacheSize) {
-            String leastRecentlyUsedKey = cachePriority.get(0);
-            cachePriority.remove(leastRecentlyUsedKey);
-            cache.remove(leastRecentlyUsedKey);
+            cache.remove(cachePriority.get(0));
+            cachePriority.remove(0);
         }
         cachePriority.add(key);
         cache.put(key, new CacheEntry(key, value));
@@ -48,9 +49,6 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
     protected String getFromCache(String key) throws KeyNotFoundException {
         CacheEntry entry = cache.get(key);
         if (entry == null) throw new KeyNotFoundException();
-        //make this key the most recently used by moving it to the top
-        cachePriority.remove(key);
-        cachePriority.add(key);
         return entry.value;
     }
 }

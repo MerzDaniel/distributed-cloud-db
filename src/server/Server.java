@@ -3,6 +3,9 @@ package server;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.*;
+import server.kv.cache.FifoCachedKeyValueStore;
+import server.kv.cache.LFUCachedKeyValueStore;
+import server.kv.cache.LRUCachedKeyValueStore;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,4 +1,7 @@
-package server.kv;
+package server.kv.cache;
+
+import server.kv.KeyNotFoundException;
+import server.kv.KeyValueStore;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

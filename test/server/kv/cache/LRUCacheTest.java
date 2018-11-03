@@ -1,7 +1,9 @@
-package server.kv;
+package server.kv.cache;
 
 import org.junit.Before;
 import org.junit.Test;
+import server.kv.KeyNotFoundException;
+import server.kv.cache.LRUCachedKeyValueStore;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -32,7 +34,7 @@ public class LRUCacheTest {
     }
 
     @Test
-    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException{
+    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException {
         String key = "key1";
 
         String value = lruCache.getFromCache(key);

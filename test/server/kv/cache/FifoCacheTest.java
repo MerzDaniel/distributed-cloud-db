@@ -1,7 +1,8 @@
-package server.kv;
+package server.kv.cache;
 
 import org.junit.Before;
 import org.junit.Test;
+import server.kv.KeyNotFoundException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -32,7 +33,7 @@ public class FifoCacheTest {
     }
 
     @Test
-    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException{
+    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException {
         String key = "key1";
 
         String value = fifoCache.getFromCache(key);

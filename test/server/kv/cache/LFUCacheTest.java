@@ -1,17 +1,9 @@
-package server.kv;
+package server.kv.cache;
 
 import org.junit.Before;
 import org.junit.Test;
-import server.kv.DbError;
 import server.kv.KeyNotFoundException;
-import server.kv.KeyValueStore;
-import server.kv.SimpleKeyValueStore;
-import util.StringBufferReader;
-
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import server.kv.cache.LFUCachedKeyValueStore;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -42,7 +34,7 @@ public class LFUCacheTest {
     }
 
     @Test
-    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException{
+    public void getFromCacheForExistingKeyTest() throws KeyNotFoundException {
         String key = "key1";
 
         String value = lfuCache.getFromCache(key);
