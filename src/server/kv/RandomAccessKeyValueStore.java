@@ -73,7 +73,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void put(String key, String value) throws DbError {
+    public boolean put(String key, String value) throws DbError {
 //        try {
 //            ioDelete(key);
 //        } catch (KeyNotFoundException e) {
@@ -87,19 +87,20 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 //            return;
 //        }
         try {
-            ioPut(key, value);
+            return ioPut(key, value);
         } catch (IOException e) {
             logger.error("IO Exception during PUT", e);
             throw new DbError(e);
         }
     }
 
-    private void ioPut(String key, String value) throws IOException {
+    private boolean ioPut(String key, String value) throws IOException {
         String newLine = key + "=" + value + System.lineSeparator();
 
         try (FileWriter writer = new FileWriter(DB_FILE, true)) {
             writer.append(newLine).flush();
         }
+        return false;
     }
 
     @Override

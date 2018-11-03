@@ -33,8 +33,8 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void put(String key, String value) throws DbError {
-        store.put(key, value);
+    public boolean put(String key, String value) throws DbError {
+        return store.put(key, value);
     }
 
     @Override

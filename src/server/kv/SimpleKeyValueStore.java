@@ -86,7 +86,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void put(String key, String value) throws DbError {
+    public boolean put(String key, String value) throws DbError {
         try {
             ioDelete(key);
         } catch (KeyNotFoundException e) {
@@ -97,7 +97,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
         }
         //when the value is null or empty, just delete any existing record and return
         if (value == "" || value == null)     {
-            return;
+            return true;
         }
         try {
             ioPut(key, value);
@@ -105,6 +105,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
             logger.error("IO Exception during PUT", e);
             throw new DbError(e);
         }
+        return false;
     }
 
     private void ioPut(String key, String value) throws IOException {

@@ -22,7 +22,7 @@ public interface KeyValueStore {
      * @param value the value to be put in the database
      * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
      */
-    void put(String key, String value) throws DbError;
+    boolean put(String key, String value) throws DbError;
 
     /**
      *Returns whether the specified {@code key} is present in the database
