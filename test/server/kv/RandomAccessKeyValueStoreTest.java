@@ -1,23 +1,28 @@
 package server.kv;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import util.StringBufferReader;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomAccessKeyValueStoreTest {
-    File dbFile = new File(Paths.get("test_files", "TEST_DB");
-    KeyValueStore kvStore;
+    File dbFile = new File(Paths.get("test_files", "TEST_DB").toUri());
+    RandomAccessKeyValueStore kvStore;
     @Before
     public void setup() throws IOException {
-        if (dbFile.exists()) dbFile.delete();
         kvStore = new RandomAccessKeyValueStore(dbFile);
         kvStore.init();
+    }
+    @After
+    public void tearDown() throws Exception {
+        kvStore.shutdown();
+        if (!dbFile.delete()) throw new Exception("What the hell");
     }
 
     @Test

@@ -93,7 +93,10 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     private void ioPut(String key, String value) throws IOException {
         String newLine = key + "=" + value + System.lineSeparator();
-        new FileWriter(DB_FILE, true).append(newLine).flush();
+
+        try (FileWriter writer = new FileWriter(DB_FILE, true)) {
+            writer.append(newLine).flush();
+        }
     }
 
     @Override
