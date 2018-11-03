@@ -16,7 +16,7 @@ public class Server implements Runnable {
     final int port;
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
-
+    private boolean stopRequested = false;
     private KeyValueStore db;
 
     public Server(int port) {
@@ -47,11 +47,12 @@ public class Server implements Runnable {
         try {
             ServerSocket s;
             s = new ServerSocket(port);
-            while (true) {
+            while (!stopRequested) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 new Thread(new ConnectionHandler(clientSocket, db)).start();
             }
+            s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,6 +79,11 @@ public class Server implements Runnable {
             logger.error("Error while initializing database", e);
             System.exit(1);
         }
+    }
+
+    public void stop() throws IOException {
+        stopRequested = true;
+        db.shutdown();
     }
 
 }
