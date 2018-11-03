@@ -64,8 +64,12 @@ public class ConnectionHandler implements Runnable {
                             logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
                             try {
                                 boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
-                                if (updated)
-                                    response = MessageFactory.createPutUpdateMessage();
+                                if (updated) {
+                                    if (kvMessage.getValue() == null || kvMessage.getValue().equals(""))
+                                        response = MessageFactory.createDeleteSuccessMessage();
+                                    else
+                                        response = MessageFactory.createPutUpdateMessage();
+                                }
                                 else
                                     response = MessageFactory.createPutSuccessMessage();
                             } catch (DbError e) {
