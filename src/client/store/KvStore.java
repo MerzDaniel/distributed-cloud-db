@@ -39,11 +39,9 @@ public class KvStore {
         return success;
     }
 
+    public boolean isConnected() { return connection.isConnected(); }
+
     public void disconnect() {
-        if (!connection.isConnected()) {
-            writeLine("Currently not connected to a server");
-            return;
-        }
         this.connection.disconnect();
     }
 
