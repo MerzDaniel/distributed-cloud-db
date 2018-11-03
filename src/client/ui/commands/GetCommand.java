@@ -27,30 +27,29 @@ public class GetCommand implements Command {
             writeLine("Currently not connected to a server!");
         }
 
-        boolean success = true;
         KVMessage kVMessageResponse = null;
         TimeWatch t = TimeWatch.start();
         try {
             kVMessageResponse = state.kvStore.get(key);
         } catch (IOException e) {
             logger.warn("error", e);
-            success = false;
+            writeLine(String.format("Error during GET. Possibly the connection to the db got lost (%d ms)",t.time()));
+            return;
         } catch (UnmarshallException e) {
+            logger.warn("Error during unmarshalling.", e);
             writeLine("Response from the server was invalid.");
             return;
         }
 
-        if (!success || kVMessageResponse.isError()) {
-            if (kVMessageResponse.getStatus() == KVMessage.StatusType.GET_NOT_FOUND) {
-                writeLine(String.format("The key<%s> not found in the database", key));
-                logger.error(kVMessageResponse.getStatus() + String.format(": The requested key<%s> is not found in the database", key));
-            }
-            else {
-                writeLine(String.format("An error occurred while executing the GET (%d ms)",t.time()));
-                logger.error("An error occurred while executing the GET, error=" + kVMessageResponse.getStatus());
-                return;
-            }
+        if (kVMessageResponse.getStatus() == KVMessage.StatusType.GET_NOT_FOUND) {
+            logger.info(kVMessageResponse.getStatus() + String.format(": The requested key<%s> is not found in the database", key));
+            writeLine(String.format("The key '%s' was not found in the database", key));
+            return;
+        }
 
+        if (kVMessageResponse.getStatus() != KVMessage.StatusType.GET_SUCCESS) {
+            logger.warn(String.format("Get '%s' was not successful: '%s'. Possibly an error in the db. ", kVMessageResponse.toString()));
+            writeLine("GET was not successful. Possibly connection hang up.");
             return;
         }
 

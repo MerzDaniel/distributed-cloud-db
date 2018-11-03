@@ -60,4 +60,9 @@ public class KVMessageImpl implements KVMessage {
                 return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s<%s,%s>", getStatus(), getKey(), getValue());
+    }
 }
