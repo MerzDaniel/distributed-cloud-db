@@ -79,4 +79,13 @@ public class RandomAccessKeyValueStoreTest {
         kvStore.deleteKey("abc");
         assertFalse(kvStore.hasKey("abc"));
     }
+
+    @Test
+    public void shouldUpdateValue() throws DbError, KeyNotFoundException {
+        kvStore.put("a", "a");
+        boolean result = kvStore.put("a", "b");
+        String val = kvStore.get("a");
+        assertTrue("Should be updated", result);
+        assertTrue("New value should be returned", val.equals("b"));
+    }
 }
