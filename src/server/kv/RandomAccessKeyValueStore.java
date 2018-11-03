@@ -3,9 +3,12 @@ package server.kv;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Paths;
-import java.util.Iterator;
+import java.util.Arrays;
 
 public class RandomAccessKeyValueStore implements KeyValueStore {
 
@@ -111,58 +114,36 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     @Override
     public boolean deleteKey(String key) throws DbError {
-        return false;
-//        try {
-//            ioDelete(key);
-//        } catch (IOException | KeyNotFoundException e) {
-//            logger.error("IO Exception during DELETE", e);
-//            throw new DbError(e);
-//        }
-//        return true;
+        try {
+            ioDelete(key);
+            return true;
+        } catch (IOException | KeyNotFoundException e) {
+            logger.error("IO Exception during DELETE", e);
+            throw new DbError(e);
+        }
     }
 
     private boolean ioDelete(String key) throws IOException, KeyNotFoundException {
+        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
+            long linePosition = 0;
+            String nextLine;
+            while (true) {
+                linePosition = db.getFilePointer();
+                nextLine = db.readLine();
+                if (nextLine == null) break;
+
+                String[] split = nextLine.split("=");
+                if (split.length != 2) continue;
+                if (split[0].equals(key)) {
+                    db.seek(linePosition);
+                    byte[] emptyLine = new byte[nextLine.length() * 2]; // chars are represented with two bytes
+                    Arrays.fill(emptyLine, (byte) Character.getNumericValue(' '));
+                    db.write(emptyLine);
+                    return true;
+                }
+            }
+        }
         return false;
-//        Reader localReader = new FileReader(DB_FILE);
-//        Writer localWriter = new FileWriter(TEMP_DB_FILE);
-//
-//        if (localReader.markSupported()) {
-//            logger.debug("Reset marker in FileReader.");
-//            localReader.reset();
-//        } else {
-//            logger.warn("Reset not supported!");
-//        }
-//
-//        int rows = 0;
-//        boolean keyFound = false;
-//        try (final BufferedReader bufferedReader = new BufferedReader(localReader); final BufferedWriter bufferedWriter = new BufferedWriter(localWriter)) {
-//            for (Iterator<String> it = bufferedReader.lines().iterator(); it.hasNext(); ) {
-//                String line = it.next();
-//                String[] split = line.split("=");
-//                if (split.length != 2) continue;
-//                if (!split[0].equals(key)) {
-//                    bufferedWriter.write(line + System.getProperty("line.separator"));
-//                } else {
-//                    keyFound = true;
-//                }
-//                rows++;
-//            }
-//        } catch (IOException e) {
-//            throw e;
-//        }
-//
-//        boolean renameSuccess = TEMP_DB_FILE.renameTo(DB_FILE);
-//        if (!renameSuccess) {
-//            throw new IOException("An error occurred while renaming the database");
-//        }
-//        writer.close();
-//        writer = new FileWriter(DB_FILE, true);
-//
-//        if (keyFound) {
-//            return key;
-//        }
-//        logger.debug(String.format("Parsed %drows without finding the key %s", rows, key));
-//        throw new KeyNotFoundException();
     }
 
 }
