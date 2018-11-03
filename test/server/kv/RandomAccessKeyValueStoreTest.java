@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomAccessKeyValueStoreTest {
@@ -70,5 +71,12 @@ public class RandomAccessKeyValueStoreTest {
         assertEquals(0, dbFile.length());
         kvStore.put("key", "value");
         assertTrue(dbFile.length() > 0);
+    }
+
+    @Test
+    public void shouldDeleteValue() throws DbError {
+        kvStore.put("abc", "abc");
+        kvStore.deleteKey("abc");
+        assertFalse(kvStore.hasKey("abc"));
     }
 }
