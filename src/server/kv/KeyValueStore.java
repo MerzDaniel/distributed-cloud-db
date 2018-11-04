@@ -5,6 +5,10 @@ import java.io.IOException;
 public interface KeyValueStore {
     void init() throws IOException;
 
+    /**
+     * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
+     * @throws IOException if an error occured during the close of any {@link java.io.Writer} or {@link java.io.Reader}
+     */
     void shutdown() throws IOException;
 
     /**
