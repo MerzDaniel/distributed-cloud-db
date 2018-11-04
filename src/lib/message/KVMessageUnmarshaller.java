@@ -6,6 +6,9 @@ import org.apache.log4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class provied the methods to unmarshall a string to a {@link KVMessage} instance
+ */
 public class KVMessageUnmarshaller {
     static Logger logger = LogManager.getLogger(KVMessageUnmarshaller.class);
 
