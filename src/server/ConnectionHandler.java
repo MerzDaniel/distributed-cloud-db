@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static lib.SocketUtil.tryClose;
+import static lib.message.MessageUtil.isValidKey;
+import static lib.message.MessageUtil.isValidValue;
 
 public class ConnectionHandler implements Runnable {
     final Socket s;
@@ -38,13 +40,15 @@ public class ConnectionHandler implements Runnable {
 
             while (SocketUtil.isConnected(s)) {
                 String msg = SocketUtil.readMessage(i);
+                KVMessage kvMessage = null;
                 try {
-                    KVMessage kvMessage = null;
                     kvMessage = KVMessageUnmarshaller.unmarshall(msg);
                     logger.debug(String.format(
                             "Got a message: %s <%s,%s>",
                             kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
                     ));
+
+                    validateKeyValueLength(kvMessage);
 
                     KVMessage response;
                     switch (kvMessage.getStatus()) {
@@ -90,6 +94,9 @@ public class ConnectionHandler implements Runnable {
                 } catch (UnmarshallException e) {
                     logger.info("Got invalid message");
                     new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+                } catch (InValidKeyValueLengthException e) {
+                    logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
+                    new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
                 }
             }
         } catch (Exception e) {
@@ -98,6 +105,21 @@ public class ConnectionHandler implements Runnable {
             tryClose(o);
             tryClose(i);
             tryClose(s);
+        }
+    }
+
+    private void validateKeyValueLength(KVMessage message) throws InValidKeyValueLengthException {
+        switch (message.getStatus()) {
+            case GET:
+            case PUT:
+            case DELETE: {
+                if (!isValidKey(message.getKey()) || !isValidValue(message.getValue())) {
+                    throw new InValidKeyValueLengthException("Key or Value are too long. Only a size for key/value of 20/120kb is allowed");
+                }
+            }
+            default:
+                return;
+
         }
     }
 }
