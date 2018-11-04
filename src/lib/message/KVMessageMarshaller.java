@@ -1,5 +1,8 @@
 package lib.message;
 
+/**
+ * This class provied the methods to marshall a {@link KVMessage} instance
+ */
 public class KVMessageMarshaller {
 
     private KVMessageMarshaller(){}
