@@ -6,6 +6,9 @@ import server.kv.KeyValueStore;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class represents a KeyValueStore with an embedded Least Frequently Used cache
+ */
 public class LFUCachedKeyValueStore extends CachedKeyValueStore {
     class CacheEntry {
         public CacheEntry(String key, String value, int hitCount) {
