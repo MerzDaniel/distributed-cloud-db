@@ -37,8 +37,8 @@ public interface KeyValueStore {
     boolean hasKey(String key) throws DbError;
 
     /**
-     *Deletes the entry with specified {@code key} from the database
-      * @param key the key which the entry is deleted
+     * Deletes the entry with specified {@code key} from the database
+     * @param key the key which the entry is deleted
      * @return whether the delete of the entry was successful or not
      * @throws DbError if any errors happened while deleting the record from the database
      */

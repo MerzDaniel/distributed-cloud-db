@@ -43,12 +43,23 @@ public class SimpleKeyValueStore implements KeyValueStore {
         }
     }
 
+    /**
+     * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
+     * @throws IOException if an error occured during the close of any {@link java.io.Writer} or {@link java.io.Reader}
+     */
     @Override
     public void shutdown() throws IOException {
         reader.close();
         writer.close();
     }
 
+    /**
+     * Returns the value associated with the {@code key} in the database
+     * @param key for which the value is required
+     * @return the value associated with the {@code key}
+     * @throws KeyNotFoundException if the {@code key} is not found in the database
+     * @throws DbError if any other errors happened during the retrival of associated value from the database
+     */
     @Override
     public String get(String key) throws DbError, KeyNotFoundException {
         try {
@@ -86,6 +97,12 @@ public class SimpleKeyValueStore implements KeyValueStore {
         throw new KeyNotFoundException();
     }
 
+    /**
+     * Puts the specified {@code key} and {@code value} in the database
+     * @param key the key to be put in the database
+     * @param value the value to be put in the database
+     * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
+     */
     @Override
     public boolean put(String key, String value) throws DbError {
         try {
@@ -114,6 +131,12 @@ public class SimpleKeyValueStore implements KeyValueStore {
         writer.flush();
     }
 
+    /**
+     * Returns whether the specified {@code key} is present in the database
+     * @param key the key
+     * @return whether the key is present or not
+     * @throws DbError if any any errors happened while checking the key is existing
+     */
     @Override
     public boolean hasKey(String key) throws DbError {
         try {
@@ -124,6 +147,12 @@ public class SimpleKeyValueStore implements KeyValueStore {
         return true;
     }
 
+    /**
+     * Deletes the entry with specified {@code key} from the database
+     * @param key the key which the entry is deleted
+     * @return whether the delete of the entry was successful or not
+     * @throws DbError if any errors happened while deleting the record from the database
+     */
     @Override
     public boolean deleteKey(String key) throws DbError {
         try {
