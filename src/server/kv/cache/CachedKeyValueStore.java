@@ -7,6 +7,10 @@ import server.kv.SimpleKeyValueStore;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 
+/**
+ * This class represent a KeyValueStore with an embedded caching mechanism. The
+ * implementations of this class can decide upon the exact behaviour of the caching mechanism
+ */
 public abstract class CachedKeyValueStore implements KeyValueStore {
 
     private KeyValueStore store;
