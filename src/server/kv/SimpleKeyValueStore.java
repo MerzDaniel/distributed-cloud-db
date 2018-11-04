@@ -17,6 +17,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
 
     Reader reader;
     Writer writer;
+    private final String RECORD_SEPARATOR = "\u001E";
 
     public SimpleKeyValueStore() {
 
@@ -73,7 +74,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
         int rows = 0;
         for (Iterator<String> it = bufferedReader.lines().iterator(); it.hasNext(); ) {
             String line = it.next();
-            String[] split = line.split("=");
+            String[] split = line.split(RECORD_SEPARATOR);
             if (split.length != 2) continue;
             if (split[0].equals(key)) {
                 return split[1];
@@ -109,7 +110,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     private void ioPut(String key, String value) throws IOException {
-        writer.write(key + "=" + value + System.getProperty("line.separator"));
+        writer.write(key + RECORD_SEPARATOR + value + System.getProperty("line.separator"));
         writer.flush();
     }
 
@@ -150,7 +151,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
         try (final BufferedReader bufferedReader = new BufferedReader(localReader); final BufferedWriter bufferedWriter = new BufferedWriter(localWriter)) {
             for (Iterator<String> it = bufferedReader.lines().iterator(); it.hasNext(); ) {
                 String line = it.next();
-                String[] split = line.split("=");
+                String[] split = line.split(RECORD_SEPARATOR);
                 if (split.length != 2) continue;
                 if (!split[0].equals(key)) {
                     bufferedWriter.write(line + System.getProperty("line.separator"));
