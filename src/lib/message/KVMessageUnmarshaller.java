@@ -11,6 +11,12 @@ public class KVMessageUnmarshaller {
 
     private KVMessageUnmarshaller(){}
 
+    /**
+     * Returns KVMessage by unmarshalling the {@code kvMessageString}
+     * @param kvMessageString the string to be unmarshalled
+     * @return a KVMessage by unmarshalling the {@code kvMessageString}
+     * @throws UnmarshallException if the given {@code kvMessageString} cannot be unmarshalled
+     */
     public static KVMessage unmarshall(String kvMessageString) throws UnmarshallException{
         KVMessage.StatusType status = null;
         String key = null;
