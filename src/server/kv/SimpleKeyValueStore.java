@@ -7,6 +7,11 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
+/**
+ * This class is an implementaiton of a KeyValueStore with a {@link Reader} and a {@link Writer}
+ * for reading and writing from the file
+ *
+ */
 public class SimpleKeyValueStore implements KeyValueStore {
 
     final Logger logger = LogManager.getLogger(SimpleKeyValueStore.class);
