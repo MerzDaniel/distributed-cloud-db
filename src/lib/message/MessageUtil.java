@@ -1,5 +1,8 @@
 package lib.message;
 
+/**
+ * This class provides utility methods to check the validity of {@code key} and {@code value} of a {@link KVMessage}
+ */
 public class MessageUtil {
     /**
      * Returns whether a given {@code key} is valid or not
