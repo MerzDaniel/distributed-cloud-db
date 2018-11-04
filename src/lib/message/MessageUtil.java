@@ -9,6 +9,7 @@ public class MessageUtil {
 
 
     public static boolean isValidValue(String value) {
+        if (value == null) return true;
         return value.length() <= 120000;
     }
 }
