@@ -10,6 +10,12 @@ import java.io.RandomAccessFile;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+/**
+ * This class is an implementaiton of a KeyValueStore with a RandomAccessFile thus having the
+ * capability of reading and writing exact positions of the file without have to read all lines
+ *
+ * Compared to {@link SimpleKeyValueStore} this has a huge performance gain
+ */
 public class RandomAccessKeyValueStore implements KeyValueStore {
 
     final Logger logger = LogManager.getLogger(RandomAccessKeyValueStore.class);
