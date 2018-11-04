@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.sql.Time;
 
-import static client.ui.Util.isValidKey;
 import static client.ui.Util.writeLine;
+import static lib.message.MessageUtil.isValidKey;
 
 public class GetCommand implements Command {
     private String key;
