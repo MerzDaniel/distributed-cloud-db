@@ -16,6 +16,9 @@ import static lib.SocketUtil.tryClose;
 import static lib.message.MessageUtil.isValidKey;
 import static lib.message.MessageUtil.isValidValue;
 
+/**
+ * This class handles a single client request in a separate thread
+ */
 public class ConnectionHandler implements Runnable {
     final Socket s;
     private KeyValueStore db;
