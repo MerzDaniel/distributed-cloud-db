@@ -1,6 +1,8 @@
 package lib.message;
 
-
+/**
+ * Represents the abstract structure of the message passed between client and the server
+ */
 public interface KVMessage {
 
     public enum StatusType {
