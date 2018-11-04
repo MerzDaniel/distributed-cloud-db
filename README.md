@@ -3,8 +3,7 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
-- JavaDoc comments everywhere
-- SERVER: Reject wrong key/value!  
+- JavaDoc comments everywhere 
 - Fix provided tests
 
 ## Optimizations
