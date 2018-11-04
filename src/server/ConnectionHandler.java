@@ -26,6 +26,9 @@ public class ConnectionHandler implements Runnable {
         this.db = db;
     }
 
+    /**
+     * start the ConnectionHandler thread
+     */
     @Override
     public void run() {
         OutputStream o = null;
