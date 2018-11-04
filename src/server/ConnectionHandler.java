@@ -94,7 +94,7 @@ public class ConnectionHandler implements Runnable {
                 } catch (UnmarshallException e) {
                     logger.info("Got invalid message");
                     new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
-                } catch (InValidKeyValueLengthException e) {
+                } catch (InvalidKeyValueLengthException e) {
                     logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
                     new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
                 }
@@ -108,13 +108,13 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    private void validateKeyValueLength(KVMessage message) throws InValidKeyValueLengthException {
+    private void validateKeyValueLength(KVMessage message) throws InvalidKeyValueLengthException {
         switch (message.getStatus()) {
             case GET:
             case PUT:
             case DELETE: {
                 if (!isValidKey(message.getKey()) || !isValidValue(message.getValue())) {
-                    throw new InValidKeyValueLengthException("Key or Value are too long. Only a size for key/value of 20/120kb is allowed");
+                    throw new InvalidKeyValueLengthException("Key or Value are too long. Only a size for key/value of 20/120kb is allowed");
                 }
             }
             default:
