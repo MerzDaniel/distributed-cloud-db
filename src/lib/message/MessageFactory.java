@@ -1,5 +1,8 @@
 package lib.message;
 
+/**
+ * This class provides the methods to create instances of {@link KVMessage}
+ */
 public class MessageFactory {
     public static KVMessage createGetMessage(String key) {
         return new KVMessageImpl(key, null, KVMessage.StatusType.GET);
