@@ -9,9 +9,10 @@ import java.io.*;
 import static junit.framework.Assert.assertEquals;
 
 public class SimpleKeyValueStoreTest {
+    private final String RECORD_SEPARATOR = "\u001E";
     @Test
     public void shouldGetValue() throws KeyNotFoundException, DbError {
-        Reader reader = new StringReader("ab=c\nde=fg\na=ha");
+        Reader reader = new StringReader("ab" + RECORD_SEPARATOR + "c\nde" + RECORD_SEPARATOR + "fg\na" + RECORD_SEPARATOR + "ha");
         Writer writer = new StringWriter();
         KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
 
@@ -20,7 +21,7 @@ public class SimpleKeyValueStoreTest {
 
     @Test
     public void shouldGetMultipleValues() throws KeyNotFoundException, DbError {
-        Reader reader = new StringReader("ab=c\nde=fg\na=ha");
+        Reader reader = new StringReader("ab" + RECORD_SEPARATOR + "c\nde" + RECORD_SEPARATOR + "fg\na" + RECORD_SEPARATOR + "ha");
         Writer writer = new StringWriter();
         KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
 
@@ -31,7 +32,7 @@ public class SimpleKeyValueStoreTest {
 
     @Test
     public void shouldReturnCorrectValuesForHasKey() throws KeyNotFoundException, DbError {
-        Reader reader = new StringReader("ab=c\nde=fg\na=ha");
+        Reader reader = new StringReader("ab" + RECORD_SEPARATOR + "c\nde" + RECORD_SEPARATOR + "fg\na" + RECORD_SEPARATOR + "ha");
         Writer writer = new StringWriter();
         KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
 
@@ -41,7 +42,7 @@ public class SimpleKeyValueStoreTest {
 
     @Test(expected = KeyNotFoundException.class)
     public void shouldThrowKeyNotFound() throws KeyNotFoundException, DbError {
-        Reader reader = new StringReader("ab=c\nde=fg\na=ha");
+        Reader reader = new StringReader("ab" + RECORD_SEPARATOR + "c\nde" + RECORD_SEPARATOR + "fg\na" + RECORD_SEPARATOR + "ha");
         Writer writer = new StringWriter();
         KeyValueStore sv = new SimpleKeyValueStore(reader, writer);
 
