@@ -4,6 +4,11 @@ public class KVMessageMarshaller {
 
     private KVMessageMarshaller(){}
 
+    /**
+     * Returns marshalled string representation of the {@code kvMessage}
+     * @param kvMessage the object to be marshalled
+     * @return a string representation of the {@code kvMessage}
+     */
     public static String marshall(KVMessage kvMessage){
         return kvMessage.getStatus().name()
                 + "<"
