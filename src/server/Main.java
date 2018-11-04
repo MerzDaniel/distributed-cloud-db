@@ -3,6 +3,9 @@ package server;
 import org.apache.commons.cli.*;
 import server.kv.CacheType;
 
+/**
+ * The main class of the Server which has the main method to start a server for a given port
+ */
 public class Main {
     public static void main(String[] args) {
         CommandLineParser c = new DefaultParser();
