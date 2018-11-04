@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * This class represents the Server instances
+ * A Server is distinguished from it's port. So different servers run on different ports
+ */
 public class Server implements Runnable {
     final Logger logger = LogManager.getLogger(Server.class);
     final int port;
