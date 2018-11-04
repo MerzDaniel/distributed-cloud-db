@@ -7,6 +7,9 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class represents a KeyValueStore with an embedded First In Forst Out cache
+ */
 public class FifoCachedKeyValueStore extends CachedKeyValueStore {
     class CacheEntry {
         public CacheEntry(String key, String value) {
