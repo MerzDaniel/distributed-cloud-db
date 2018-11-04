@@ -27,6 +27,13 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
         store.init();
     }
 
+    /**
+     *Returns the value associated with the {@code key} in the database
+     * @param key for which the value is required
+     * @return the value associated with the {@code key}
+     * @throws KeyNotFoundException if the {@code key} is not found in the database
+     * @throws DbError if any other errors happened during the retrival of associated value from the database
+     */
     @Override
     public String get(String key) throws KeyNotFoundException, DbError {
         if (isCached(key)) return getFromCache(key);
@@ -36,28 +43,68 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
         return value;
     }
 
+    /**
+     *Puts the specified {@code key} and {@code value} in the database
+     * @param key the key to be put in the database
+     * @param value the value to be put in the database
+     * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
+     */
     @Override
     public boolean put(String key, String value) throws DbError {
         return store.put(key, value);
     }
 
+    /**
+     *Returns whether the specified {@code key} is present in the database
+     * @param key the key
+     * @return whether the key is present or not
+     * @throws DbError if any any errors happened while checking the key is existing
+     */
     @Override
     public boolean hasKey(String key) throws DbError {
         if (isCached(key)) return true;
         return store.hasKey(key);
     }
 
+    /**
+     *Deletes the entry with specified {@code key} from the database
+     * @param key the key which the entry is deleted
+     * @return whether the delete of the entry was successful or not
+     * @throws DbError if any errors happened while deleting the record from the database
+     */
     @Override
     public boolean deleteKey(String key) throws DbError {
         throw new NotImplementedException();
     }
 
+    /**
+     * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
+     * @throws IOException if an error occured during the close of any {@link java.io.Writer} or {@link java.io.Reader}
+     */
     @Override
     public void shutdown() throws IOException {
         store.shutdown();
     }
 
+    /**
+     * add the given {@code key} and {@code value} into the database
+     * @param key the {@code key}
+     * @param value the {@code value}
+     */
     protected abstract void addToCache(String key, String value);
+
+    /**
+     * returns whether the {@code key} is present or not in the database
+     * @param key the {@code key} to be checked
+     * @return whether the {@code key} is present or not
+     */
     protected abstract boolean isCached(String key);
+
+    /**
+     * returns the value associated with the {@code key} in the database
+     * @param key the {@code key} for which the value is required
+     * @return the value associated with the {@code key}
+     * @throws KeyNotFoundException if any errors occurred while retrieving the value
+     */
     protected abstract String getFromCache(String key) throws KeyNotFoundException;
 }
