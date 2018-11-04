@@ -14,12 +14,22 @@ public class KvStore {
 
     private final Logger logger = LogManager.getLogger(KvStore.class);
 
+    /**
+     * Creates a new KvStore
+     * @param host the host name
+     * @param port the port
+     */
     public KvStore(String host, int port) {
         this.host = host;
         this.port = port;
         this.connection = new Connection();
     }
 
+    /**
+     * Connects to the backend server
+     * @return true if successfully connected otherwise false
+     * @throws IOException if any error occurred while establishing the connection
+     */
     public boolean connect() throws IOException {
         this.connection.connect(host, port);
 
@@ -37,14 +47,28 @@ public class KvStore {
         return success;
     }
 
+    /**
+     * Returns whether the client is connected to the backend
+     * @return the connection status
+     */
     public boolean isConnected() {
         return connection.isConnected();
     }
 
+    /**
+     * Disconnect the client from the backend
+     */
     public void disconnect() {
         this.connection.disconnect();
     }
 
+    /**
+     * Get the KVMessage for the {@code key} from backend
+     * @param key
+     * @return KVMessage with information about operation success or failure
+     * @throws IOException if any I/O error happens
+     * @throws UnmarshallException if any error happens during the unmarshall process
+     */
     public KVMessage get(String key) throws IOException, UnmarshallException {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
@@ -52,6 +76,14 @@ public class KvStore {
         return KVMessageUnmarshaller.unmarshall(response);
     }
 
+    /**
+     * Put the given {@code key} and {@code value} in the backend database
+     * @param key
+     * @param value
+     * @return KVMessage with information about operation success or failure
+     * @throws IOException if any I/O error happens
+     * @throws UnmarshallException if any error happens during the unmarshall process
+     */
     public KVMessage put(String key, String value) throws IOException, UnmarshallException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
