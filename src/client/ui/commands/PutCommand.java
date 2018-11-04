@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static client.ui.Util.isValidKey;
-import static client.ui.Util.isValidValue;
 import static client.ui.Util.writeLine;
+import static lib.message.MessageUtil.isValidKey;
+import static lib.message.MessageUtil.isValidValue;
 
 public class PutCommand implements Command {
     private String key;
