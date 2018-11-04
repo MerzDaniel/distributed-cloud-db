@@ -18,6 +18,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     File DB_FILE;
     RandomAccessFile db;
 
+    private final String RECORD_SEPARATOR = "\u001E";
+
     public RandomAccessKeyValueStore() {
         DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
     }
@@ -62,7 +64,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             rows++;
             if (nextLine == null) break;
 
-            String[] split = nextLine.split("=");
+            String[] split = nextLine.split(RECORD_SEPARATOR);
             if (split.length != 2) continue;
             if (split[0].equals(key)) {
                 return split[1];
@@ -94,7 +96,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     private boolean ioPut(String key, String value) throws IOException {
-        String newLine = key + "=" + value + System.lineSeparator();
+        String newLine = key + RECORD_SEPARATOR + value + System.lineSeparator();
 
         try (FileWriter writer = new FileWriter(DB_FILE, true)) {
             writer.append(newLine).flush();
@@ -132,7 +134,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
                 nextLine = db.readLine();
                 if (nextLine == null) break;
 
-                String[] split = nextLine.split("=");
+                String[] split = nextLine.split(RECORD_SEPARATOR);
                 if (split.length != 2) continue;
                 if (split[0].equals(key)) {
                     db.seek(linePosition);
