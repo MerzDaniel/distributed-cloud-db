@@ -2,6 +2,9 @@ package server.kv;
 
 import java.io.IOException;
 
+/**
+ * This class defines the abstract behaviour for the KeyValueStore
+ */
 public interface KeyValueStore {
     void init() throws IOException;
 
