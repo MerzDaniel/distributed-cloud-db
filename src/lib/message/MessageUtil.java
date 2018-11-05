@@ -16,6 +16,7 @@ public class MessageUtil {
 
     /**
      * Returns whether a given {@code value} is valid or not
+     *
      * @param value the value to be validated
      * @return the validity
      */
