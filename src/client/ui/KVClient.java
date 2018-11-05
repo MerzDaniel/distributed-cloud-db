@@ -11,8 +11,8 @@ import java.io.InputStreamReader;
 /**
  * A simple echo client that can establish a connection to the echo server.
  */
-public class Application {
-    Logger logger = LogManager.getLogger(Application.class);
+public class KVClient {
+    Logger logger = LogManager.getLogger(KVClient.class);
     ApplicationState state = new ApplicationState();
     CommandParser commandParser = new CommandParser();
 

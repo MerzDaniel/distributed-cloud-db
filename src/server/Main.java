@@ -9,7 +9,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import server.kv.CacheType;
 
 /**
- * The main class of the Server which has the main method to start a server for a given port
+ * The main class of the KVServer which has the main method to start a server for a given port
  */
 public class Main {
 
@@ -34,7 +34,7 @@ public class Main {
         LogManager.getLogger(Main.class).info(serverStartMsg);
         System.out.println(serverStartMsg);
 
-        new Server(port, cacheSize, cacheType).run();
+        new KVServer(port, cacheSize, cacheType).run();
     }
 
     static {

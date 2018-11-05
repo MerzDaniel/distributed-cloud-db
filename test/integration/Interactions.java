@@ -1,6 +1,6 @@
 package integration;
 
-import client.store.KvStore;
+import client.store.KVStore;
 import junit.framework.TestCase;
 import lib.message.KVMessage;
 import org.junit.After;
@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public class Interactions extends TestCase {
 
-    private KvStore kvClient;
+    private KVStore kvClient;
 
     @Before
     public void setUp() throws IOException {
-        kvClient = new KvStore("localhost", 50000);
+        kvClient = new KVStore("localhost", 50000);
         kvClient.connect();
     }
 

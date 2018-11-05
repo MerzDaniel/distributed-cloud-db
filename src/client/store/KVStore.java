@@ -10,19 +10,19 @@ import java.io.IOException;
 /**
  * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
  */
-public class KvStore {
+public class KVStore implements KVCommInterface{
     final String host;
     final int port;
     final Connection connection;
 
-    private final Logger logger = LogManager.getLogger(KvStore.class);
+    private final Logger logger = LogManager.getLogger(KVStore.class);
 
     /**
-     * Creates a new KvStore
+     * Creates a new KVStore
      * @param host the host name
      * @param port the port
      */
-    public KvStore(String host, int port) {
+    public KVStore(String host, int port) {
         this.host = host;
         this.port = port;
         this.connection = new Connection();
@@ -42,7 +42,7 @@ public class KvStore {
             KVMessage kvM = KVMessageUnmarshaller.unmarshall(message);
             success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
         } catch (UnmarshallException e) {
-            logger.warn(String.format("Server %s:%d returned an invalid response: '%s'", host, port, message));
+            logger.warn(String.format("KVServer %s:%d returned an invalid response: '%s'", host, port, message));
             disconnect();
             success = false;
         }

@@ -1,6 +1,6 @@
 package client.ui.commands;
 
-import client.store.KvStore;
+import client.store.KVStore;
 import client.ui.ApplicationState;
 import client.ui.Command;
 import org.apache.log4j.LogManager;
@@ -26,7 +26,7 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        state.kvStore = new KvStore(this.url, this.port);
+        state.kvStore = new KVStore(this.url, this.port);
         boolean success;
         try {
             success = state.kvStore.connect();

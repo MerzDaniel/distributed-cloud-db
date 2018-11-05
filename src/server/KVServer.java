@@ -15,30 +15,42 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class represents the Server instances
- * A Server is distinguished from it's port. So different servers run on different ports
+ * This class represents the KVServer instances
+ * A KVServer is distinguished from it's port. So different servers run on different ports
  */
-public class Server implements Runnable {
-    final Logger logger = LogManager.getLogger(Server.class);
+public class KVServer implements Runnable {
+    final Logger logger = LogManager.getLogger(KVServer.class);
     final int port;
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
     private boolean stopRequested = false;
     private KeyValueStore db;
 
-    public Server(int port) {
+    public KVServer(int port) {
         this.port = port;
         db = new RandomAccessKeyValueStore();
     }
 
-    public Server(int port, int cacheSize, CacheType cacheType) {
+    /**
+     * Start KV Server at given port
+     *
+     * @param port      given port for storage server to operate
+     * @param cacheSize specifies how many key-value pairs the server is allowed
+     *                  to keep in-memory
+     * @param cacheType  specifies the cache replacement strategy in case the cache
+     *                  is full and there is a GET- or PUT-request on a key that is
+     *                  currently not contained in the cache. Options are "FIFO", "LRU",
+     *                  and "LFU".
+     */
+
+    public KVServer(int port, int cacheSize, CacheType cacheType) {
         this.port = port;
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         db = new RandomAccessKeyValueStore();
     }
 
-    public Server(int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
+    public KVServer(int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
         this.port = port;
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;

@@ -1,9 +1,9 @@
 package client;
 
-import client.ui.Application;
+import client.ui.KVClient;
 
 /**
- * Main class for the KvStore client
+ * Main class for the KVStore client
  */
 public class Main {
     static {
@@ -11,6 +11,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Application().run();
+        new KVClient().run();
     }
 }
