@@ -39,7 +39,11 @@ public class FifoCachedKeyValueStore extends CachedKeyValueStore {
      */
     @Override
     protected void addToCache(String key, String value) {
-        if (isCached(key)) return;
+        if (isCached(key)) {
+            CacheEntry entry = cache.get(key);
+            entry.value = value;
+            return;
+        }
         if (cache.size() >= this.cacheSize) {
             cache.remove(cachePriority.get(0));
             cachePriority.remove(0);
