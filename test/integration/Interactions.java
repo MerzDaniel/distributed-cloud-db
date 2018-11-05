@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class InteractionTest extends TestCase {
+public class Interactions extends TestCase {
 
     private KvStore kvClient;
 
@@ -38,7 +38,11 @@ public class InteractionTest extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.PUT_SUCCESS);
+        assertTrue(
+                String.format("ERROR: %s, response: %s",
+                        ex != null ? ex.getMessage() : "",
+                        response!=null?response.getStatus().toString():""),
+                ex == null && response.getStatus() == KVMessage.StatusType.PUT_SUCCESS);
     }
 
     @Test

@@ -1,7 +1,5 @@
 package integration;
 
-import integration.InteractionTest;
-import integration.ConnectionTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import server.kv.CacheType;
@@ -28,8 +26,8 @@ public class AllTests {
 
     public static Test suite() {
         TestSuite clientSuite = new TestSuite("Basic Storage ServerTest-Suite");
-        clientSuite.addTestSuite(ConnectionTest.class);
-        clientSuite.addTestSuite(InteractionTest.class);
+        clientSuite.addTestSuite(Connections.class);
+        clientSuite.addTestSuite(Interactions.class);
 //        clientSuite.addTestSuite(AdditionalTest.class);
         return clientSuite;
     }

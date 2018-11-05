@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 import java.net.UnknownHostException;
 
 
-public class ConnectionTest extends TestCase {
+public class Connections extends TestCase {
 
 
     public void testConnectionSuccess() {

@@ -3,7 +3,6 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
-- Fix provided tests
 - remove dependency to apache-cli-common
 
 ## Optimizations
