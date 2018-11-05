@@ -2,6 +2,26 @@
 
 A distributed key-value database for the master praktikum "Cloud Databases"
 
+## SETUP
+Run tests: 
+`ant test`
+
+Build jars for server and client: 
+`ant build-jar`
+
+Run the server
+`java -jar ms2-server.jar --port 50000 --cache-type LFU --cache-size 10 --log-level WARN`
+
+Run the client
+`java -jar ms2-client.jar`
+
+## Folder structure
+- `src` contains all source code
+- `test` contains all tests
+- `logs` contains logs
+- `db` contains dbs
+- `docs` contains the test descriptions
+
 ## Todo List
 
 ## Optimizations
