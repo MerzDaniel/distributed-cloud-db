@@ -55,6 +55,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
      */
     @Override
     public boolean put(String key, String value) throws DbError {
+        addToCache(key, value);
         return store.put(key, value);
     }
 
