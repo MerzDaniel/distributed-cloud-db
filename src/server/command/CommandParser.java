@@ -65,7 +65,12 @@ public class CommandParser {
                 .collect(Collectors.toList());
 
         try {
-            if (optionsList.contains(CommandOption.HELP.commandValue) || valueList.size() != optionsList.size() || hasUnrecognizedOption(optionsList)) {
+            if (optionsList.contains(CommandOption.HELP.commandValue)) {
+                this.printHelp();
+                System.exit(0);
+            }
+            if (valueList.size() != optionsList.size() || hasUnrecognizedOption(optionsList)) {
+                System.out.println("An error occurred parsing command arguments");
                 this.printHelp();
                 System.exit(0);
             }
@@ -82,6 +87,7 @@ public class CommandParser {
                 logLevel = Level.valueOf(valueList.get(optionsList.indexOf(CommandOption.LOG_LEVEL.commandValue)));
             }
         } catch (Exception ex) {
+            System.out.println("An error occurred parsing command arguments");
             this.printHelp();
             System.exit(0);
         }
@@ -90,7 +96,6 @@ public class CommandParser {
     }
 
     private void printHelp() {
-        System.out.println("An error occurred parsing command arguments");
         System.out.println("Usage of command arguments:");
         System.out.println("--port <port>           : specify the port to connect");
         System.out.println("--cache-type <type>     : allowed values are FIFO, LFU, LRU and NONE");
