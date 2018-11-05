@@ -3,7 +3,6 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
-- LRU cache value update does not work
 - `put <key> null` should delete value
 
 ## Optimizations
