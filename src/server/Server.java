@@ -1,5 +1,6 @@
 package server;
 
+import lib.SocketUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.*;
@@ -10,6 +11,8 @@ import server.kv.cache.LRUCachedKeyValueStore;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class represents the Server instances
@@ -48,17 +51,20 @@ public class Server implements Runnable {
 
         initDb();
 
-        try {
-            ServerSocket s;
-            s = new ServerSocket(port);
+        List<Socket> openConnections = new LinkedList<>();
+        try (ServerSocket s = new ServerSocket(port)) {
             while (!stopRequested) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
+                openConnections.add(clientSocket);
                 new Thread(new ConnectionHandler(clientSocket, db)).start();
             }
-            s.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            for (Socket s : openConnections) {
+                SocketUtil.tryClose(s);
+            }
         }
     }
 
