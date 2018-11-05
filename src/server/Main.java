@@ -1,56 +1,32 @@
 package server;
 
-import org.apache.commons.cli.*;
+import lib.command.CommandLine;
+import lib.command.CommandParser;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import server.kv.CacheType;
 
 /**
  * The main class of the Server which has the main method to start a server for a given port
  */
 public class Main {
+
     public static void main(String[] args) {
-        CommandLineParser c = new DefaultParser();
-        Options options = new Options();
-        options.addOption(new Option("h", "help", false, "show help text"));
-        options.addOption(new Option("p", "port", true, "port of the server"));
-        options.addOption(new Option(
-                "c", "cache-type", true,
-                "Cachetype to use. possible values: FIFO,LRU,LFU,NONE(default)"
-        ));
-        options.addOption(new Option(
-                "s", "cache-size", true,
-                "Cache size to use (number of key,value pairs that will be hold in cache)"
-        ));
+        CommandLine cm = new CommandParser().parse(args);
 
-        CommandLine cmd = null;
-        try {
-            cmd = c.parse(options, args);
-        } catch (ParseException e) {
-            System.out.println("Wrong argument.");
-            printHelp(options);
-            System.exit(1);
-        }
+        int port = cm.getPort();
+        int cacheSize = cm.getCacheSize();
+        CacheType cacheType = cm.getCacheType();
+        Level logLevel = cm.getLogLevel();
 
-        if (cmd.hasOption("h")) {
-            printHelp(options);
-            System.exit(0);
-        }
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration conf = ctx.getConfiguration();
+        conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(logLevel);
+        ctx.updateLoggers(conf);
 
-        int port = Integer.parseInt(cmd.getOptionValue("p", "50000"));
-        int cacheSize = Integer.parseInt(cmd.getOptionValue("s", "10"));
-        CacheType type = CacheType.NONE;
-        try {
-            type = CacheType.valueOf(cmd.getOptionValue("c", "NONE"));
-        } catch(IllegalArgumentException e) {
-            System.out.println("Wrong argument.");
-            printHelp(options);
-            System.exit(1);
-        }
-
-        new Server(port, cacheSize, type).run();
-    }
-
-    private static void printHelp(Options options) {
-        new HelpFormatter().printHelp("java -jar server.jar", options);
+        new Server(port, cacheSize, cacheType).run();
     }
 
     static {
