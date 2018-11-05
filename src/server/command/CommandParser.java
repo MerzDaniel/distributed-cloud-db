@@ -49,8 +49,8 @@ public class CommandParser {
 
         int port = 50000;
         int cacheSize = 10;
-        CacheType cacheType = CacheType.NONE;
-        Level logLevel = Level.ALL;
+        CacheType cacheType = CacheType.LRU;
+        Level logLevel = Level.INFO;
 
         List<String> argsList = Arrays.asList(args);
 
