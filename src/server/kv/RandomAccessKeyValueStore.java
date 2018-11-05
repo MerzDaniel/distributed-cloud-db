@@ -109,7 +109,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             throw new DbError(e);
         }
         try {
-            if (value != null && !value.equals("")) {
+            if (value != null && !value.equals("") && !value.equals("null")) {
                 ioPut(key, value);
             }
         } catch (IOException e) {

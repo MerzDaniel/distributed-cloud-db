@@ -55,7 +55,7 @@ public class PutCommand implements Command {
         }
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.DELETE_SUCCESS
-                && (value == null || value.equals(""))) {
+                && (value == null || value.equals("") || value.equals("null"))) {
             writeLine(String.format("Succesfully deleted the entry with key <%s> from database (%d ms)", key, t.time()));
             return;
         }

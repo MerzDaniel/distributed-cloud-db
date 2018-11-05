@@ -95,7 +95,7 @@ public class ConnectionHandler implements Runnable {
         try {
             boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
             if (updated) {
-                if (kvMessage.getValue() == null || kvMessage.getValue().equals(""))
+                if (kvMessage.getValue() == null || kvMessage.getValue().equals("") || kvMessage.getValue().equals("null"))
                     response = MessageFactory.createDeleteSuccessMessage();
                 else
                     response = MessageFactory.createPutUpdateMessage();
