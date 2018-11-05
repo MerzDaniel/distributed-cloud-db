@@ -3,6 +3,7 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
+- LRU cache value update does not work
 
 ## Optimizations
 - COMMUNICATION: Message ids for parallel GET requests
