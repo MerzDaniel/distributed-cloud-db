@@ -5,6 +5,9 @@ import client.ui.Command;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Prints the help
+ */
 public class HelpCommand implements Command {
     @Override
     public void execute(ApplicationState state) {

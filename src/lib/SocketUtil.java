@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * Provides methods for reading writing messages and gracefully handling of sockets
+ */
 public class SocketUtil {
     final static Logger logger = LogManager.getLogger(SocketUtil.class);
 

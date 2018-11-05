@@ -8,6 +8,9 @@ import client.ui.Command;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Used to print "unexpected error message" and write the log with the error state.
+ */
 public class ErrorCommand implements Command {
     private final Exception ex;
     private final Logger logger = LogManager.getLogger(ErrorCommand.class);

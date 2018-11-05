@@ -5,6 +5,9 @@ import client.ui.Command;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Disconnects from a server
+ */
 public class DisconnectCommand implements Command {
 
     public DisconnectCommand() {

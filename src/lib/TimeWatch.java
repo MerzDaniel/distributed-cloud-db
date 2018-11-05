@@ -2,6 +2,9 @@ package lib;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A simple class for time measurements
+ */
 public class TimeWatch {
     long starts;
 

@@ -14,6 +14,9 @@ import java.sql.Time;
 import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
 
+/**
+ * Issues a GET on the server
+ */
 public class GetCommand implements Command {
     private String key;
     private final Logger logger = LogManager.getLogger(GetCommand.class);

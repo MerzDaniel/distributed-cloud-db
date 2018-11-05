@@ -11,6 +11,9 @@ import client.ui.Util;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Sets the logLevel
+ */
 public class LogCommand implements Command {
     private String logLevel;
 

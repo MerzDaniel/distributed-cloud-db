@@ -10,6 +10,9 @@ import java.io.IOException;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Connects to a server.
+ */
 public class ConnectCommand implements Command {
     private String url;
     private int port;

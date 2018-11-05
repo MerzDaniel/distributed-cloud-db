@@ -14,6 +14,9 @@ import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
 import static lib.message.MessageUtil.isValidValue;
 
+/**
+ * Writes values on the server
+ */
 public class PutCommand implements Command {
     private String key;
     private String value;

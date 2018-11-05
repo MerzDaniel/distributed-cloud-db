@@ -7,6 +7,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+/**
+ * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
+ */
 public class KvStore {
     final String host;
     final int port;

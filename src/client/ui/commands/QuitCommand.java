@@ -5,6 +5,9 @@ import client.ui.Command;
 
 import static client.ui.Util.writeLine;
 
+/**
+ * Exits the application
+ */
 public class QuitCommand implements Command {
 
     @Override
