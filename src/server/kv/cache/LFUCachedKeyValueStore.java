@@ -39,7 +39,13 @@ public class LFUCachedKeyValueStore extends CachedKeyValueStore {
      */
     @Override
     protected void addToCache(String key, String value) {
-        if (isCached(key)) return;
+        if (isCached(key)) {
+            // update value in cache
+            CacheEntry entry = cache.get(key);
+            entry.hitCount++;
+            entry.value = value;
+            return;
+        }
         if (cache.size() >= this.cacheSize) {
             Optional<CacheEntry> leastFrequentlyUsedKey = cache.values().stream().min(new Comparator<CacheEntry>() {
                 @Override
