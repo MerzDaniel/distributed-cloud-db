@@ -89,4 +89,9 @@ public class LFUCachedKeyValueStore extends CachedKeyValueStore {
         entry.hitCount++;
         return entry.value;
     }
+
+    @Override
+    protected void removeFromCache(String key) {
+        cache.remove(key);
+    }
 }
