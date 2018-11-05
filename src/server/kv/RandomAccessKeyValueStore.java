@@ -51,7 +51,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      */
     @Override
     public void shutdown() throws IOException {
-        db.close();
+        if (db != null)
+            db.close();
     }
 
     /**
