@@ -119,7 +119,7 @@ public class SimpleKeyValueStore implements KeyValueStore {
             throw new DbError(e);
         }
         //when the value is null or empty, just delete any existing record and return
-        if (value == "" || value == null)     {
+        if (value.equals("") || value == null || value.equals("null"))     {
             return true;
         }
         try {

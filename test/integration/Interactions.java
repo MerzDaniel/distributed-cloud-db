@@ -91,7 +91,7 @@ public class Interactions extends TestCase {
 
         try {
             kvClient.put(key, value);
-            response = kvClient.put(key, "");
+            response = kvClient.put(key, "null");
         } catch (Exception e) {
             ex = e;
         }
