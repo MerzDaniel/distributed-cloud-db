@@ -34,12 +34,7 @@ public class ConnectionHandler implements Runnable {
      */
     @Override
     public void run() {
-        OutputStream o = null;
-        InputStream i = null;
-
-        try {
-            i = s.getInputStream();
-            o = s.getOutputStream();
+        try (InputStream i = s.getInputStream() ;OutputStream o = s.getOutputStream()){
 
             String connectMessage = KVMessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
             SocketUtil.sendMessage(o, connectMessage);
@@ -108,8 +103,6 @@ public class ConnectionHandler implements Runnable {
         } catch (Exception e) {
             logger.warn("Error during communication with an open connection:" + e.getMessage(), e);
         } finally {
-            tryClose(o);
-            tryClose(i);
             tryClose(s);
         }
     }
