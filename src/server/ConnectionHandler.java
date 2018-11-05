@@ -35,7 +35,7 @@ public class ConnectionHandler implements Runnable {
      */
     @Override
     public void run() {
-        try (InputStream i = s.getInputStream() ;OutputStream o = s.getOutputStream()){
+        try (InputStream i = s.getInputStream(); OutputStream o = s.getOutputStream()) {
 
             String connectMessage = KVMessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
             SocketUtil.sendMessage(o, connectMessage);
@@ -92,19 +92,23 @@ public class ConnectionHandler implements Runnable {
 
     private KVMessage handlePutMessage(KVMessage kvMessage) {
         KVMessage response;
-        try {
-            boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
-            if (updated) {
-                if (kvMessage.getValue() == null || kvMessage.getValue().equals("") || kvMessage.getValue().equals("null"))
-                    response = MessageFactory.createDeleteSuccessMessage();
-                else
-                    response = MessageFactory.createPutUpdateMessage();
+        if (shouldDelete(kvMessage.getValue())) {
+            try {
+                db.deleteKey(kvMessage.getKey());
+                response = MessageFactory.createDeleteSuccessMessage();
+            } catch (DbError dbError) {
+                logger.warn("PUT: Databaseerror while deleting a value", dbError);
+                response = MessageFactory.createDeleteErrorMessage();
             }
-            else
-                response = MessageFactory.createPutSuccessMessage();
-        } catch (DbError e) {
-            logger.warn("PUT: Databaseerror!", e);
-            response = MessageFactory.createPutErrorMessage();
+        } else {
+            try {
+                boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
+                if (updated) response = MessageFactory.createPutUpdateMessage();
+                else response = MessageFactory.createPutSuccessMessage();
+            } catch (DbError dbError) {
+                logger.warn("PUT: Databaseerror while PUT a value", dbError);
+                response = MessageFactory.createPutErrorMessage();
+            }
         }
         return response;
     }
@@ -137,6 +141,10 @@ public class ConnectionHandler implements Runnable {
                 return;
 
         }
+    }
+
+    private boolean shouldDelete(String value) {
+        return value == null || value.equals("") || value.equals("null");
     }
 }
 
