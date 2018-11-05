@@ -14,6 +14,7 @@ public class CommandLine {
 
     /**
      * Create a new CommandLine
+     *
      * @param port the port passed with command arguments
      * @param cacheSize the cacheSize passed with command arguments
      * @param cacheType the cacheTypec passed with command arguments

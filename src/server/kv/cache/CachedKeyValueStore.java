@@ -33,6 +33,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      *Returns the value associated with the {@code key} in the database
+     *
      * @param key for which the value is required
      * @return the value associated with the {@code key}
      * @throws KeyNotFoundException if the {@code key} is not found in the database
@@ -49,6 +50,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      *Puts the specified {@code key} and {@code value} in the database
+     *
      * @param key the key to be put in the database
      * @param value the value to be put in the database
      * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
@@ -61,6 +63,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      *Returns whether the specified {@code key} is present in the database
+     *
      * @param key the key
      * @return whether the key is present or not
      * @throws DbError if any any errors happened while checking the key is existing
@@ -73,6 +76,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      *Deletes the entry with specified {@code key} from the database
+     *
      * @param key the key which the entry is deleted
      * @return whether the delete of the entry was successful or not
      * @throws DbError if any errors happened while deleting the record from the database
@@ -85,6 +89,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
+     *
      * @throws IOException if an error occured during the close of any {@link java.io.Writer} or {@link java.io.Reader}
      */
     @Override
@@ -94,6 +99,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      * add the given {@code key} and {@code value} into the database
+     *
      * @param key the {@code key}
      * @param value the {@code value}
      */
@@ -101,6 +107,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      * returns whether the {@code key} is present or not in the database
+     *
      * @param key the {@code key} to be checked
      * @return whether the {@code key} is present or not
      */
@@ -108,6 +115,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     /**
      * returns the value associated with the {@code key} in the database
+     *
      * @param key the {@code key} for which the value is required
      * @return the value associated with the {@code key}
      * @throws KeyNotFoundException if any errors occurred while retrieving the value

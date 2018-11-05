@@ -19,6 +19,7 @@ public class KVStore implements KVCommInterface{
 
     /**
      * Creates a new KVStore
+     *
      * @param host the host name
      * @param port the port
      */
@@ -30,6 +31,7 @@ public class KVStore implements KVCommInterface{
 
     /**
      * Connects to the backend server
+     *
      * @return true if successfully connected otherwise false
      * @throws IOException if any error occurred while establishing the connection
      */
@@ -52,6 +54,7 @@ public class KVStore implements KVCommInterface{
 
     /**
      * Returns whether the client is connected to the backend
+     *
      * @return the connection status
      */
     public boolean isConnected() {
@@ -67,6 +70,7 @@ public class KVStore implements KVCommInterface{
 
     /**
      * Get the KVMessage for the {@code key} from backend
+     *
      * @param key
      * @return KVMessage with information about operation success or failure
      * @throws IOException if any I/O error happens
@@ -81,6 +85,7 @@ public class KVStore implements KVCommInterface{
 
     /**
      * Put the given {@code key} and {@code value} in the backend database
+     *
      * @param key
      * @param value
      * @return KVMessage with information about operation success or failure

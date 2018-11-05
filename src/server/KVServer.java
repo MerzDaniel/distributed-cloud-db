@@ -26,6 +26,11 @@ public class KVServer implements Runnable {
     private boolean stopRequested = false;
     private KeyValueStore db;
 
+    /**
+     * Start KV Server at given port
+     *
+     * @param port      given port for storage server to operate
+     */
     public KVServer(int port) {
         this.port = port;
         db = new RandomAccessKeyValueStore();
@@ -50,6 +55,18 @@ public class KVServer implements Runnable {
         db = new RandomAccessKeyValueStore();
     }
 
+    /**
+     * Start KV Server at given port
+     *
+     * @param port      given port for storage server to operate
+     * @param cacheSize specifies how many key-value pairs the server is allowed
+     *                  to keep in-memory
+     * @param cacheType  specifies the cache replacement strategy in case the cache
+     *                  is full and there is a GET- or PUT-request on a key that is
+     *                  currently not contained in the cache. Options are "FIFO", "LRU",
+     *                  and "LFU".
+     * @param db the {@link KeyValueStore} associated with the KVServer instance
+     */
     public KVServer(int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
         this.port = port;
         this.cacheSize = cacheSize;
