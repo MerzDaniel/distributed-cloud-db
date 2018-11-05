@@ -3,12 +3,22 @@ package lib.command;
 import org.apache.logging.log4j.Level;
 import server.kv.CacheType;
 
+/**
+ * The class repersents a command line arguments passed to the application startup
+ */
 public class CommandLine {
     private int port;
     private int cacheSize;
     private CacheType cacheType;
     private Level logLevel;
 
+    /**
+     * Create a new CommandLine
+     * @param port the port passed with command arguments
+     * @param cacheSize the cacheSize passed with command arguments
+     * @param cacheType the cacheTypec passed with command arguments
+     * @param logLevel the logLevel passed with command arguments
+     */
     public CommandLine(int port, int cacheSize, CacheType cacheType, Level logLevel) {
         this.port = port;
         this.cacheSize = cacheSize;
