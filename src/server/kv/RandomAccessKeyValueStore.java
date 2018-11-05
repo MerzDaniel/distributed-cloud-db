@@ -100,7 +100,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
      */
     @Override
-    public boolean put(String key, String value) throws DbError {
+    public synchronized boolean put(String key, String value) throws DbError {
         boolean deleted;
         try {
             deleted = ioDelete(key);
@@ -151,7 +151,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      * @throws DbError if any errors happened while deleting the record from the database
      */
     @Override
-    public boolean deleteKey(String key) throws DbError {
+    public synchronized boolean deleteKey(String key) throws DbError {
         try {
             ioDelete(key);
             return true;
