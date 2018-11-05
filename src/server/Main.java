@@ -1,7 +1,7 @@
 package server;
 
-import lib.command.CommandLine;
-import lib.command.CommandParser;
+import server.command.CommandLine;
+import server.command.CommandParser;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;

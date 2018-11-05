@@ -1,4 +1,4 @@
-package lib.command;
+package server.command;
 
 import org.apache.logging.log4j.Level;
 import server.kv.CacheType;

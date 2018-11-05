@@ -1,4 +1,4 @@
-package lib.command;
+package server.command;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
