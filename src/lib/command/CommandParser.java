@@ -10,8 +10,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * This class contains the methods to parse a command line arguments during the application startup
+ */
 public class CommandParser {
 
+    /**
+     * Supported commandOptions
+     */
     public enum CommandOption {
 
         PORT("--port"),
@@ -33,6 +39,12 @@ public class CommandParser {
 
     final Logger logger = LogManager.getLogger(CommandParser.class);
 
+    /**
+     * Parse the command line {@code arg} array to a {@link CommandLine}
+     *
+     * @param args command line arguments array
+     * @return a {@link CommandLine} object
+     */
     public CommandLine parse(String[] args) {
 
         int port = 50000;
