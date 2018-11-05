@@ -3,8 +3,8 @@
 A distributed key-value database for the master praktikum "Cloud Databases"
 
 ## Todo List
-- JavaDoc comments everywhere 
 - Fix provided tests
+- remove dependency to apache-cli-common
 
 ## Optimizations
 - COMMUNICATION: Message ids for parallel GET requests
