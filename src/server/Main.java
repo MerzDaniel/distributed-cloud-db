@@ -26,6 +26,14 @@ public class Main {
         conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(logLevel);
         ctx.updateLoggers(conf);
 
+
+        String serverStartMsg = String.format(
+                "Starting server on port %d (cache: %s cache-size: %d log-level: %s)",
+                cm.getPort(), cm.getCacheType().toString(), cm.getCacheSize(), cm.getLogLevel().toString()
+        );
+        LogManager.getLogger(Main.class).info(serverStartMsg);
+        System.out.println(serverStartMsg);
+
         new Server(port, cacheSize, cacheType).run();
     }
 
