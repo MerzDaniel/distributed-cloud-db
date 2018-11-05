@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * This class is an implementaiton of a KeyValueStore with a {@link RandomAccessFile} thus having the
  * capability of reading and writing exact positions of the file without have to read all lines
- *
+ * <p>
  * Compared to {@link SimpleKeyValueStore} this has a huge performance gain
  */
 public class RandomAccessKeyValueStore implements KeyValueStore {
@@ -47,6 +47,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     /**
      * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
+     *
      * @throws IOException if an error occured during the close of any {@link java.io.Writer} or {@link java.io.Reader}
      */
     @Override
@@ -57,10 +58,11 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     /**
      * Returns the value associated with the {@code key} in the database
+     *
      * @param key for which the value is required
      * @return the value associated with the {@code key}
      * @throws KeyNotFoundException if the {@code key} is not found in the database
-     * @throws DbError if any other errors happened during the retrival of associated value from the database
+     * @throws DbError              if any other errors happened during the retrival of associated value from the database
      */
     @Override
     public String get(String key) throws DbError, KeyNotFoundException {
@@ -95,7 +97,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     /**
      * Puts the specified {@code key} and {@code value} in the database
-     * @param key the key to be put in the database
+     *
+     * @param key   the key to be put in the database
      * @param value the value to be put in the database
      * @throws DbError if any errors happened while writing the {@code key} and {@code value} to the database
      */
@@ -109,9 +112,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             throw new DbError(e);
         }
         try {
-            if (value != null && !value.equals("") && !value.equals("null")) {
-                ioPut(key, value);
-            }
+            ioPut(key, value);
         } catch (IOException e) {
             logger.error("IO Exception during PUT", e);
             throw new DbError(e);
@@ -130,6 +131,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     /**
      * Returns whether the specified {@code key} is present in the database
+     *
      * @param key the key
      * @return whether the key is present or not
      * @throws DbError if any any errors happened while checking the key is existing
@@ -146,6 +148,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     /**
      * Deletes the entry with specified {@code key} from the database
+     *
      * @param key the key which the entry is deleted
      * @return whether the delete of the entry was successful or not
      * @throws DbError if any errors happened while deleting the record from the database
