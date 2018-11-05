@@ -65,36 +65,14 @@ public class ConnectionHandler implements Runnable {
             KVMessage response;
             switch (kvMessage.getStatus()) {
                 case GET:
-                    try {
-                        String value = db.get(kvMessage.getKey());
-                        response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
-                    } catch (KeyNotFoundException e) {
-                        logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
-                        response = MessageFactory.createGetNotFoundMessage();
-                    } catch (DbError e) {
-                        logger.warn("Some error occured at database level", e);
-                        response = MessageFactory.createGetErrorMessage();
-                    }
+                    response = handleGetMessage(kvMessage);
                     break;
                 case PUT:
                     logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
-                    try {
-                        boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
-                        if (updated) {
-                            if (kvMessage.getValue() == null || kvMessage.getValue().equals(""))
-                                response = MessageFactory.createDeleteSuccessMessage();
-                            else
-                                response = MessageFactory.createPutUpdateMessage();
-                        }
-                        else
-                            response = MessageFactory.createPutSuccessMessage();
-                    } catch (DbError e) {
-                        logger.warn("PUT: Databaseerror!", e);
-                        response = MessageFactory.createPutErrorMessage();
-                    }
+                    response = handlePutMessage(kvMessage);
                     break;
                 case DELETE:
-                    response = MessageFactory.createDeleteSuccessMessage();
+                    response = MessageFactory.createDeleteErrorMessage();
                     break;
                 default:
                     response = MessageFactory.createInvalidMessage();
@@ -110,6 +88,40 @@ public class ConnectionHandler implements Runnable {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
             new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
+    }
+
+    private KVMessage handlePutMessage(KVMessage kvMessage) {
+        KVMessage response;
+        try {
+            boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
+            if (updated) {
+                if (kvMessage.getValue() == null || kvMessage.getValue().equals(""))
+                    response = MessageFactory.createDeleteSuccessMessage();
+                else
+                    response = MessageFactory.createPutUpdateMessage();
+            }
+            else
+                response = MessageFactory.createPutSuccessMessage();
+        } catch (DbError e) {
+            logger.warn("PUT: Databaseerror!", e);
+            response = MessageFactory.createPutErrorMessage();
+        }
+        return response;
+    }
+
+    private KVMessage handleGetMessage(KVMessage kvMessage) {
+        KVMessage response;
+        try {
+            String value = db.get(kvMessage.getKey());
+            response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
+        } catch (KeyNotFoundException e) {
+            logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
+            response = MessageFactory.createGetNotFoundMessage();
+        } catch (DbError e) {
+            logger.warn("Some error occured at database level", e);
+            response = MessageFactory.createGetErrorMessage();
+        }
+        return response;
     }
 
     private void validateKeyValueLength(KVMessage message) throws InvalidKeyValueLengthException {
