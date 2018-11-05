@@ -79,7 +79,8 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
      */
     @Override
     public boolean deleteKey(String key) throws DbError {
-        throw new NotImplementedException();
+        removeFromCache(key);
+        return store.deleteKey(key);
     }
 
     /**
@@ -112,4 +113,6 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
      * @throws KeyNotFoundException if any errors occurred while retrieving the value
      */
     protected abstract String getFromCache(String key) throws KeyNotFoundException;
+
+    protected abstract void removeFromCache(String key);
 }

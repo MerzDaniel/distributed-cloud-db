@@ -80,4 +80,10 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
         cachePriority.add(key);
         return entry.value;
     }
+
+    @Override
+    protected void removeFromCache(String key) {
+        cache.remove(key);
+        cachePriority.remove(key);
+    }
 }
