@@ -1,7 +1,13 @@
 package ecs;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
 public class Main {
-    public static void main(String[] args) {
-        System.out.printf("Hello World!");
+
+    static final String defaultConfigPath = Paths.get("db", "ecs.config").toString();
+
+    public static void main(String[] args) throws IOException {
+        new EcsAdminConsole(defaultConfigPath).start();
     }
 }
