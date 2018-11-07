@@ -5,6 +5,7 @@ package lib.message;
  */
 public class KVMessageMarshaller {
 
+    private final static String RECORD_SEPARATOR = "\u001E";
     private KVMessageMarshaller(){}
 
     /**
@@ -15,15 +16,9 @@ public class KVMessageMarshaller {
      */
     public static String marshall(KVMessage kvMessage){
         return kvMessage.getStatus().name()
-                + "<"
-                + escapeSpecialCharacters(kvMessage.getKey())
-                + ","
-                + escapeSpecialCharacters(kvMessage.getValue())
-                + ">";
-    }
-
-    private static String escapeSpecialCharacters(String string){
-        if (string == null || string.equals("")) return "";
-        return string.replaceAll("/", "//").replaceAll("<", "/<").replaceAll(",", "/,").replaceAll(">", "/>");
+                + RECORD_SEPARATOR
+                + kvMessage.getKey()
+                + RECORD_SEPARATOR
+                + kvMessage.getValue();
     }
 }
