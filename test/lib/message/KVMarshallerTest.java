@@ -11,7 +11,9 @@ public class KVMarshallerTest extends TestCase {
         KVMessage kvMessage = new KVMessageImpl("Name", "TUM", KVMessage.StatusType.PUT);
         String unmarshalledMessage = KVMessageMarshaller.marshall(kvMessage);
 
-        assertEquals("PUT<Name,TUM>", unmarshalledMessage);
+        final String RECORD_SEPARATOR = "\u001E";
+        String expected = "PUT" + RECORD_SEPARATOR + "Name" + RECORD_SEPARATOR + "TUM";
+        assertEquals(expected, unmarshalledMessage);
     }
 
     @Test
@@ -19,7 +21,9 @@ public class KVMarshallerTest extends TestCase {
         KVMessage kvMessage = new KVMessageImpl("<N<ame/,", ",T/UM>", KVMessage.StatusType.PUT);
         String unmarshalledMessage = KVMessageMarshaller.marshall(kvMessage);
 
-        assertEquals("PUT</<N/<ame///,,/,T//UM/>>", unmarshalledMessage);
+        final String RECORD_SEPARATOR = "\u001E";
+        String expected = "PUT" + RECORD_SEPARATOR + "<N<ame/," + RECORD_SEPARATOR + ",T/UM>";
+        assertEquals(expected, unmarshalledMessage);
     }
 
 }
