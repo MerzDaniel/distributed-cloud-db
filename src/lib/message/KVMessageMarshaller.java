@@ -14,11 +14,11 @@ public class KVMessageMarshaller {
      * @param kvMessage the object to be marshalled
      * @return a string representation of the {@code kvMessage}
      */
-    public static String marshall(KVMessage kvMessage){
+    public static String marshall(KVMessage kvMessage) {
         return kvMessage.getStatus().name()
                 + RECORD_SEPARATOR
-                + kvMessage.getKey()
+                + (kvMessage.getKey() != null ? kvMessage.getKey() : "")
                 + RECORD_SEPARATOR
-                + kvMessage.getValue();
+                + (kvMessage.getValue() != null ? kvMessage.getValue() : "");
     }
 }
