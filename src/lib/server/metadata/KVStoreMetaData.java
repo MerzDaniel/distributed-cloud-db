@@ -18,6 +18,20 @@ public class KVStoreMetaData {
             this.toHash = toHash;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof KVServerMetaData)) {
+                return false;
+            }
+
+            KVServerMetaData kvServerMetaData = (KVServerMetaData) o;
+            if (this.host.equals(kvServerMetaData.host) && this.port.equals(kvServerMetaData.port) && this.fromHash == kvServerMetaData.fromHash && this.toHash == kvServerMetaData.toHash) {
+                return true;
+            }
+
+            return false;
+        }
+
         public int getFromHash() {
             return fromHash;
         }
