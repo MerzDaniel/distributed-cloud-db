@@ -5,7 +5,7 @@ import java.util.List;
 
 public class KVStoreMetaData {
 
-    public class KVServerMetaData {
+    public static class KVServerMetaData {
         String host;
         String port;
         int fromHash;
@@ -35,7 +35,11 @@ public class KVStoreMetaData {
         }
     }
 
-    private final List<KVServerMetaData> kvServerList = new ArrayList<>();
+    private List<KVServerMetaData> kvServerList = new ArrayList<>();
+
+    public KVStoreMetaData(List<KVServerMetaData> kvServerList) {
+        this.kvServerList = kvServerList;
+    }
 
     public List<KVServerMetaData> getKvServerList() {
         return kvServerList;
