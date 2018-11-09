@@ -1,6 +1,7 @@
 package ecs;
 
 import ecs.command.AddServerCommand;
+import ecs.command.SshCommand;
 import ecs.command.UsageCommand;
 
 public final class CommandParser {
@@ -13,6 +14,9 @@ public final class CommandParser {
             try {
                 command = new AddServerCommand(tokens[1], tokens[2], Integer.valueOf(tokens[3]));
             } catch (NumberFormatException e) {}
+        }
+        if (tokens[0].equals("c")) {
+            command = new SshCommand();
         }
         if (tokens[0].equals("help")) {
             command = new UsageCommand();
