@@ -31,7 +31,7 @@ public class KVStoreMetaDataUtil {
 
     private static String marshallKvServerMetaData(KVStoreMetaData.KVServerMetaData kvServerMetaData) {
         final String ELEMENT_SEPARATOR = "\u001F";
-        return kvServerMetaData.host + "" + kvServerMetaData.port + ELEMENT_SEPARATOR + kvServerMetaData.fromHash + ELEMENT_SEPARATOR + kvServerMetaData.toHash;
+        return kvServerMetaData.host + ELEMENT_SEPARATOR + kvServerMetaData.port + ELEMENT_SEPARATOR + kvServerMetaData.fromHash + ELEMENT_SEPARATOR + kvServerMetaData.toHash;
     }
 
     public static KVStoreMetaData unmarshallKVStoreMetaData(String kvStoreMetaData) throws UnmarshallException {
