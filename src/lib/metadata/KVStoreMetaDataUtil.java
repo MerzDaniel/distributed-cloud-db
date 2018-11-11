@@ -1,5 +1,6 @@
 package lib.metadata;
 
+import java.util.List;
 import java.util.Optional;
 
 public class KVStoreMetaDataUtil {
@@ -7,12 +8,14 @@ public class KVStoreMetaDataUtil {
     public static MetaContent getKVServer(KVStoreMetaData kvStoreMetaData, String key) throws KVServerNotFoundException {
         //todo hash value comparison needs to be changed based on consistent hashing
         int hash = key.hashCode();
-        Optional<MetaContent> kvServer = kvStoreMetaData.getKvServerList().stream().filter(it -> (it.getFromHash() <= hash && hash < it.getToHash())).findAny();
 
-        if(!kvServer.isPresent()) {
-            throw new KVServerNotFoundException();
+        List<MetaContent> l = kvStoreMetaData.getKvServerList();
+        for (int i = 0; i < l.size(); i++) {
+            if (l.get(i).getFromHash() <= hash
+                    && hash < l.get(i + 1 % l.size()).getFromHash())
+                return l.get(i);
         }
 
-        return kvServer.get();
+        throw new KVServerNotFoundException();
     }
 }

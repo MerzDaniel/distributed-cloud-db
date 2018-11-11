@@ -8,13 +8,11 @@ public class MetaContent {
     String host;
     int port;
     int fromHash;
-    int toHash;
 
-    public MetaContent(String host, int port, int fromHash, int toHash) {
+    public MetaContent(String host, int port, int fromHash) {
         this.host = host;
         this.port = port;
         this.fromHash = fromHash;
-        this.toHash = toHash;
     }
 
     public MetaContent(String host, int port) {
@@ -29,7 +27,7 @@ public class MetaContent {
         }
 
         MetaContent metaContent = (MetaContent) o;
-        if (this.host.equals(metaContent.host) && port == metaContent.port && this.fromHash == metaContent.fromHash && this.toHash == metaContent.toHash) {
+        if (this.host.equals(metaContent.host) && port == metaContent.port && this.fromHash == metaContent.fromHash) {
             return true;
         }
 
@@ -48,12 +46,8 @@ public class MetaContent {
         return port;
     }
 
-    public int getToHash() {
-        return toHash;
-    }
-
     public String marshall() {
-        return host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash + ELEMENT_SEPARATOR + toHash;
+        return host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash;
     }
 
     public static MetaContent unmarshall(String kvServerMetaData) throws MarshallingException {
@@ -61,7 +55,7 @@ public class MetaContent {
         try {
             String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
             int port = Integer.parseInt(split[1]);
-            return new MetaContent(split[0], port, Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+            return new MetaContent(split[0], port, Integer.parseInt(split[2]));
         } catch (Exception ex) {
             throw new MarshallingException(ex);
         }
