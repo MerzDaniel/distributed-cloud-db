@@ -152,5 +152,19 @@ public class MessageUnmarshallerTest extends TestCase {
         assertEquals(50001, c.getPort());
         assertEquals(0, c.getFromHash());
     }
+
+    @Test
+    public void testUnmarshallMoveMessage() throws MarshallingException {
+        String s = "MOVE" + RECORD_SEPARATOR +
+                "127.0.0.1" + ELEMENT_SEPARATOR +
+                "50001" + ELEMENT_SEPARATOR+
+                "000000";
+        KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
+        assertEquals(KVAdminMessage.StatusType.MOVE, message.status);
+        MetaContent c = message.metaContent;
+        assertEquals("127.0.0.1", c.getHost());
+        assertEquals(50001, c.getPort());
+        assertEquals(0, c.getFromHash());
+    }
 }
 
