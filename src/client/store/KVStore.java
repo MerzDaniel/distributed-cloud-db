@@ -41,7 +41,7 @@ public class KVStore implements KVCommInterface{
         boolean success = true;
         String message = connection.readMessage();
         try {
-            KVMessage kvM = KVMessageUnmarshaller.unmarshall(message);
+            KVMessage kvM = KVMessageMarshaller.unmarshall(message);
             success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
         } catch (UnmarshallException e) {
             logger.warn(String.format("KVServer %s:%d returned an invalid response: '%s'", host, port, message));
@@ -80,7 +80,7 @@ public class KVStore implements KVCommInterface{
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
-        return KVMessageUnmarshaller.unmarshall(response);
+        return KVMessageMarshaller.unmarshall(response);
     }
 
     /**
@@ -97,6 +97,6 @@ public class KVStore implements KVCommInterface{
         this.connection.sendMessage(KVMessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
 
-        return KVMessageUnmarshaller.unmarshall(response);
+        return KVMessageMarshaller.unmarshall(response);
     }
 }
