@@ -24,16 +24,16 @@ public class KVMessageUnmarshaller {
      */
     public static KVMessage unmarshall(String kvMessageString) throws UnmarshallException{
         try {
-            String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR);
+            String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR, 3);
             String key;
             String value;
 
             if (kvMessageComponents.length == 3){
-                key = kvMessageComponents[1] != "" ? kvMessageComponents[1] : null;
-                value = kvMessageComponents[2] != "" ? kvMessageComponents[2] : null;
+                key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
+                value = !kvMessageComponents[2].equals("") ? kvMessageComponents[2] : null;
             }
             else if(kvMessageComponents.length == 2){
-                key = kvMessageComponents[1] != "" ? kvMessageComponents[1] : null;
+                key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
                 value = null;
             }
             else {
