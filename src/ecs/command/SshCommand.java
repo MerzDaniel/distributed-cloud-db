@@ -17,8 +17,8 @@ public class SshCommand implements ecs.Command {
             return;
         }
         try {
-            String userName = "";
-            String host = "";
+            String userName = "daniel";
+            String host = "2001:a61:2429:9000:d01f:27fa:f5e4:4f31";
             Session session = shell.getSession(userName, host, 22);
             session.connect(1000);
             Channel channel = session.openChannel("shell");

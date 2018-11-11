@@ -14,10 +14,10 @@ public class KVStoreMetaDataTest extends TestCase {
 
     @Test
     public void testMarshallKVStoreMetaData() {
-        List<MetaContent> serverList = Arrays.asList(new MetaContent("127.0.0.1", "45000", 0, 10000),
-                new MetaContent("127.0.0.2", "35000", 10001, 20000),
-                new MetaContent("127.0.0.3", "50000", 20001, 30000),
-                new MetaContent("127.0.0.4", "60000", 30001, 40000));
+        List<MetaContent> serverList = Arrays.asList(new MetaContent("127.0.0.1", 45000, 0, 10000),
+                new MetaContent("127.0.0.2", 35000, 10001, 20000),
+                new MetaContent("127.0.0.3", 50000, 20001, 30000),
+                new MetaContent("127.0.0.4", 60000, 30001, 40000));
 
         KVStoreMetaData kvStoreMetaData = new KVStoreMetaData(serverList);
 
@@ -51,10 +51,10 @@ public class KVStoreMetaDataTest extends TestCase {
 
         KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
         System.out.println("");
-        assertEquals(kvStoreMetaData.getKvServerList().get(0), new MetaContent("127.0.0.1", "45000", 0, 10000));
-        assertEquals(kvStoreMetaData.getKvServerList().get(1), new MetaContent("127.0.0.2", "35000", 10001, 20000));
-        assertEquals(kvStoreMetaData.getKvServerList().get(2), new MetaContent("127.0.0.3", "50000", 20001, 30000));
-        assertEquals(kvStoreMetaData.getKvServerList().get(3), new MetaContent("127.0.0.4", "60000", 30001, 40000));
+        assertEquals(kvStoreMetaData.getKvServerList().get(0), new MetaContent("127.0.0.1", 45000, 0, 10000));
+        assertEquals(kvStoreMetaData.getKvServerList().get(1), new MetaContent("127.0.0.2", 35000, 10001, 20000));
+        assertEquals(kvStoreMetaData.getKvServerList().get(2), new MetaContent("127.0.0.3", 50000, 20001, 30000));
+        assertEquals(kvStoreMetaData.getKvServerList().get(3), new MetaContent("127.0.0.4", 60000, 30001, 40000));
     }
 
     @Test(expected = UnmarshallException.class)

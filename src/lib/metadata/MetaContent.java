@@ -6,15 +6,20 @@ public class MetaContent {
     private final static String ELEMENT_SEPARATOR = "\u001F";
 
     String host;
-    String port;
+    int port;
     int fromHash;
     int toHash;
 
-    public MetaContent(String host, String port, int fromHash, int toHash) {
+    public MetaContent(String host, int port, int fromHash, int toHash) {
         this.host = host;
         this.port = port;
         this.fromHash = fromHash;
         this.toHash = toHash;
+    }
+
+    public MetaContent(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
     @Override
@@ -24,7 +29,7 @@ public class MetaContent {
         }
 
         MetaContent metaContent = (MetaContent) o;
-        if (this.host.equals(metaContent.host) && this.port.equals(metaContent.port) && this.fromHash == metaContent.fromHash && this.toHash == metaContent.toHash) {
+        if (this.host.equals(metaContent.host) && port == metaContent.port && this.fromHash == metaContent.fromHash && this.toHash == metaContent.toHash) {
             return true;
         }
 
@@ -39,7 +44,7 @@ public class MetaContent {
         return host;
     }
 
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 
@@ -55,7 +60,8 @@ public class MetaContent {
 
         try {
             String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
-            return new MetaContent(split[0], split[1], Integer.valueOf(split[2]), Integer.valueOf(split[3]));
+            int port = Integer.parseInt(split[1]);
+            return new MetaContent(split[0], port, Integer.parseInt(split[2]), Integer.parseInt(split[3]));
         } catch (Exception ex) {
             throw new UnmarshallException(ex);
         }

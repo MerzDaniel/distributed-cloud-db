@@ -11,7 +11,7 @@ public class MetaContentTest extends TestCase {
 
     @Test
     public void testMarshallKVServerMetaData() {
-        MetaContent metaContent = new MetaContent("127.0.0.1", "45000", 0, 10000);
+        MetaContent metaContent = new MetaContent("127.0.0.1", 45000, 0, 10000);
 
         String marshalledString = MetaContent.marshall(metaContent);
 
@@ -29,7 +29,7 @@ public class MetaContentTest extends TestCase {
 
         MetaContent metaContent = MetaContent.unmarshall(kvStoreMetaDataString);
 
-        assertEquals(metaContent, new MetaContent("127.0.0.1", "45000", 0, 10000));
+        assertEquals(metaContent, new MetaContent("127.0.0.1", 45000, 0, 10000));
     }
 
     @Test(expected = UnmarshallException.class)

@@ -34,7 +34,7 @@ public class Main {
         LogManager.getLogger(Main.class).info(serverStartMsg);
         System.out.println(serverStartMsg);
 
-        new KVServer(port, cacheSize, cacheType).run();
+        new KVServer("localhost", port, cacheSize, cacheType).run();
     }
 
     static {

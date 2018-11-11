@@ -1,6 +1,7 @@
 package server;
 
 import lib.SocketUtil;
+import lib.metadata.MetaContent;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.*;
@@ -20,21 +21,21 @@ import java.util.List;
  */
 public class KVServer implements Runnable {
     final Logger logger = LogManager.getLogger(KVServer.class);
-    final int port;
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
     private boolean stopRequested = false;
     private final ServerState state;
+    private final MetaContent metaContent;
 
     /**
      * Start KV Server at given port
      *
-     * @param port      given port for storage server to operate
+     * @param port given port for storage server to operate
      */
-    public KVServer(int port) {
-        this.port = port;
+    public KVServer(String host, int port) {
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        state = new ServerState(db);
+        metaContent = new MetaContent(host, port);
+        state = new ServerState(db, metaContent);
     }
 
     /**
@@ -43,18 +44,18 @@ public class KVServer implements Runnable {
      * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed
      *                  to keep in-memory
-     * @param cacheType  specifies the cache replacement strategy in case the cache
+     * @param cacheType specifies the cache replacement strategy in case the cache
      *                  is full and there is a GET- or PUT-request on a key that is
      *                  currently not contained in the cache. Options are "FIFO", "LRU",
      *                  and "LFU".
      */
 
-    public KVServer(int port, int cacheSize, CacheType cacheType) {
-        this.port = port;
+    public KVServer(String host, int port, int cacheSize, CacheType cacheType) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
+        metaContent = new MetaContent(host, port);
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        state = new ServerState(db);
+        state = new ServerState(db, metaContent);
     }
 
     /**
@@ -63,27 +64,27 @@ public class KVServer implements Runnable {
      * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed
      *                  to keep in-memory
-     * @param cacheType  specifies the cache replacement strategy in case the cache
+     * @param cacheType specifies the cache replacement strategy in case the cache
      *                  is full and there is a GET- or PUT-request on a key that is
      *                  currently not contained in the cache. Options are "FIFO", "LRU",
      *                  and "LFU".
-     * @param db the {@link KeyValueStore} associated with the KVServer instance
+     * @param db        the {@link KeyValueStore} associated with the KVServer instance
      */
-    public KVServer(int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
-        this.port = port;
+    public KVServer(String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        state = new ServerState(db);
+        metaContent = new MetaContent(host, port);
+        state = new ServerState(db, metaContent);
     }
 
     @Override
     public void run() {
-        logger.info("Start server on port " + port);
+        logger.info("Start server on port " + metaContent.getPort());
 
         initDb();
 
         List<Socket> openConnections = new LinkedList<>();
-        try (ServerSocket s = new ServerSocket(port)) {
+        try (ServerSocket s = new ServerSocket(metaContent.getPort())) {
             while (!stopRequested) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
