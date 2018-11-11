@@ -5,6 +5,7 @@ import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.KVMessage;
 import lib.message.UnmarshallException;
+import lib.metadata.KVStoreMetaData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -57,9 +58,19 @@ public class GetCommand implements Command {
             return;
         }
 
+        if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
+            logger.info(String.format("This server is not responsible for the key %s", kVMessageResponse.toString()));
+            try {
+                state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
+            } catch (UnmarshallException e) {
+                logger.error("Error occurred during unmarshalling meta data", e);
+                writeLine("Unexpected error occured when executing the GET command");
+            }
+            return;
+        }
+
         if (kVMessageResponse.getStatus() != KVMessage.StatusType.GET_SUCCESS) {
             logger.warn(String.format("Get '%s' was not successful: '%s'. Possibly an error in the db. ", kVMessageResponse.toString()));
-            writeLine("GET was not successful. Possibly connection hang up.");
             return;
         }
 

@@ -4,6 +4,7 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.*;
+import lib.metadata.KVStoreMetaData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -70,6 +71,16 @@ public class PutCommand implements Command {
             case PUT_ERROR:
                 writeLine("PUT was not successful: The db returned an error.");
                 break;
+            case SERVER_NOT_RESPONSIBLE:
+                logger.info(String.format("The requested server is not responsible for the key %s", kVMessageResponse.toString()));
+                try {
+                    state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
+                    logger.info("The kvstore meta data is updated");
+                } catch (UnmarshallException e) {
+                    logger.error("Error occurred during unmarshalling meta data", e);
+                    writeLine("Unexpected error occurred when executing the PUT command");
+                }
+                return;
             default:
                 writeLine(String.format("Got unexpected response from server: %s", kVMessageResponse.getStatus()));
         }
