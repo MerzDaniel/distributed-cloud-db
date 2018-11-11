@@ -2,8 +2,8 @@ package lib.message.server.metadata;
 
 import junit.framework.TestCase;
 import lib.message.UnmarshallException;
-import lib.server.metadata.KVStoreMetaData;
-import lib.server.metadata.MetaContent;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.junit.Test;
 
 import java.util.Arrays;

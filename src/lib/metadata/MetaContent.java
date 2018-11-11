@@ -1,4 +1,4 @@
-package lib.server.metadata;
+package lib.metadata;
 
 import lib.message.UnmarshallException;
 

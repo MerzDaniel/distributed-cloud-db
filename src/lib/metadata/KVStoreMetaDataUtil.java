@@ -1,6 +1,4 @@
-package lib.server.metadata;
-
-import lib.server.KVServerNotFoundException;
+package lib.metadata;
 
 import java.util.Optional;
 
