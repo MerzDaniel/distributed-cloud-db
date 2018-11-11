@@ -8,9 +8,9 @@ public class MessageUnmarshallerTest extends TestCase {
     final String ELEMENT_SEPARATOR = "\u001F";
 
     @Test
-    public void testUnmarshall() throws UnmarshallException {
+    public void testUnmarshall() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "Name" + RECORD_SEPARATOR + "TUM";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals("GET", kvMessage.getStatus().name());
         assertEquals("Name", kvMessage.getKey());
@@ -18,9 +18,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters1() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters1() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "<N<ame" + RECORD_SEPARATOR + "<T>UM>";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("<N<ame", kvMessage.getKey());
@@ -28,9 +28,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters2() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters2() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "Name" + RECORD_SEPARATOR + "TU,M";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name", kvMessage.getKey());
@@ -38,9 +38,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters3() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters3() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "Name" + RECORD_SEPARATOR + "TU/,M";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name", kvMessage.getKey());
@@ -48,9 +48,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters4() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters4() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "Name/" + RECORD_SEPARATOR + "TU/,M";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("Name/", kvMessage.getKey());
@@ -58,9 +58,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters5() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters5() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "N/,ame," + RECORD_SEPARATOR + "TU/,M";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("N/,ame,", kvMessage.getKey());
@@ -68,30 +68,30 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testUnmarshallScpecialCharacters6() throws UnmarshallException {
+    public void testUnmarshallScpecialCharacters6() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "N/,ame," + RECORD_SEPARATOR + "/,TU/,M";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("N/,ame,", kvMessage.getKey());
         assertEquals("/,TU/,M", kvMessage.getValue());
     }
 
-    @Test(expected = UnmarshallException.class)
+    @Test(expected = MarshallingException.class)
     public void testInvalidMessage() {
         String kvMessageString = "INVALIDMESSAGETYPE" + RECORD_SEPARATOR + "key" + RECORD_SEPARATOR + "value";
         try {
-            KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
-        } catch (UnmarshallException e) {
+            KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
+        } catch (MarshallingException e) {
             return;
         }
-        assertTrue("UnmarshallException expected", false);
+        assertTrue("MarshallingException expected", false);
     }
 
     @Test
-    public void testEmptyMessage() throws UnmarshallException {
+    public void testEmptyMessage() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "" + RECORD_SEPARATOR + "";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals(null, kvMessage.getKey());
@@ -99,9 +99,9 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testMessageWithSpaces() throws UnmarshallException {
+    public void testMessageWithSpaces() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + " " + RECORD_SEPARATOR + " ";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals(" ", kvMessage.getKey());
@@ -110,9 +110,9 @@ public class MessageUnmarshallerTest extends TestCase {
 
 
     @Test
-    public void testMessageWithEmptyValue() throws UnmarshallException {
+    public void testMessageWithEmptyValue() throws MarshallingException {
         String kvMessageString = "GET" + RECORD_SEPARATOR + "SampleKey" + RECORD_SEPARATOR + "";
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.GET, kvMessage.getStatus());
         assertEquals("SampleKey", kvMessage.getKey());
@@ -120,7 +120,7 @@ public class MessageUnmarshallerTest extends TestCase {
     }
 
     @Test
-    public void testServerNotFoundMessage() throws UnmarshallException {
+    public void testServerNotFoundMessage() throws MarshallingException {
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
                 + RECORD_SEPARATOR
                 + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
@@ -131,7 +131,7 @@ public class MessageUnmarshallerTest extends TestCase {
 
         String kvMessageString = "SERVER_NOT_RESPONSIBLE" + RECORD_SEPARATOR + "SampleKey" + RECORD_SEPARATOR + kvStoreMetaDataString;
 
-        KVMessage kvMessage = MessageMarshaller.unmarshall(kvMessageString);
+        KVMessage kvMessage = (KVMessage) MessageMarshaller.unmarshall(kvMessageString);
 
         assertEquals(KVMessage.StatusType.SERVER_NOT_RESPONSIBLE, kvMessage.getStatus());
         assertEquals("SampleKey", kvMessage.getKey());

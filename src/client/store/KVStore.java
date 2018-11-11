@@ -43,7 +43,7 @@ public class KVStore implements KVCommInterface{
         try {
             KVMessage kvM = (KVMessage)MessageMarshaller.unmarshall(message);
             success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
-        } catch (UnmarshallException e) {
+        } catch (MarshallingException e) {
             logger.warn(String.format("KVServer %s:%d returned an invalid response: '%s'", host, port, message));
             disconnect();
             success = false;
@@ -74,9 +74,9 @@ public class KVStore implements KVCommInterface{
      * @param key
      * @return KVMessage with information about operation success or failure
      * @throws IOException if any I/O error happens
-     * @throws UnmarshallException if any error happens during the unmarshall process
+     * @throws MarshallingException if any error happens during the unmarshall process
      */
-    public KVMessage get(String key) throws IOException, UnmarshallException {
+    public KVMessage get(String key) throws IOException, MarshallingException {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
         this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();
@@ -90,9 +90,9 @@ public class KVStore implements KVCommInterface{
      * @param value
      * @return KVMessage with information about operation success or failure
      * @throws IOException if any I/O error happens
-     * @throws UnmarshallException if any error happens during the unmarshall process
+     * @throws MarshallingException if any error happens during the unmarshall process
      */
-    public KVMessage put(String key, String value) throws IOException, UnmarshallException {
+    public KVMessage put(String key, String value) throws IOException, MarshallingException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
         this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
         String response = this.connection.readMessage();

@@ -1,6 +1,6 @@
 package lib.metadata;
 
-import lib.message.UnmarshallException;
+import lib.message.MarshallingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class KVStoreMetaData {
         return kvStoreMetaData.getKvServerList().stream().map(it -> MetaContent.marshall(it)).collect(Collectors.joining(RECORD_SEPARATOR));
     }
 
-    public static KVStoreMetaData unmarshall(String kvStoreMetaData) throws UnmarshallException {
+    public static KVStoreMetaData unmarshall(String kvStoreMetaData) throws MarshallingException {
         List<MetaContent> metaContentList = new ArrayList<>();
         String[] kvServers = kvStoreMetaData.split(RECORD_SEPARATOR);
 

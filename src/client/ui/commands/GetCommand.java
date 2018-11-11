@@ -4,13 +4,12 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.KVMessage;
-import lib.message.UnmarshallException;
+import lib.message.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.Time;
 
 import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
@@ -46,7 +45,7 @@ public class GetCommand implements Command {
             logger.warn("error", e);
             writeLine(String.format("Error during GET. Possibly the connection to the db got lost (%d ms)",t.time()));
             return;
-        } catch (UnmarshallException e) {
+        } catch (MarshallingException e) {
             logger.warn("Error during unmarshalling.", e);
             writeLine("Response from the server was invalid.");
             return;
@@ -62,7 +61,7 @@ public class GetCommand implements Command {
             logger.info(String.format("This server is not responsible for the key %s", kVMessageResponse.toString()));
             try {
                 state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
-            } catch (UnmarshallException e) {
+            } catch (MarshallingException e) {
                 logger.error("Error occurred during unmarshalling meta data", e);
                 writeLine("Unexpected error occured when executing the GET command");
             }

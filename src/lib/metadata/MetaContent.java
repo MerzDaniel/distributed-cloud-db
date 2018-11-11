@@ -1,6 +1,6 @@
 package lib.metadata;
 
-import lib.message.UnmarshallException;
+import lib.message.MarshallingException;
 
 public class MetaContent {
     private final static String ELEMENT_SEPARATOR = "\u001F";
@@ -56,14 +56,14 @@ public class MetaContent {
         return metaContent.host + ELEMENT_SEPARATOR + metaContent.port + ELEMENT_SEPARATOR + metaContent.fromHash + ELEMENT_SEPARATOR + metaContent.toHash;
     }
 
-    public static MetaContent unmarshall(String kvServerMetaData) throws UnmarshallException {
+    public static MetaContent unmarshall(String kvServerMetaData) throws MarshallingException {
 
         try {
             String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
             int port = Integer.parseInt(split[1]);
             return new MetaContent(split[0], port, Integer.parseInt(split[2]), Integer.parseInt(split[3]));
         } catch (Exception ex) {
-            throw new UnmarshallException(ex);
+            throw new MarshallingException(ex);
         }
     }
 }

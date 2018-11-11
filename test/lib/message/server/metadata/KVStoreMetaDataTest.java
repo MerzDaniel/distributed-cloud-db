@@ -1,7 +1,7 @@
 package lib.message.server.metadata;
 
 import junit.framework.TestCase;
-import lib.message.UnmarshallException;
+import lib.message.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.MetaContent;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class KVStoreMetaDataTest extends TestCase {
     }
 
     @Test
-    public void testUnMarshallKVStoreMetaData() throws UnmarshallException {
+    public void testUnMarshallKVStoreMetaData() throws MarshallingException {
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
@@ -56,8 +56,8 @@ public class KVStoreMetaDataTest extends TestCase {
         assertEquals(kvStoreMetaData.getKvServerList().get(3), new MetaContent("127.0.0.4", 60000, 30001, 40000));
     }
 
-    @Test(expected = UnmarshallException.class)
-    public void testUnMarshallKVStoreMetaDataThrowsException() throws UnmarshallException {
+    @Test(expected = MarshallingException.class)
+    public void testUnMarshallKVStoreMetaDataThrowsException() throws MarshallingException {
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "qwe12" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
@@ -70,7 +70,7 @@ public class KVStoreMetaDataTest extends TestCase {
 
         try {
             KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
-        }catch (UnmarshallException e){
+        }catch (MarshallingException e){
             return;
         }
 

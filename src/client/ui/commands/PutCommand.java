@@ -9,7 +9,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
@@ -49,7 +48,7 @@ public class PutCommand implements Command {
             writeLine(String.format("An error occurred while executing the command PUT (%d ms)", t.time()));
             logger.error("An error occurred while executing the command GET, error", e);
             return;
-        } catch (UnmarshallException e) {
+        } catch (MarshallingException e) {
             logger.warn("Got an invalid message.");
             writeLine("PUT was not successful: Response from server was invalid.");
             return;
@@ -76,7 +75,7 @@ public class PutCommand implements Command {
                 try {
                     state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
                     logger.info("The kvstore meta data is updated");
-                } catch (UnmarshallException e) {
+                } catch (MarshallingException e) {
                     logger.error("Error occurred during unmarshalling meta data", e);
                     writeLine("Unexpected error occurred when executing the PUT command");
                 }
