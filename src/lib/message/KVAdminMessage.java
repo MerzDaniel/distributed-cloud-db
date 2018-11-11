@@ -37,4 +37,14 @@ public class KVAdminMessage implements IMessage {
     public KVAdminMessage(StatusType status) {
         this.status = status;
     }
+
+    public KVAdminMessage(StatusType status, MetaContent content) {
+        this.status = status;
+        metaContent = content;
+    }
+    public KVAdminMessage(StatusType status, KVStoreMetaData meta) {
+        this.status = status;
+        this.meta = meta;
+    }
+
 }

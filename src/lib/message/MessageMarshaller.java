@@ -1,5 +1,7 @@
 package lib.message;
 
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -45,7 +47,7 @@ public final class MessageMarshaller {
             return String.join(RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.metaContent.marshall()
-                    );
+            );
 
         return adminMessage.status.name();
     }
@@ -63,12 +65,56 @@ public final class MessageMarshaller {
             String key;
             String value;
 
+            if (isKvMessage(kvMessageComponents[0]))
+                return unmarshallKvMessage(kvMessageComponents);
+            if (isAdminMessage(kvMessageComponents[0]))
+                return unmarshallKvAdminMessage(kvMessageComponents);
 
-            return unmarshallKvMessage(kvMessageComponents);
+            throw new Exception("Unknown status type");
         } catch (Exception e) {
             logger.warn("Exception while parsing message: '" + kvMessageString + "'", e);
             throw new MarshallingException(e);
         }
+    }
+
+    private static IMessage unmarshallKvAdminMessage(String[] kvMessageComponents) throws MarshallingException {
+        KVAdminMessage.StatusType status = KVAdminMessage.StatusType.valueOf(kvMessageComponents[0]);
+        StringBuilder b = new StringBuilder();
+        for (int i = 1; i < kvMessageComponents.length; i++) {
+            b.append(kvMessageComponents[i]);
+        }
+        String secondPart = b.toString();
+
+        switch (status) {
+            case CONFIGURE:
+
+                return new KVAdminMessage(
+                        status, KVStoreMetaData.unmarshall(secondPart)
+                );
+            case MOVE:
+                return new KVAdminMessage(status, MetaContent.unmarshall(secondPart));
+
+            default:
+                return new KVAdminMessage(status);
+        }
+    }
+
+    private static boolean isKvMessage(String status) {
+        try {
+            KVMessage.StatusType.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isAdminMessage(String status) {
+        try {
+            KVAdminMessage.StatusType.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 
     private static IMessage unmarshallKvMessage(String[] kvMessageComponents) {

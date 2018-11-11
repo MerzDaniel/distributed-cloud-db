@@ -1,6 +1,7 @@
 package lib.message;
 
 import junit.framework.TestCase;
+import lib.metadata.MetaContent;
 import org.junit.Test;
 
 public class MessageUnmarshallerTest extends TestCase {
@@ -146,7 +147,10 @@ public class MessageUnmarshallerTest extends TestCase {
                 "000000";
         KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
         assertEquals(KVAdminMessage.StatusType.CONFIGURE, message.status);
-//        assertEquals(host );
+        MetaContent c = message.meta.getKvServerList().get(0);
+        assertEquals("127.0.0.1", c.getHost());
+        assertEquals(50001, c.getPort());
+        assertEquals(0, c.getFromHash());
     }
 }
 

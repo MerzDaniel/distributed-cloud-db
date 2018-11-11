@@ -10,6 +10,9 @@ public class KVStoreMetaDataUtil {
         int hash = key.hashCode();
 
         List<MetaContent> l = kvStoreMetaData.getKvServerList();
+
+        if (l.size() == 1) return l.get(0);
+
         for (int i = 0; i < l.size(); i++) {
             if (l.get(i).getFromHash() <= hash
                     && hash < l.get(i + 1 % l.size()).getFromHash())
