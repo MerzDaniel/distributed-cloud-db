@@ -4,6 +4,7 @@ import lib.SocketUtil;
 import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import server.handler.PutHandler;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.kv.KeyValueStore;
@@ -69,7 +70,7 @@ public class ConnectionHandler implements Runnable {
                     break;
                 case PUT:
                     logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
-                    response = handlePutMessage(kvMessage);
+                    response = new PutHandler().handleRequest(kvMessage, state);
                     break;
                 case DELETE:
                     response = MessageFactory.createDeleteErrorMessage();
@@ -88,29 +89,6 @@ public class ConnectionHandler implements Runnable {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
             new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
-    }
-
-    private KVMessage handlePutMessage(KVMessage kvMessage) {
-        KVMessage response;
-        if (shouldDelete(kvMessage.getValue())) {
-            try {
-                state.db.deleteKey(kvMessage.getKey());
-                response = MessageFactory.createDeleteSuccessMessage();
-            } catch (DbError dbError) {
-                logger.warn("PUT: Databaseerror while deleting a value", dbError);
-                response = MessageFactory.createDeleteErrorMessage();
-            }
-        } else {
-            try {
-                boolean updated = state.db.put(kvMessage.getKey(), kvMessage.getValue());
-                if (updated) response = MessageFactory.createPutUpdateMessage();
-                else response = MessageFactory.createPutSuccessMessage();
-            } catch (DbError dbError) {
-                logger.warn("PUT: Databaseerror while PUT a value", dbError);
-                response = MessageFactory.createPutErrorMessage();
-            }
-        }
-        return response;
     }
 
     private KVMessage handleGetMessage(KVMessage kvMessage) {
@@ -141,10 +119,6 @@ public class ConnectionHandler implements Runnable {
                 return;
 
         }
-    }
-
-    private boolean shouldDelete(String value) {
-        return value == null || value.equals("") || value.equals("null");
     }
 }
 
