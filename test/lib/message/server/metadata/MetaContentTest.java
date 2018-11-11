@@ -3,6 +3,7 @@ package lib.message.server.metadata;
 import junit.framework.TestCase;
 import lib.message.UnmarshallException;
 import lib.server.metadata.KVStoreMetaData;
+import lib.server.metadata.MetaContent;
 import org.junit.Test;
 
 
@@ -10,9 +11,9 @@ public class MetaContentTest extends TestCase {
 
     @Test
     public void testMarshallKVServerMetaData() {
-        KVStoreMetaData.MetaContent metaContent = new KVStoreMetaData.MetaContent("127.0.0.1", "45000", 0, 10000);
+        MetaContent metaContent = new MetaContent("127.0.0.1", "45000", 0, 10000);
 
-        String marshalledString = KVStoreMetaData.MetaContent.marshall(metaContent);
+        String marshalledString = MetaContent.marshall(metaContent);
 
         final String ELEMENT_SEPARATOR = "\u001F";
         String expected = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000";
@@ -26,9 +27,9 @@ public class MetaContentTest extends TestCase {
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000";
 
-        KVStoreMetaData.MetaContent metaContent = KVStoreMetaData.MetaContent.unmarshall(kvStoreMetaDataString);
+        MetaContent metaContent = MetaContent.unmarshall(kvStoreMetaDataString);
 
-        assertEquals(metaContent, new KVStoreMetaData.MetaContent("127.0.0.1", "45000", 0, 10000));
+        assertEquals(metaContent, new MetaContent("127.0.0.1", "45000", 0, 10000));
     }
 
     @Test(expected = UnmarshallException.class)
