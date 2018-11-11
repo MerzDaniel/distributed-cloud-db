@@ -6,12 +6,14 @@ import lib.metadata.KVStoreMetaData;
 import lib.metadata.MetaContent;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 
 public class MetaContentTest extends TestCase {
 
     @Test
     public void testMarshallKVServerMetaData() {
-        MetaContent metaContent = new MetaContent("127.0.0.1", 45000, 0);
+        MetaContent metaContent = new MetaContent("127.0.0.1", 45000, BigInteger.ZERO);
 
         String marshalledString = metaContent.marshall();
 
@@ -29,7 +31,7 @@ public class MetaContentTest extends TestCase {
 
         MetaContent metaContent = MetaContent.unmarshall(kvStoreMetaDataString);
 
-        assertEquals(metaContent, new MetaContent("127.0.0.1", 45000, 0));
+        assertEquals(metaContent, new MetaContent("127.0.0.1", 45000, BigInteger.ZERO));
     }
 
     @Test(expected = MarshallingException.class)

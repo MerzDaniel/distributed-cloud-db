@@ -6,6 +6,7 @@ import lib.metadata.KVStoreMetaData;
 import lib.metadata.MetaContent;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,10 +15,10 @@ public class KVStoreMetaDataTest extends TestCase {
 
     @Test
     public void testMarshallKVStoreMetaData() {
-        List<MetaContent> serverList = Arrays.asList(new MetaContent("127.0.0.1", 45000, 0),
-                new MetaContent("127.0.0.2", 35000, 10001),
-                new MetaContent("127.0.0.3", 50000, 20001),
-                new MetaContent("127.0.0.4", 60000, 30001));
+        List<MetaContent> serverList = Arrays.asList(new MetaContent("127.0.0.1", 45000, BigInteger.ZERO),
+                new MetaContent("127.0.0.2", 35000, new BigInteger("10001")),
+                new MetaContent("127.0.0.3", 50000, new BigInteger("20001")),
+                new MetaContent("127.0.0.4", 60000, new BigInteger("30001")));
 
         KVStoreMetaData kvStoreMetaData = new KVStoreMetaData(serverList);
 
@@ -50,10 +51,10 @@ public class KVStoreMetaDataTest extends TestCase {
                 + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
 
         KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
-        assertEquals(kvStoreMetaData.getKvServerList().get(0), new MetaContent("127.0.0.1", 45000, 0));
-        assertEquals(kvStoreMetaData.getKvServerList().get(1), new MetaContent("127.0.0.2", 35000, 10001));
-        assertEquals(kvStoreMetaData.getKvServerList().get(2), new MetaContent("127.0.0.3", 50000, 20001));
-        assertEquals(kvStoreMetaData.getKvServerList().get(3), new MetaContent("127.0.0.4", 60000, 30001));
+        assertEquals(kvStoreMetaData.getKvServerList().get(0), new MetaContent("127.0.0.1", 45000, BigInteger.ZERO));
+        assertEquals(kvStoreMetaData.getKvServerList().get(1), new MetaContent("127.0.0.2", 35000, new BigInteger("10001")));
+        assertEquals(kvStoreMetaData.getKvServerList().get(2), new MetaContent("127.0.0.3", 50000, new BigInteger("20001")));
+        assertEquals(kvStoreMetaData.getKvServerList().get(3), new MetaContent("127.0.0.4", 60000, new BigInteger("30001")));
     }
 
     @Test(expected = MarshallingException.class)
@@ -70,7 +71,7 @@ public class KVStoreMetaDataTest extends TestCase {
 
         try {
             KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
-        }catch (MarshallingException e){
+        } catch (MarshallingException e) {
             return;
         }
 
