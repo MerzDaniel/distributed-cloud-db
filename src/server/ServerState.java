@@ -8,9 +8,23 @@ public class ServerState {
     public final KVStoreMetaData meta = new KVStoreMetaData();
     public KeyValueStore db;
     private MetaContent currentServerMetaContent;
+    private State runningState = State.UNCONFIGURED;
 
     public ServerState(KeyValueStore db, MetaContent metaContent) {
         this.db = db;
         this.currentServerMetaContent = metaContent;
+    }
+
+    public enum State {
+        /** No meta configured */
+        UNCONFIGURED,
+        /** Configured but does not handle client requests */
+        IDLE,
+        /** Handles client READ requests */
+        READONLY,
+        /** Normally handle all requests */
+        RUNNING,
+        /** Server is shutting down will not be reachable in a few seconds */
+        SHUTTINGDOWN,
     }
 }
