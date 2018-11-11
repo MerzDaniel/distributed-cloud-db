@@ -21,7 +21,7 @@ public class KVStoreMetaDataTest extends TestCase {
 
         KVStoreMetaData kvStoreMetaData = new KVStoreMetaData(serverList);
 
-        String marshalledString = KVStoreMetaData.marshall(kvStoreMetaData);
+        String marshalledString = kvStoreMetaData.marshall();
 
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";

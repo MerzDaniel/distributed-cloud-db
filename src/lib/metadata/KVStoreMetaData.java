@@ -23,8 +23,8 @@ public class KVStoreMetaData {
         return kvServerList;
     }
 
-    public static String marshall(KVStoreMetaData kvStoreMetaData) {
-        return kvStoreMetaData.getKvServerList().stream().map(it -> MetaContent.marshall(it)).collect(Collectors.joining(RECORD_SEPARATOR));
+    public String marshall() {
+        return getKvServerList().stream().map(it -> MetaContent.marshall(it)).collect(Collectors.joining(RECORD_SEPARATOR));
     }
 
     public static KVStoreMetaData unmarshall(String kvStoreMetaData) throws MarshallingException {
