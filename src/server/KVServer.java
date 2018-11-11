@@ -24,7 +24,7 @@ public class KVServer implements Runnable {
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
     private boolean stopRequested = false;
-    private KeyValueStore db;
+    private final ServerState state;
 
     /**
      * Start KV Server at given port
@@ -33,7 +33,8 @@ public class KVServer implements Runnable {
      */
     public KVServer(int port) {
         this.port = port;
-        db = new RandomAccessKeyValueStore();
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        state = new ServerState(db);
     }
 
     /**
@@ -52,7 +53,8 @@ public class KVServer implements Runnable {
         this.port = port;
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        db = new RandomAccessKeyValueStore();
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        state = new ServerState(db);
     }
 
     /**
@@ -71,7 +73,7 @@ public class KVServer implements Runnable {
         this.port = port;
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        this.db = db;
+        state = new ServerState(db);
     }
 
     @Override
@@ -86,7 +88,7 @@ public class KVServer implements Runnable {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 openConnections.add(clientSocket);
-                new Thread(new ConnectionHandler(clientSocket, db)).start();
+                new Thread(new ConnectionHandler(clientSocket, state)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,19 +101,19 @@ public class KVServer implements Runnable {
 
     private void initDb() {
         try {
-            db.init();
+            state.db.init();
             switch (cacheType) {
                 case FIFO:
                     logger.info("Setting up FIFO caching");
-                    db = new FifoCachedKeyValueStore(cacheSize, db);
+                    state.db = new FifoCachedKeyValueStore(cacheSize, state.db);
                     break;
                 case LRU:
                     logger.info("Setting up LRU caching");
-                    db = new LRUCachedKeyValueStore(cacheSize, db);
+                    state.db = new LRUCachedKeyValueStore(cacheSize, state.db);
                     break;
                 case LFU:
                     logger.info("Setting up LFU caching");
-                    db = new LFUCachedKeyValueStore(cacheSize, db);
+                    state.db = new LFUCachedKeyValueStore(cacheSize, state.db);
                     break;
             }
         } catch (IOException e) {
@@ -122,7 +124,7 @@ public class KVServer implements Runnable {
 
     public void stop() throws IOException {
         stopRequested = true;
-        db.shutdown();
+        state.db.shutdown();
     }
 
 }

@@ -22,12 +22,12 @@ import static lib.message.MessageUtil.isValidValue;
  */
 public class ConnectionHandler implements Runnable {
     final Socket s;
-    private KeyValueStore db;
+    private ServerState state;
     final Logger logger = LogManager.getLogger(ConnectionHandler.class);
 
-    public ConnectionHandler(Socket s, KeyValueStore db) {
+    public ConnectionHandler(Socket s, ServerState state) {
         this.s = s;
-        this.db = db;
+        this.state = state;
     }
 
     /**
@@ -94,7 +94,7 @@ public class ConnectionHandler implements Runnable {
         KVMessage response;
         if (shouldDelete(kvMessage.getValue())) {
             try {
-                db.deleteKey(kvMessage.getKey());
+                state.db.deleteKey(kvMessage.getKey());
                 response = MessageFactory.createDeleteSuccessMessage();
             } catch (DbError dbError) {
                 logger.warn("PUT: Databaseerror while deleting a value", dbError);
@@ -102,7 +102,7 @@ public class ConnectionHandler implements Runnable {
             }
         } else {
             try {
-                boolean updated = db.put(kvMessage.getKey(), kvMessage.getValue());
+                boolean updated = state.db.put(kvMessage.getKey(), kvMessage.getValue());
                 if (updated) response = MessageFactory.createPutUpdateMessage();
                 else response = MessageFactory.createPutSuccessMessage();
             } catch (DbError dbError) {
@@ -116,7 +116,7 @@ public class ConnectionHandler implements Runnable {
     private KVMessage handleGetMessage(KVMessage kvMessage) {
         KVMessage response;
         try {
-            String value = db.get(kvMessage.getKey());
+            String value = state.db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {
             logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
