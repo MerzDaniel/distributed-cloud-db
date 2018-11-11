@@ -43,7 +43,8 @@ public class ConnectionHandler implements Runnable {
             SocketUtil.sendMessage(o, connectMessage);
 
             while (SocketUtil.isConnected(s)) {
-                handleIncomingMessage(i, o);
+                KVMessage response = handleIncomingMessage(i, o);
+                SocketUtil.sendMessage(o, KVMessageMarshaller.marshall(response));
             }
         } catch (Exception e) {
             logger.warn("Error during communication with an open connection:" + e.getMessage(), e);
@@ -52,11 +53,17 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    private void handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
+    private KVMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
         String msg = SocketUtil.readMessage(i);
         KVMessage kvMessage = null;
         try {
             kvMessage = KVMessageUnmarshaller.unmarshall(msg);
+        } catch (UnmarshallException e) {
+            logger.info("Got invalid message");
+            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+        }
+
+        try {
             logger.debug(String.format(
                     "Got a message: %s <%s,%s>",
                     kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
@@ -81,14 +88,11 @@ public class ConnectionHandler implements Runnable {
                     break;
             }
 
-            SocketUtil.sendMessage(o, KVMessageMarshaller.marshall(response));
+            return response;
 
-        } catch (UnmarshallException e) {
-            logger.info("Got invalid message");
-            new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         } catch (InvalidKeyValueLengthException e) {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
-            new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
     }
 
