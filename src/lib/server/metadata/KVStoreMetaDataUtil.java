@@ -23,39 +23,4 @@ public class KVStoreMetaDataUtil {
 
         return kvServer.get();
     }
-
-    public static String marshallKvStoreMetaData(KVStoreMetaData kvStoreMetaData) {
-        final String RECORD_SEPARATOR = "\u001E";
-        return kvStoreMetaData.getKvServerList().stream().map(it -> KVStoreMetaDataUtil.marshallKvServerMetaData(it)).collect(Collectors.joining(RECORD_SEPARATOR));
-    }
-
-    private static String marshallKvServerMetaData(KVStoreMetaData.KVServerMetaData kvServerMetaData) {
-        final String ELEMENT_SEPARATOR = "\u001F";
-        return kvServerMetaData.host + ELEMENT_SEPARATOR + kvServerMetaData.port + ELEMENT_SEPARATOR + kvServerMetaData.fromHash + ELEMENT_SEPARATOR + kvServerMetaData.toHash;
-    }
-
-    public static KVStoreMetaData unmarshallKVStoreMetaData(String kvStoreMetaData) throws UnmarshallException {
-        final String RECORD_SEPARATOR = "\u001E";
-
-        List<KVStoreMetaData.KVServerMetaData> kvServerMetaDataList = new ArrayList<>();
-        String[] kvServers = kvStoreMetaData.split(RECORD_SEPARATOR);
-
-        for (String kvServer : kvServers) {
-            KVStoreMetaData.KVServerMetaData kvServerMetaData = KVStoreMetaDataUtil.unmarshallKvServerMetaData(kvServer);
-            kvServerMetaDataList.add(kvServerMetaData);
-        }
-
-        return new KVStoreMetaData(kvServerMetaDataList);
-    }
-
-    private static KVStoreMetaData.KVServerMetaData unmarshallKvServerMetaData(String kvServerMetaData) throws UnmarshallException {
-        final String ELEMENT_SEPARATOR = "\u001F";
-
-        try {
-            String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
-            return new KVStoreMetaData.KVServerMetaData(split[0], split[1], Integer.valueOf(split[2]), Integer.valueOf(split[3]));
-        } catch (Exception ex) {
-            throw new UnmarshallException(ex);
-        }
-    }
 }
