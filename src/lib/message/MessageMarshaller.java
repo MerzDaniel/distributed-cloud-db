@@ -26,8 +26,28 @@ public final class MessageMarshaller {
                     + RECORD_SEPARATOR
                     + (kvMessage.getValue() != null ? kvMessage.getValue() : "");
         }
+        if (message instanceof KVAdminMessage) {
+            KVAdminMessage adminMessage = (KVAdminMessage) message;
+            return marshallAdminMessage(adminMessage);
+        }
 
         throw new MarshallingException("Unknown message type");
+    }
+
+    private static String marshallAdminMessage(KVAdminMessage adminMessage) {
+        if (adminMessage.status == KVAdminMessage.StatusType.CONFIGURE)
+            return String.join(RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.meta.marshall()
+            );
+
+        if (adminMessage.status == KVAdminMessage.StatusType.MOVE)
+            return String.join(RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.metaContent.marshall()
+                    );
+
+        return adminMessage.status.name();
     }
 
     /**
@@ -43,15 +63,13 @@ public final class MessageMarshaller {
             String key;
             String value;
 
-            if (kvMessageComponents.length == 3){
+            if (kvMessageComponents.length == 3) {
                 key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
                 value = !kvMessageComponents[2].equals("") ? kvMessageComponents[2] : null;
-            }
-            else if(kvMessageComponents.length == 2){
+            } else if (kvMessageComponents.length == 2) {
                 key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
                 value = null;
-            }
-            else {
+            } else {
                 key = null;
                 value = null;
             }
