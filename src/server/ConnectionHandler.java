@@ -70,6 +70,7 @@ public class ConnectionHandler implements Runnable {
     }
 
     private KVMessage handleKvAdminMessage(KVAdminMessage message) {
+
         // handle Admin messages
         throw new NotImplementedException();
     }
@@ -82,6 +83,9 @@ public class ConnectionHandler implements Runnable {
             );
             return MessageFactory.creatServerStopped();
         }
+
+        // todo: check responsible
+
         if (state.runningState == ServerState.State.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
             logger.info(String.format("Client issued %s while server is in state %s",
                     kvMessage.getStatus().toString(), state.runningState.toString())
