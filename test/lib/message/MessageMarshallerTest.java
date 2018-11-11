@@ -1,11 +1,14 @@
 package lib.message;
 
 import junit.framework.TestCase;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.junit.Test;
 
 
 public class MessageMarshallerTest extends TestCase {
     final String RECORD_SEPARATOR = "\u001E";
+    final static String ELEMENT_SEPARATOR = "\u001F";
 
     @Test
     public void testMarshall() throws MarshallingException {
@@ -43,5 +46,24 @@ public class MessageMarshallerTest extends TestCase {
         assertEquals(expected, unmarshalledMessage);
     }
 
-}
+    @Test
+    public void testMarshallAdminConfigureMessage() throws MarshallingException {
+        KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE);
+        m.meta = new KVStoreMetaData();
+        m.meta.getKvServerList().add(new MetaContent("localhost", 50000));
 
+        String expected = String.format("CONFIGURE%1$slocalhost%2$s50000%2$s0%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
+        String result = MessageMarshaller.marshall(m);
+        assertEquals(expected , result);
+    }
+    @Test
+    public void testMarshallAdminMoveMessage() throws MarshallingException {
+        KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.MOVE);
+        m.meta = new KVStoreMetaData();
+        m.metaContent = new MetaContent("localhost", 50000);
+
+        String expected = String.format("MOVE%1$slocalhost%2$s50000%2$s0%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
+        String result = MessageMarshaller.marshall(m);
+        assertEquals(expected , result);
+    }
+}
