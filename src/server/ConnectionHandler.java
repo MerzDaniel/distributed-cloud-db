@@ -4,6 +4,7 @@ import lib.SocketUtil;
 import lib.message.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import server.handler.GetHandler;
 import server.handler.PutHandler;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
@@ -66,7 +67,7 @@ public class ConnectionHandler implements Runnable {
             KVMessage response;
             switch (kvMessage.getStatus()) {
                 case GET:
-                    response = handleGetMessage(kvMessage);
+                    response = new GetHandler().handleRequest(kvMessage, state);
                     break;
                 case PUT:
                     logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
@@ -89,21 +90,6 @@ public class ConnectionHandler implements Runnable {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
             new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
-    }
-
-    private KVMessage handleGetMessage(KVMessage kvMessage) {
-        KVMessage response;
-        try {
-            String value = state.db.get(kvMessage.getKey());
-            response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
-        } catch (KeyNotFoundException e) {
-            logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
-            response = MessageFactory.createGetNotFoundMessage();
-        } catch (DbError e) {
-            logger.warn("Some error occured at database level", e);
-            response = MessageFactory.createGetErrorMessage();
-        }
-        return response;
     }
 
     private void validateKeyValueLength(KVMessage message) throws InvalidKeyValueLengthException {

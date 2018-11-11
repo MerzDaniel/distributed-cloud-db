@@ -9,11 +9,11 @@ import server.ServerState;
 import server.kv.DbError;
 
 public class PutHandler implements IMessageHandler {
+    Logger logger = LogManager.getLogger(this.getClass().getName());
 
     @Override
     public KVMessage handleRequest(KVMessage request, ServerState state) {
         KVMessage response;
-        Logger logger = LogManager.getLogger(this.getClass().getName());
         if (shouldDelete(request.getValue())) {
             try {
                 state.db.deleteKey(request.getKey());
