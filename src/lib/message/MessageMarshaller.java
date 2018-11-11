@@ -6,9 +6,9 @@ import org.apache.log4j.Logger;
 /**
  * This class provied the methods to marshall a {@link KVMessage} instance
  */
-public final class KVMessageMarshaller {
+public final class MessageMarshaller {
 
-    static Logger logger = LogManager.getLogger(KVMessageMarshaller.class);
+    static Logger logger = LogManager.getLogger(MessageMarshaller.class);
     private final static String RECORD_SEPARATOR = "\u001E";
 
     /**

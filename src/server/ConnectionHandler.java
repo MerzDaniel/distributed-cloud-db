@@ -36,12 +36,12 @@ public class ConnectionHandler implements Runnable {
     public void run() {
         try (InputStream i = s.getInputStream(); OutputStream o = s.getOutputStream()) {
 
-            String connectMessage = KVMessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
+            String connectMessage = MessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
             SocketUtil.sendMessage(o, connectMessage);
 
             while (SocketUtil.isConnected(s)) {
                 KVMessage response = handleIncomingMessage(i, o);
-                SocketUtil.sendMessage(o, KVMessageMarshaller.marshall(response));
+                SocketUtil.sendMessage(o, MessageMarshaller.marshall(response));
             }
         } catch (Exception e) {
             logger.warn("Error during communication with an open connection:" + e.getMessage(), e);
@@ -55,7 +55,7 @@ public class ConnectionHandler implements Runnable {
         KVMessage kvMessage;
         try {
 
-            kvMessage = KVMessageMarshaller.unmarshall(msg);
+            kvMessage = MessageMarshaller.unmarshall(msg);
         } catch (UnmarshallException e) {
             logger.info("Got invalid message");
             return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
