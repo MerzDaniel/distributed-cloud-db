@@ -11,3 +11,7 @@ commit*
 data
 *.dat
 *.jar
+external
+db
+.gradle
+tmp
