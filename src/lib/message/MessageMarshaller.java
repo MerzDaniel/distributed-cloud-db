@@ -14,15 +14,19 @@ public final class MessageMarshaller {
     /**
      * Returns marshalled string representation of the {@code kvMessage}
      *
-     * @param kvMessage the object to be marshalled
+     * @param message the object to be marshalled
      * @return a string representation of the {@code kvMessage}
      */
-    public static String marshall(KVMessage kvMessage) {
-        return kvMessage.getStatus().name()
-                + RECORD_SEPARATOR
-                + (kvMessage.getKey() != null ? kvMessage.getKey() : "")
-                + RECORD_SEPARATOR
-                + (kvMessage.getValue() != null ? kvMessage.getValue() : "");
+    public static String marshall(IMessage message) throws UnmarshallException {
+        if (message instanceof KVMessage) {
+            KVMessage kvMessage = (KVMessage) message;
+            return kvMessage.getStatus().name()
+                    + RECORD_SEPARATOR
+                    + (kvMessage.getKey() != null ? kvMessage.getKey() : "")
+                    + RECORD_SEPARATOR
+                    + (kvMessage.getValue() != null ? kvMessage.getValue() : "");
+        }
+        throw new UnmarshallException("Unknown message type");
     }
 
     /**
@@ -32,7 +36,7 @@ public final class MessageMarshaller {
      * @return a {@link KVMessage} by unmarshalling the {@code kvMessageString}
      * @throws UnmarshallException if the given {@code kvMessageString} cannot be unmarshalled
      */
-    public static KVMessage unmarshall(String kvMessageString) throws UnmarshallException{
+    public static IMessage unmarshall(String kvMessageString) throws UnmarshallException{
         try {
             String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR, 3);
             String key;

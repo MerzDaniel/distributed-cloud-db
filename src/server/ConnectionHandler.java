@@ -55,7 +55,7 @@ public class ConnectionHandler implements Runnable {
         KVMessage kvMessage;
         try {
 
-            kvMessage = MessageMarshaller.unmarshall(msg);
+            kvMessage = (KVMessage) MessageMarshaller.unmarshall(msg);
         } catch (UnmarshallException e) {
             logger.info("Got invalid message");
             return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
