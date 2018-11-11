@@ -45,6 +45,10 @@ public class MessageFactory {
         return new KVMessageImpl(KVMessage.StatusType.CONNECT_SUCCESSFUL);
     }
 
+    public static KVMessage createConnectErrorMessage() {
+        return new KVMessageImpl(KVMessage.StatusType.CONNECT_ERROR);
+    }
+
     public static KVMessage creatServerStopped() { return new KVMessageImpl(KVMessage.StatusType.SERVER_STOPPED);}
 
     public static KVMessage createServerWriteLock() { return new KVMessageImpl(KVMessage.StatusType.SERVER_WRITE_LOCK);}
