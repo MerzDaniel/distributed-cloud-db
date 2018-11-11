@@ -19,16 +19,16 @@ public class KVStoreMetaData {
         return kvServerList;
     }
 
-    public static String marshallKvStoreMetaData(KVStoreMetaData kvStoreMetaData) {
-        return kvStoreMetaData.getKvServerList().stream().map(it -> KVServerMetaData.marshallKvServerMetaData(it)).collect(Collectors.joining(RECORD_SEPARATOR));
+    public static String marshall(KVStoreMetaData kvStoreMetaData) {
+        return kvStoreMetaData.getKvServerList().stream().map(it -> KVServerMetaData.marshall(it)).collect(Collectors.joining(RECORD_SEPARATOR));
     }
 
-    public static KVStoreMetaData unmarshallKVStoreMetaData(String kvStoreMetaData) throws UnmarshallException {
+    public static KVStoreMetaData unmarshall(String kvStoreMetaData) throws UnmarshallException {
         List<KVStoreMetaData.KVServerMetaData> kvServerMetaDataList = new ArrayList<>();
         String[] kvServers = kvStoreMetaData.split(RECORD_SEPARATOR);
 
         for (String kvServer : kvServers) {
-            KVStoreMetaData.KVServerMetaData kvServerMetaData = KVServerMetaData.unmarshallKvServerMetaData(kvServer);
+            KVStoreMetaData.KVServerMetaData kvServerMetaData = KVServerMetaData.unmarshall(kvServer);
             kvServerMetaDataList.add(kvServerMetaData);
         }
 
@@ -80,11 +80,11 @@ public class KVStoreMetaData {
             return toHash;
         }
 
-        public static String marshallKvServerMetaData(KVStoreMetaData.KVServerMetaData kvServerMetaData) {
+        public static String marshall(KVStoreMetaData.KVServerMetaData kvServerMetaData) {
             return kvServerMetaData.host + ELEMENT_SEPARATOR + kvServerMetaData.port + ELEMENT_SEPARATOR + kvServerMetaData.fromHash + ELEMENT_SEPARATOR + kvServerMetaData.toHash;
         }
 
-        public static KVStoreMetaData.KVServerMetaData unmarshallKvServerMetaData(String kvServerMetaData) throws UnmarshallException {
+        public static KVStoreMetaData.KVServerMetaData unmarshall(String kvServerMetaData) throws UnmarshallException {
 
             try {
                 String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
