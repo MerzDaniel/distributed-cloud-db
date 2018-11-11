@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 import static lib.SocketUtil.tryClose;
 import static lib.message.MessageUtil.isValidKey;
@@ -74,6 +75,20 @@ public class ConnectionHandler implements Runnable {
     }
 
     private KVMessage handleKvMessage(KVMessage kvMessage) {
+        if (
+                !Arrays.asList(ServerState.State.RUNNING, ServerState.State.READONLY).contains(state.runningState)) {
+            logger.info(String.format("Client issued %s while server is in state %s",
+                    kvMessage.getStatus().toString(), state.runningState.toString())
+            );
+            return MessageFactory.creatServerStopped();
+        }
+        if (state.runningState == ServerState.State.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
+            logger.info(String.format("Client issued %s while server is in state %s",
+                    kvMessage.getStatus().toString(), state.runningState.toString())
+            );
+            return MessageFactory.createServerWriteLock();
+        }
+
         logger.debug(String.format(
                 "Got a message: %s <%s,%s>",
                 kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
