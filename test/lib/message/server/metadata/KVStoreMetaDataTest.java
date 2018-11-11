@@ -50,7 +50,6 @@ public class KVStoreMetaDataTest extends TestCase {
                 + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
 
         KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
-        System.out.println("");
         assertEquals(kvStoreMetaData.getKvServerList().get(0), new MetaContent("127.0.0.1", 45000, 0, 10000));
         assertEquals(kvStoreMetaData.getKvServerList().get(1), new MetaContent("127.0.0.2", 35000, 10001, 20000));
         assertEquals(kvStoreMetaData.getKvServerList().get(2), new MetaContent("127.0.0.3", 50000, 20001, 30000));
@@ -69,7 +68,13 @@ public class KVStoreMetaDataTest extends TestCase {
                 + RECORD_SEPARATOR
                 + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
 
-        KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
+        try {
+            KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
+        }catch (UnmarshallException e){
+            return;
+        }
+
+        assertTrue(false);
     }
 }
 
