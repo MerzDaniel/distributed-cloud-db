@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.handler.GetHandler;
 import server.handler.PutHandler;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,14 +53,27 @@ public class ConnectionHandler implements Runnable {
 
     private KVMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
         String msg = SocketUtil.readMessage(i);
-        KVMessage kvMessage;
+        IMessage message;
         try {
-            kvMessage = (KVMessage) MessageMarshaller.unmarshall(msg);
+            message = MessageMarshaller.unmarshall(msg);
         } catch (MarshallingException e) {
             logger.info("Got invalid message");
             return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
 
+        if (message instanceof KVMessage)
+            return handleKvMessage((KVMessage) message);
+
+        return handleKvAdminMessage((KVAdminMessage) message);
+
+    }
+
+    private KVMessage handleKvAdminMessage(KVAdminMessage message) {
+        // handle Admin messages
+        throw new NotImplementedException();
+    }
+
+    private KVMessage handleKvMessage(KVMessage kvMessage) {
         logger.debug(String.format(
                 "Got a message: %s <%s,%s>",
                 kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
@@ -81,14 +95,16 @@ public class ConnectionHandler implements Runnable {
             default:
                 return MessageFactory.createInvalidMessage();
         }
-
     }
 
     private boolean isValidKeyValueLength(KVMessage message) {
         switch (message.getStatus()) {
-            case GET: return isValidKey(message.getKey());
-            case PUT: return isValidKey(message.getKey()) && isValidValue(message.getValue());
-            case DELETE: return isValidKey(message.getKey());
+            case GET:
+                return isValidKey(message.getKey());
+            case PUT:
+                return isValidKey(message.getKey()) && isValidValue(message.getValue());
+            case DELETE:
+                return isValidKey(message.getKey());
         }
 
         return true;
