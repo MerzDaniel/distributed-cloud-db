@@ -52,7 +52,7 @@ public class MessageMarshallerTest extends TestCase {
         m.meta = new KVStoreMetaData();
         m.meta.getKvServerList().add(new MetaContent("localhost", 50000));
 
-        String expected = String.format("CONFIGURE%1$slocalhost%2$s50000%2$s0%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
+        String expected = String.format("CONFIGURE%1$slocalhost%2$s50000%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
         String result = MessageMarshaller.marshall(m);
         assertEquals(expected , result);
     }
@@ -62,7 +62,7 @@ public class MessageMarshallerTest extends TestCase {
         m.meta = new KVStoreMetaData();
         m.metaContent = new MetaContent("localhost", 50000);
 
-        String expected = String.format("MOVE%1$slocalhost%2$s50000%2$s0%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
+        String expected = String.format("MOVE%1$slocalhost%2$s50000%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
         String result = MessageMarshaller.marshall(m);
         assertEquals(expected , result);
     }

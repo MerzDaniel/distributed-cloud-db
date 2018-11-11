@@ -137,5 +137,16 @@ public class MessageUnmarshallerTest extends TestCase {
         assertEquals("SampleKey", kvMessage.getKey());
         assertEquals(kvStoreMetaDataString, kvMessage.getValue());
     }
+
+    @Test
+    public void testUnmarshallConfigureMessage() throws MarshallingException {
+        String s = "CONFIGURE" + RECORD_SEPARATOR +
+                "127.0.0.1" + ELEMENT_SEPARATOR +
+                "50001" + ELEMENT_SEPARATOR+
+                "000000";
+        KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
+        assertEquals(KVAdminMessage.StatusType.CONFIGURE, message.status);
+//        assertEquals(host );
+    }
 }
 
