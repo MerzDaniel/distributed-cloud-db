@@ -6,9 +6,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.handler.GetHandler;
 import server.handler.PutHandler;
-import server.kv.DbError;
-import server.kv.KeyNotFoundException;
-import server.kv.KeyValueStore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +52,7 @@ public class ConnectionHandler implements Runnable {
 
     private KVMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
         String msg = SocketUtil.readMessage(i);
-        KVMessage kvMessage = null;
+        KVMessage kvMessage;
         try {
             kvMessage = KVMessageUnmarshaller.unmarshall(msg);
         } catch (UnmarshallException e) {
@@ -63,52 +60,38 @@ public class ConnectionHandler implements Runnable {
             return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
         }
 
-        try {
-            logger.debug(String.format(
-                    "Got a message: %s <%s,%s>",
-                    kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
-            ));
+        logger.debug(String.format(
+                "Got a message: %s <%s,%s>",
+                kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
+        ));
 
-            validateKeyValueLength(kvMessage);
-
-            KVMessage response;
-            switch (kvMessage.getStatus()) {
-                case GET:
-                    response = new GetHandler().handleRequest(kvMessage, state);
-                    break;
-                case PUT:
-                    logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
-                    response = new PutHandler().handleRequest(kvMessage, state);
-                    break;
-                case DELETE:
-                    response = MessageFactory.createDeleteErrorMessage();
-                    break;
-                default:
-                    response = MessageFactory.createInvalidMessage();
-                    break;
-            }
-
-            return response;
-
-        } catch (InvalidKeyValueLengthException e) {
+        if (!isValidKeyValueLength(kvMessage)) {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
-            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
+            return MessageFactory.createInvalidMessage();
         }
+
+        switch (kvMessage.getStatus()) {
+            case GET:
+                return new GetHandler().handleRequest(kvMessage, state);
+            case PUT:
+                logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
+                return new PutHandler().handleRequest(kvMessage, state);
+            case DELETE:
+                return MessageFactory.createDeleteErrorMessage();
+            default:
+                return MessageFactory.createInvalidMessage();
+        }
+
     }
 
-    private void validateKeyValueLength(KVMessage message) throws InvalidKeyValueLengthException {
+    private boolean isValidKeyValueLength(KVMessage message) {
         switch (message.getStatus()) {
-            case GET:
-            case PUT:
-            case DELETE: {
-                if (!isValidKey(message.getKey()) || !isValidValue(message.getValue())) {
-                    throw new InvalidKeyValueLengthException("Key or Value are too long. Only a size for key/value of 20/120kb is allowed");
-                }
-            }
-            default:
-                return;
-
+            case GET: return isValidKey(message.getKey());
+            case PUT: return isValidKey(message.getKey()) && isValidValue(message.getValue());
+            case DELETE: return isValidKey(message.getKey());
         }
+
+        return true;
     }
 }
 
