@@ -8,7 +8,7 @@ public class MessageMarshallerTest extends TestCase {
     final String RECORD_SEPARATOR = "\u001E";
 
     @Test
-    public void testMarshall() {
+    public void testMarshall() throws MarshallingException {
         KVMessage kvMessage = new KVMessageImpl("Name", "TUM", KVMessage.StatusType.PUT);
         String unmarshalledMessage = MessageMarshaller.marshall(kvMessage);
 
@@ -17,7 +17,7 @@ public class MessageMarshallerTest extends TestCase {
     }
 
     @Test
-    public void testMarshallForNullPair() {
+    public void testMarshallForNullPair() throws MarshallingException {
         KVMessage kvMessage = new KVMessageImpl(null, null, KVMessage.StatusType.PUT);
         String unmarshalledMessage = MessageMarshaller.marshall(kvMessage);
 
@@ -26,7 +26,7 @@ public class MessageMarshallerTest extends TestCase {
     }
 
     @Test
-    public void testMarshallForEmptyPair() {
+    public void testMarshallForEmptyPair() throws MarshallingException {
         KVMessage kvMessage = new KVMessageImpl("", "", KVMessage.StatusType.PUT);
         String unmarshalledMessage = MessageMarshaller.marshall(kvMessage);
 
@@ -35,7 +35,7 @@ public class MessageMarshallerTest extends TestCase {
     }
 
     @Test
-    public void testMarshallSpecialCharacters() {
+    public void testMarshallSpecialCharacters() throws MarshallingException {
         KVMessage kvMessage = new KVMessageImpl("<N<ame/,", ",T/UM>", KVMessage.StatusType.PUT);
         String unmarshalledMessage = MessageMarshaller.marshall(kvMessage);
 

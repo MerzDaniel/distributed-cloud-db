@@ -13,7 +13,7 @@ public class MetaContentTest extends TestCase {
     public void testMarshallKVServerMetaData() {
         MetaContent metaContent = new MetaContent("127.0.0.1", 45000, 0, 10000);
 
-        String marshalledString = MetaContent.marshall(metaContent);
+        String marshalledString = metaContent.marshall();
 
         final String ELEMENT_SEPARATOR = "\u001F";
         String expected = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000";

@@ -52,8 +52,8 @@ public class MetaContent {
         return toHash;
     }
 
-    public static String marshall(MetaContent metaContent) {
-        return metaContent.host + ELEMENT_SEPARATOR + metaContent.port + ELEMENT_SEPARATOR + metaContent.fromHash + ELEMENT_SEPARATOR + metaContent.toHash;
+    public String marshall() {
+        return host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash + ELEMENT_SEPARATOR + toHash;
     }
 
     public static MetaContent unmarshall(String kvServerMetaData) throws MarshallingException {
