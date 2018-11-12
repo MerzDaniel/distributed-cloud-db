@@ -1,7 +1,6 @@
 package client.ui;
 
 import client.store.KVStore;
-import lib.metadata.KVStoreMetaData;
 
 /**
  * Contains the application state.
@@ -9,5 +8,8 @@ import lib.metadata.KVStoreMetaData;
 public class ApplicationState {
     public boolean stopRequested = false;
     public KVStore kvStore;
-    public KVStoreMetaData kvStoreMetaData;
+
+    public ApplicationState(KVStore kvStore) {
+        this.kvStore = kvStore;
+    }
 }
