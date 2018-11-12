@@ -50,6 +50,9 @@ public class KVClient {
         }
     }
 
+    /**
+     * Initialize the KVClient
+     */
     private void init() {
         logger = LogManager.getLogger(KVClient.class);
         state = new ApplicationState(
