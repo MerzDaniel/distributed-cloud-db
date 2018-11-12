@@ -16,15 +16,12 @@ import java.util.Arrays;
  * A simple echo client that can establish a connection to the echo server.
  */
 public class KVClient {
-    Logger logger = LogManager.getLogger(KVClient.class);
-    ApplicationState state = new ApplicationState(
-            new KVStore(
-                    new KVStoreMetaData(Arrays.asList(new MetaContent("127.0.0.1", 50000)))
-            )
-    );
-    CommandParser commandParser = new CommandParser();
+    Logger logger;
+    ApplicationState state;
+    CommandParser commandParser;
 
     public void run() {
+        init();
         logger.info("Start application");
         while (!state.stopRequested) {
             System.out.print("EchoClient> ");
@@ -51,5 +48,15 @@ public class KVClient {
         } catch (Exception ex) {
             new ErrorCommand(ex).execute(state);
         }
+    }
+
+    private void init() {
+        logger = LogManager.getLogger(KVClient.class);
+        state = new ApplicationState(
+                new KVStore(
+                        new KVStoreMetaData(Arrays.asList(new MetaContent("127.0.0.1", 50000)))
+                )
+        );
+        commandParser = new CommandParser();
     }
 }
