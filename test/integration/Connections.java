@@ -2,8 +2,11 @@ package integration;
 
 import client.store.KVStore;
 import junit.framework.TestCase;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 
 public class Connections extends TestCase {
@@ -13,9 +16,9 @@ public class Connections extends TestCase {
 
         Exception ex = null;
 
-        KVStore kvClient = new KVStore("localhost", 50000);
+        KVStore kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new MetaContent("127.0.0.4", 30000))));
         try {
-            kvClient.connect();
+            kvClient.connect("localhost", 50000);
         } catch (Exception e) {
             ex = e;
         }
@@ -26,10 +29,10 @@ public class Connections extends TestCase {
 
     public void testUnknownHost() {
         Exception ex = null;
-        KVStore kvClient = new KVStore("unknown", 50000);
+        KVStore kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new MetaContent("localhost", 50000))));
 
         try {
-            kvClient.connect();
+            kvClient.connect("unknown", 50000);
         } catch (Exception e) {
             ex = e;
         }
@@ -40,10 +43,10 @@ public class Connections extends TestCase {
 
     public void testIllegalPort() {
         Exception ex = null;
-        KVStore kvClient = new KVStore("localhost", 123456789);
+        KVStore kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new MetaContent("localhost", 50000))));
 
         try {
-            kvClient.connect();
+            kvClient.connect("localhost", 123456789);
         } catch (Exception e) {
             ex = e;
         }

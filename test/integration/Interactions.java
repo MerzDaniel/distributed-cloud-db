@@ -3,11 +3,14 @@ package integration;
 import client.store.KVStore;
 import junit.framework.TestCase;
 import lib.message.KVMessage;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Interactions extends TestCase {
 
@@ -15,8 +18,8 @@ public class Interactions extends TestCase {
 
     @Before
     public void setUp() throws IOException {
-        kvClient = new KVStore("localhost", 50000);
-        kvClient.connect();
+        kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new MetaContent("localhost", 50000))));
+//        kvClient.connect("localhost", 50000);
     }
 
     @After
