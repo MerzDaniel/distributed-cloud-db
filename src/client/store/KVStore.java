@@ -26,6 +26,7 @@ public class KVStore implements KVCommInterface{
      * @param kvStoreMetaData meta data about the KVStore
      */
     public KVStore(KVStoreMetaData kvStoreMetaData) {
+        this.kvStoreMetaData = kvStoreMetaData;
         this.connection = new Connection();
     }
 
