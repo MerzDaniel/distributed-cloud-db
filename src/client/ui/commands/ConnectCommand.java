@@ -3,10 +3,13 @@ package client.ui.commands;
 import client.store.KVStore;
 import client.ui.ApplicationState;
 import client.ui.Command;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static client.ui.Util.writeLine;
 
@@ -26,10 +29,11 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        state.kvStore = new KVStore(this.url, this.port);
+        MetaContent serverMetaContent = new MetaContent(this.url, this.port);
+        state.kvStore = new KVStore(new KVStoreMetaData(Arrays.asList(serverMetaContent)));
         boolean success;
         try {
-            success = state.kvStore.connect();
+            success = state.kvStore.connect(this.url, this.port);
         } catch (IOException e) {
             logger.warn("Error while connecting", e);
             success = false;
