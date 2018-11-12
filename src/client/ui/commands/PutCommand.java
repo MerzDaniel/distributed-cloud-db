@@ -4,11 +4,13 @@ import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.*;
+import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
@@ -46,11 +48,19 @@ public class PutCommand implements Command {
             kVMessageResponse = state.kvStore.put(key, value);
         } catch (IOException e) {
             writeLine(String.format("An error occurred while executing the command PUT (%d ms)", t.time()));
-            logger.error("An error occurred while executing the command GET, error", e);
+            logger.error("An error occurred while executing the command PUT, error", e);
             return;
         } catch (MarshallingException e) {
-            logger.warn("Got an invalid message.");
+            logger.error("Got an invalid message.");
             writeLine("PUT was not successful: Response from server was invalid.");
+            return;
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Error during hashing.", e);
+            writeLine("An error occurred while executing the command PUT");
+            return;
+        } catch (KVServerNotFoundException e) {
+            logger.error(String.format("Couldn't find the server responsible for the key <%s>", key), e);
+            writeLine("Couldn't find the server to connect");
             return;
         }
 
@@ -73,8 +83,10 @@ public class PutCommand implements Command {
             case SERVER_NOT_RESPONSIBLE:
                 logger.info(String.format("The requested server is not responsible for the key %s", kVMessageResponse.toString()));
                 try {
-                    state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
+                    state.kvStore.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
                     logger.info("The kvstore meta data is updated");
+
+                    this.execute(state);
                 } catch (MarshallingException e) {
                     logger.error("Error occurred during unmarshalling meta data", e);
                     writeLine("Unexpected error occurred when executing the PUT command");

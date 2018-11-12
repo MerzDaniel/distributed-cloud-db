@@ -5,11 +5,13 @@ import client.ui.Command;
 import lib.TimeWatch;
 import lib.message.KVMessage;
 import lib.message.MarshallingException;
+import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
@@ -42,12 +44,20 @@ public class GetCommand implements Command {
         try {
             kVMessageResponse = state.kvStore.get(key);
         } catch (IOException e) {
-            logger.warn("error", e);
+            logger.error("error", e);
             writeLine(String.format("Error during GET. Possibly the connection to the db got lost (%d ms)",t.time()));
             return;
         } catch (MarshallingException e) {
-            logger.warn("Error during unmarshalling.", e);
+            logger.error("Error during unmarshalling.", e);
             writeLine("Response from the server was invalid.");
+            return;
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Error during hashing.", e);
+            writeLine("An unexpected error occurred while GET");
+            return;
+        } catch (KVServerNotFoundException e) {
+            logger.error(String.format("Couldn't find the server responsible for the key <%s>", key), e);
+            writeLine("Couldn't find the server to connect");
             return;
         }
 
@@ -60,7 +70,10 @@ public class GetCommand implements Command {
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
             logger.info(String.format("This server is not responsible for the key %s", kVMessageResponse.toString()));
             try {
-                state.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
+                state.kvStore.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
+                logger.info("The kvstore meta data is updated");
+
+                this.execute(state);
             } catch (MarshallingException e) {
                 logger.error("Error occurred during unmarshalling meta data", e);
                 writeLine("Unexpected error occured when executing the GET command");
@@ -69,6 +82,7 @@ public class GetCommand implements Command {
         }
 
         if (kVMessageResponse.getStatus() != KVMessage.StatusType.GET_SUCCESS) {
+            writeLine("GET was not successful. Possibly connection hang up.");
             logger.warn(String.format("Get '%s' was not successful: '%s'. Possibly an error in the db. ", kVMessageResponse.toString()));
             return;
         }
