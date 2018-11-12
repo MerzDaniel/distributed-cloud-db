@@ -2,17 +2,20 @@ package client.store;
 
 import client.communication.Connection;
 import lib.message.*;
+import lib.metadata.KVServerNotFoundException;
+import lib.metadata.KVStoreMetaData;
+import lib.metadata.MetaContent;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
  */
 public class KVStore implements KVCommInterface{
-    final String host;
-    final int port;
+    public KVStoreMetaData kvStoreMetaData;
     final Connection connection;
 
     private final Logger logger = LogManager.getLogger(KVStore.class);
@@ -20,22 +23,21 @@ public class KVStore implements KVCommInterface{
     /**
      * Creates a new KVStore
      *
-     * @param host the host name
-     * @param port the port
+     * @param kvStoreMetaData meta data about the KVStore
      */
-    public KVStore(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public KVStore(KVStoreMetaData kvStoreMetaData) {
         this.connection = new Connection();
     }
 
     /**
      * Connects to the backend server
      *
+     * @param host the host to be connected to
+     * @param port the port of the host
      * @return true if successfully connected otherwise false
      * @throws IOException if any error occurred while establishing the connection
      */
-    public boolean connect() throws IOException {
+    public boolean connect(String host, int port) throws IOException {
         this.connection.connect(host, port);
 
         boolean success = true;
@@ -76,11 +78,20 @@ public class KVStore implements KVCommInterface{
      * @throws IOException if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process
      */
-    public KVMessage get(String key) throws IOException, MarshallingException {
+    public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
-        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-        String response = this.connection.readMessage();
-        return (KVMessage) MessageMarshaller.unmarshall(response);
+
+        MetaContent serverMetaContent = kvStoreMetaData.getKVServer(key);
+        boolean connectSuccess = this.connect(serverMetaContent.getHost(), serverMetaContent.getPort());
+
+        if (connectSuccess) {
+            this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
+            String response = this.connection.readMessage();
+
+            return (KVMessage) MessageMarshaller.unmarshall(response);
+        }
+
+        return MessageFactory.createConnectErrorMessage();
     }
 
     /**
@@ -92,11 +103,19 @@ public class KVStore implements KVCommInterface{
      * @throws IOException if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process
      */
-    public KVMessage put(String key, String value) throws IOException, MarshallingException {
+    public KVMessage put(String key, String value) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
-        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-        String response = this.connection.readMessage();
 
-        return (KVMessage) MessageMarshaller.unmarshall(response);
+        MetaContent serverMetaContent = kvStoreMetaData.getKVServer(key);
+        boolean connectSuccess = this.connect(serverMetaContent.getHost(), serverMetaContent.getPort());
+
+        if (connectSuccess) {
+            this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
+            String response = this.connection.readMessage();
+
+            return (KVMessage) MessageMarshaller.unmarshall(response);
+        }
+
+        return MessageFactory.createConnectErrorMessage();
     }
 }
