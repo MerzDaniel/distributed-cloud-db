@@ -2,6 +2,7 @@ package ecs;
 
 import ecs.command.AddServerCommand;
 import ecs.command.SshCommand;
+import ecs.command.StartServersCommand;
 import ecs.command.UsageCommand;
 
 public final class CommandParser {
@@ -20,6 +21,9 @@ public final class CommandParser {
         }
         if (tokens[0].equals("help")) {
             command = new UsageCommand();
+        }
+        if (tokens[0].equals("start")) {
+            command = new StartServersCommand();
         }
 
         if (command == null) {
