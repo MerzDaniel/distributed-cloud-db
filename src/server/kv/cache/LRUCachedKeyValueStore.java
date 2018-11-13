@@ -23,8 +23,8 @@ public class LRUCachedKeyValueStore extends CachedKeyValueStore {
     List<String> cachePriority = new LinkedList<>();
     Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
-    public LRUCachedKeyValueStore(int cacheSize) {
-        super(cacheSize);
+    public LRUCachedKeyValueStore(int cacheSize, String dataFileName) {
+        super(cacheSize, dataFileName);
     }
 
     public LRUCachedKeyValueStore(int cacheSize, KeyValueStore store) {

@@ -16,9 +16,9 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
     private KeyValueStore store;
     int cacheSize;
 
-    public CachedKeyValueStore(int cacheSize) {
+    public CachedKeyValueStore(int cacheSize, String dataFileName) {
         this.cacheSize = cacheSize;
-        store = new SimpleKeyValueStore();
+        store = new SimpleKeyValueStore(dataFileName);
     }
 
     public CachedKeyValueStore(int cacheSize, KeyValueStore store) {

@@ -16,21 +16,22 @@ public class SimpleKeyValueStore implements KeyValueStore {
 
     final Logger logger = LogManager.getLogger(SimpleKeyValueStore.class);
 
-    final static File DB_DIRECTORY = new File(Paths.get("db").toUri());
-    final static File DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
-    final static File TEMP_DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "temp_db").toUri());
+    final File DB_DIRECTORY = new File(Paths.get("db").toUri());
+    final File DB_FILE;
+    final File TEMP_DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "temp_db").toUri());
 
     Reader reader;
     Writer writer;
     private final String RECORD_SEPARATOR = "\u001E";
 
-    public SimpleKeyValueStore() {
-
+    public SimpleKeyValueStore(String dataFileName) {
+        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dataFileName).toUri());
     }
 
-    public SimpleKeyValueStore(Reader reader, Writer writer) {
+    public SimpleKeyValueStore(Reader reader, Writer writer, String dataFileName) {
         this.reader = reader;
         this.writer = writer;
+        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dataFileName).toUri());
     }
 
     @Override

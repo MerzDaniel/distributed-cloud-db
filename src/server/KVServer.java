@@ -33,7 +33,7 @@ public class KVServer implements Runnable {
      * @param port given port for storage server to operate
      */
     public KVServer(String name, String host, int port) {
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore(name);
         serverData = new ServerData(name, host, port);
         state = new ServerState(db, serverData);
     }
@@ -54,7 +54,7 @@ public class KVServer implements Runnable {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore(name);
         state = new ServerState(db, serverData);
     }
 

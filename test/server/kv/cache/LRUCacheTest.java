@@ -13,7 +13,7 @@ public class LRUCacheTest {
 
     @Before
     public void initCache() {
-        lruCache = new LRUCachedKeyValueStore(3);
+        lruCache = new LRUCachedKeyValueStore(3, "db");
         this.populateCache();
     }
 
