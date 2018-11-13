@@ -43,7 +43,7 @@ public class KVStoreMetaData {
         return new KVStoreMetaData(metaContentList);
     }
 
-    public MetaContent getKVServer(String key) throws NoSuchAlgorithmException, KVServerNotFoundException {
+    public MetaContent findKVServer(String key) throws NoSuchAlgorithmException, KVServerNotFoundException {
         BigInteger hash = HashUtil.getHash(key);
 
         if (kvServerList == null || kvServerList.size() == 0) {
