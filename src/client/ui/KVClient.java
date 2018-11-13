@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * A simple echo client that can establish a connection to the echo server.
@@ -55,9 +56,11 @@ public class KVClient {
      */
     private void init() {
         logger = LogManager.getLogger(KVClient.class);
+
+        ServerData sd = new ServerData("kitten-" + new Random().nextInt(), "127.0.0.1", 50000);
         state = new ApplicationState(
                 new KVStore(
-                        new KVStoreMetaData(Arrays.asList(new ServerData("127.0.0.1", 50000)))
+        new KVStoreMetaData(Arrays.asList(sd))
                 )
         );
         commandParser = new CommandParser();

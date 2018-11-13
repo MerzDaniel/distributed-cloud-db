@@ -18,7 +18,7 @@ public class AllTests {
             File dbFile = new File(Paths.get("tmp", "INTEGRATION_TEST_DB").toUri());
             if (dbFile.exists()) dbFile.delete();
             KeyValueStore db = new RandomAccessKeyValueStore(dbFile);
-            KVServer s = new KVServer("localhost",50000, 10, CacheType.FIFO, db, ServerState.State.RUNNING);
+            KVServer s = new KVServer("server", "localhost",50000, 10, CacheType.FIFO, db, ServerState.State.RUNNING);
             new Thread(s).start();
         } catch (Exception e) {
             e.printStackTrace();

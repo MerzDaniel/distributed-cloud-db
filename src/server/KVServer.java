@@ -14,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This class represents the KVServer instances
@@ -31,9 +32,9 @@ public class KVServer implements Runnable {
      *
      * @param port given port for storage server to operate
      */
-    public KVServer(String host, int port) {
+    public KVServer(String name, String host, int port) {
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        serverData = new ServerData(host, port);
+        serverData = new ServerData(name, host, port);
         state = new ServerState(db, serverData);
     }
 
@@ -49,10 +50,10 @@ public class KVServer implements Runnable {
      *                  and "LFU".
      */
 
-    public KVServer(String host, int port, int cacheSize, CacheType cacheType) {
+    public KVServer(String name, String host, int port, int cacheSize, CacheType cacheType) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        serverData = new ServerData(host, port);
+        serverData = new ServerData(name, host, port);
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
         state = new ServerState(db, serverData);
     }
@@ -69,11 +70,11 @@ public class KVServer implements Runnable {
      *                  and "LFU".
      * @param db        the {@link KeyValueStore} associated with the KVServer instance
      */
-    public KVServer(String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db,
+    public KVServer(String name, String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db,
                     ServerState.State runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        serverData = new ServerData(host, port);
+        serverData = new ServerData(name, host, port);
         state = new ServerState(db, serverData);
         state.runningState = runningState;
     }

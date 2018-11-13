@@ -29,7 +29,7 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        ServerData serverServerData = new ServerData(this.url, this.port);
+        ServerData serverServerData = new ServerData("server", this.url, this.port);
         state.kvStore = new KVStore(new KVStoreMetaData(Arrays.asList(serverServerData)));
         boolean success;
         try {

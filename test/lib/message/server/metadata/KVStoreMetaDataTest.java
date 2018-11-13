@@ -15,10 +15,10 @@ public class KVStoreMetaDataTest extends TestCase {
 
     @Test
     public void testMarshallKVStoreMetaData() {
-        List<ServerData> serverList = Arrays.asList(new ServerData("127.0.0.1", 45000, BigInteger.ZERO),
-                new ServerData("127.0.0.2", 35000, new BigInteger("10001")),
-                new ServerData("127.0.0.3", 50000, new BigInteger("20001")),
-                new ServerData("127.0.0.4", 60000, new BigInteger("30001")));
+        List<ServerData> serverList = Arrays.asList(new ServerData("server1", "127.0.0.1", 45000, BigInteger.ZERO),
+                new ServerData("server2", "127.0.0.2", 35000, new BigInteger("10001")),
+                new ServerData("server3", "127.0.0.3", 50000, new BigInteger("20001")),
+                new ServerData("server4", "127.0.0.4", 60000, new BigInteger("30001")));
 
         KVStoreMetaData kvStoreMetaData = new KVStoreMetaData(serverList);
 
@@ -26,13 +26,13 @@ public class KVStoreMetaDataTest extends TestCase {
 
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";
-        String expected = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0"
+        String expected = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0"
                 + RECORD_SEPARATOR
-                + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001"
+                + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001"
                 + RECORD_SEPARATOR
-                + "127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001"
+                + "server3" + ELEMENT_SEPARATOR +"127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001"
                 + RECORD_SEPARATOR
-                + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001";
+                + "server4" + ELEMENT_SEPARATOR +"127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001";
 
         assertEquals(expected, marshalledString);
 
@@ -42,32 +42,32 @@ public class KVStoreMetaDataTest extends TestCase {
     public void testUnMarshallKVStoreMetaData() throws MarshallingException {
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";
-        String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
+        String kvStoreMetaDataString = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
                 + RECORD_SEPARATOR
-                + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
+                + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
                 + RECORD_SEPARATOR
-                + "127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001" + ELEMENT_SEPARATOR + "30000"
+                + "server3" + ELEMENT_SEPARATOR + "127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001" + ELEMENT_SEPARATOR + "30000"
                 + RECORD_SEPARATOR
-                + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
+                + "server4" + ELEMENT_SEPARATOR + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
 
         KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);
-        assertEquals(kvStoreMetaData.getKvServerList().get(0), new ServerData("127.0.0.1", 45000, BigInteger.ZERO));
-        assertEquals(kvStoreMetaData.getKvServerList().get(1), new ServerData("127.0.0.2", 35000, new BigInteger("10001")));
-        assertEquals(kvStoreMetaData.getKvServerList().get(2), new ServerData("127.0.0.3", 50000, new BigInteger("20001")));
-        assertEquals(kvStoreMetaData.getKvServerList().get(3), new ServerData("127.0.0.4", 60000, new BigInteger("30001")));
+        assertEquals(kvStoreMetaData.getKvServerList().get(0), new ServerData("server1", "127.0.0.1", 45000, BigInteger.ZERO));
+        assertEquals(kvStoreMetaData.getKvServerList().get(1), new ServerData("server2", "127.0.0.2", 35000, new BigInteger("10001")));
+        assertEquals(kvStoreMetaData.getKvServerList().get(2), new ServerData("server3", "127.0.0.3", 50000, new BigInteger("20001")));
+        assertEquals(kvStoreMetaData.getKvServerList().get(3), new ServerData("server4", "127.0.0.4", 60000, new BigInteger("30001")));
     }
 
     @Test(expected = MarshallingException.class)
     public void testUnMarshallKVStoreMetaDataThrowsException() throws MarshallingException {
         final String RECORD_SEPARATOR = "\u001E";
         final String ELEMENT_SEPARATOR = "\u001F";
-        String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "qwe12" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
+        String kvStoreMetaDataString = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "qwe12" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
                 + RECORD_SEPARATOR
-                + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
+                + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
                 + RECORD_SEPARATOR
-                + "127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001" + ELEMENT_SEPARATOR + "30000"
+                + "server3" + ELEMENT_SEPARATOR + "127.0.0.3" + ELEMENT_SEPARATOR + "50000" + ELEMENT_SEPARATOR + "20001" + ELEMENT_SEPARATOR + "30000"
                 + RECORD_SEPARATOR
-                + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
+                + "server4" + ELEMENT_SEPARATOR + "127.0.0.4" + ELEMENT_SEPARATOR + "60000" + ELEMENT_SEPARATOR + "30001" + ELEMENT_SEPARATOR + "40000";
 
         try {
             KVStoreMetaData kvStoreMetaData = KVStoreMetaData.unmarshall(kvStoreMetaDataString);

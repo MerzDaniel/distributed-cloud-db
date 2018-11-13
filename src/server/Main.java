@@ -8,6 +8,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import server.kv.CacheType;
 
+import java.util.Random;
+
 /**
  * The main class of the KVServer which has the main method to start a server for a given port
  */
@@ -34,7 +36,8 @@ public class Main {
         LogManager.getLogger(Main.class).info(serverStartMsg);
         System.out.println(serverStartMsg);
 
-        new KVServer("localhost", port, cacheSize, cacheType).run();
+        String name = "kitten-" + new Random().nextInt();
+        new KVServer(name, "localhost", port, cacheSize, cacheType).run();
     }
 
     static {

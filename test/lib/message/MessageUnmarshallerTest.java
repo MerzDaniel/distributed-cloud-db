@@ -144,6 +144,7 @@ public class MessageUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallConfigureMessage() throws MarshallingException {
         String s = "CONFIGURE" + RECORD_SEPARATOR +
+                "server" + ELEMENT_SEPARATOR +
                 "127.0.0.1" + ELEMENT_SEPARATOR +
                 "50001" + ELEMENT_SEPARATOR+
                 "000000";
@@ -158,6 +159,7 @@ public class MessageUnmarshallerTest extends TestCase {
     @Test
     public void testUnmarshallMoveMessage() throws MarshallingException {
         String s = "MOVE" + RECORD_SEPARATOR +
+                "server" + ELEMENT_SEPARATOR +
                 "127.0.0.1" + ELEMENT_SEPARATOR +
                 "50001" + ELEMENT_SEPARATOR+
                 "000000";

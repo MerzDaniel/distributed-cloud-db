@@ -18,7 +18,7 @@ public class Interactions extends TestCase {
 
     @Before
     public void setUp() throws IOException {
-        kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new ServerData("localhost", 50000))));
+        kvClient = new KVStore(new KVStoreMetaData(Arrays.asList(new ServerData("server", "localhost", 50000))));
 //        kvClient.connect("localhost", 50000);
     }
 

@@ -51,6 +51,7 @@ public class EcsAdminConsole {
                 }
 
                 // todo: add new server to the table in the state
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
