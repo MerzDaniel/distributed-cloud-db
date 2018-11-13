@@ -52,13 +52,13 @@ public class KVStoreMetaData {
 
         if (kvServerList.size() == 1) return kvServerList.get(0);
 
-        for (int i = 0; i < kvServerList.size()-1; i++) {
+        for (int i = 0; i < kvServerList.size() - 1; i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) < 0
                     && hash.compareTo(kvServerList.get(i + 1).getFromHash()) < 0)
                 return kvServerList.get(i);
         }
         //for the scenario where the hash value of key is larger than the last kvServer(MetaContent)
-        return kvServerList.get(kvServerList.size()-1);
+        return kvServerList.get(kvServerList.size() - 1);
     }
 
 }
