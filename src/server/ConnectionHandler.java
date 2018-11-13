@@ -2,6 +2,8 @@ package server;
 
 import lib.SocketUtil;
 import lib.message.*;
+import lib.metadata.KVServerNotFoundException;
+import lib.metadata.MetaContent;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.handler.GetHandler;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static lib.SocketUtil.tryClose;
@@ -112,7 +115,17 @@ public class ConnectionHandler implements Runnable {
             return MessageFactory.creatServerStopped();
         }
 
-        // todo: check responsible
+        MetaContent responsibleServer;
+        try {
+            responsibleServer = state.meta.findKVServer(kvMessage.getKey());
+        } catch (KVServerNotFoundException e) {
+            return MessageFactory.createServerNotFoundMessage();
+        } catch (NoSuchAlgorithmException e) {
+            return MessageFactory.createServerError();
+        }
+        if (!state.currentServerMetaContent.equals(responsibleServer)) {
+            return MessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
+        }
 
         if (state.runningState == ServerState.State.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
             logger.info(String.format("Client issued %s while server is in state %s",
