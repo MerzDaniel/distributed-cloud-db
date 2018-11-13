@@ -42,7 +42,7 @@ public class ConnectionHandler implements Runnable {
             SocketUtil.sendMessage(o, connectMessage);
 
             while (SocketUtil.isConnected(s)) {
-                KVMessage response = handleIncomingMessage(i, o);
+                IMessage response = handleIncomingMessage(i, o);
                 SocketUtil.sendMessage(o, MessageMarshaller.marshall(response));
             }
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    private KVMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
+    private IMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
         String msg = SocketUtil.readMessage(i);
         IMessage message;
         try {
@@ -69,7 +69,33 @@ public class ConnectionHandler implements Runnable {
 
     }
 
-    private KVMessage handleKvAdminMessage(KVAdminMessage message) {
+    private KVAdminMessage handleKvAdminMessage(KVAdminMessage message) {
+        logger.info(String.format(
+                "Got a message: %s with meta '%s' and metaContent '%s'",
+                message.status, message.meta.marshall(), message.metaContent.marshall())
+        );
+
+        switch (message.status) {
+            case CONFIGURE:
+                state.meta = message.meta;
+                if (state.runningState == ServerState.State.UNCONFIGURED)
+                    state.runningState = ServerState.State.IDLE;
+                return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
+            case START:
+                if (state.runningState != ServerState.State.IDLE)
+                    return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
+                state.runningState = ServerState.State.RUNNING;
+                return new KVAdminMessage(KVAdminMessage.StatusType.START_SUCCESS);
+            case STOP:
+                if (!Arrays.asList(ServerState.State.RUNNING, ServerState.State.READONLY).contains(state.runningState))
+                    return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
+                state.runningState = ServerState.State.IDLE;
+                return new KVAdminMessage(KVAdminMessage.StatusType.STOP_SUCCESS);
+            case SHUT_DOWN:
+                break;
+            case MOVE:
+                break;
+        }
 
         // handle Admin messages
         throw new NotImplementedException();

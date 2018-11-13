@@ -11,7 +11,7 @@ public class KVAdminMessage implements IMessage {
     public KVStoreMetaData meta;
     public MetaContent metaContent;
 
-    enum StatusType {
+    public enum StatusType {
         CONFIGURE,
         CONFIGURE_SUCCESS,
         CONFIGURE_ERROR,

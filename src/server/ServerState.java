@@ -5,7 +5,7 @@ import lib.metadata.MetaContent;
 import server.kv.KeyValueStore;
 
 public class ServerState {
-    public final KVStoreMetaData meta = new KVStoreMetaData();
+    public KVStoreMetaData meta = new KVStoreMetaData();
     public KeyValueStore db;
     public MetaContent currentServerMetaContent;
     public State runningState = State.UNCONFIGURED;
