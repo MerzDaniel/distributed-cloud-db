@@ -9,6 +9,7 @@ import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -70,11 +71,13 @@ public class KVServer implements Runnable {
      *                  and "LFU".
      * @param db        the {@link KeyValueStore} associated with the KVServer instance
      */
-    public KVServer(String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db) {
+    public KVServer(String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db,
+                    ServerState.State runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         metaContent = new MetaContent(host, port);
         state = new ServerState(db, metaContent);
+        state.runningState = runningState;
     }
 
     @Override

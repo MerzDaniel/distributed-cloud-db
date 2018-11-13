@@ -51,17 +51,19 @@ public class Interactions extends TestCase {
     @Test
     public void testPutDisconnected() {
         kvClient.disconnect();
-        String key = "foo";
+        String key = "asdlfkjasdf";
         String value = "bar";
         Exception ex = null;
 
+        KVMessage result = null;
         try {
-            kvClient.put(key, value);
+            result = kvClient.put(key, value);
         } catch (Exception e) {
             ex = e;
+            assertTrue(e.getMessage(), false);
         }
 
-        assertNotNull(ex);
+        assertEquals(KVMessage.StatusType.PUT_SUCCESS, result.getStatus());
     }
 
     @Test

@@ -2,6 +2,7 @@ package integration;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import server.ServerState;
 import server.kv.CacheType;
 import server.KVServer;
 import server.kv.KeyValueStore;
@@ -17,7 +18,7 @@ public class AllTests {
             File dbFile = new File(Paths.get("tmp", "INTEGRATION_TEST_DB").toUri());
             if (dbFile.exists()) dbFile.delete();
             KeyValueStore db = new RandomAccessKeyValueStore(dbFile);
-            KVServer s = new KVServer("localhost",50000, 10, CacheType.FIFO, db);
+            KVServer s = new KVServer("localhost",50000, 10, CacheType.FIFO, db, ServerState.State.RUNNING);
             new Thread(s).start();
         } catch (Exception e) {
             e.printStackTrace();
