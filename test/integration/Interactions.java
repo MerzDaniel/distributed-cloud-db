@@ -109,14 +109,18 @@ public class Interactions extends TestCase {
         KVMessage response = null;
         Exception ex = null;
 
+        String result = "";
         try {
             kvClient.put(key, value);
             response = kvClient.get(key);
+            result = response.getValue();
         } catch (Exception e) {
             ex = e;
+            assertTrue(e.getMessage(), false);
         }
 
-        assertTrue(ex == null && response.getValue().equals("bar"));
+        assertEquals(KVMessage.StatusType.GET_SUCCESS, response.getStatus());
+        assertTrue(result.equals("bar"));
     }
 
     @Test
