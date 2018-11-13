@@ -92,6 +92,14 @@ public class PutCommand implements Command {
                     writeLine("Unexpected error occurred when executing the PUT command");
                 }
                 return;
+            case SERVER_STOPPED:
+                logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
+                writeLine("The server is stopped so cannot perform the request");
+                break;
+            case SERVER_WRITE_LOCK:
+                logger.info(kVMessageResponse.getStatus() + String.format("The server is locked for writing so cannot perform the request key<%s>", key));
+                writeLine("The server is locked for writing. Please try again later");
+                break;
             default:
                 writeLine(String.format("Got unexpected response from server: %s", kVMessageResponse.getStatus()));
         }
