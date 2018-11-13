@@ -19,10 +19,11 @@ public interface KVMessage extends IMessage {
         DELETE_ERROR, 	        /* Delete - request successful */
         INVALID_MESSAGE,        /* Invalid message */
         CONNECT_SUCCESSFUL,     /* Connection successful message */
-        CONNECT_ERROR,         /* Connect error message */
+        CONNECT_ERROR,          /* Connect error message */
         SERVER_STOPPED,         /* Server is stopped, no requests are processed */
         SERVER_WRITE_LOCK,      /* Server locked for out, only get possible */
-        SERVER_NOT_RESPONSIBLE  /* Request not successful, server not responsible for key */
+        SERVER_NOT_RESPONSIBLE, /* Request not successful, server not responsible for key */
+        SERVER_NOT_FOUND        /* Request not successful, server not responsible for key */
     }
 
     /**
