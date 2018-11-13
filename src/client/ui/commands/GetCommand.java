@@ -81,6 +81,18 @@ public class GetCommand implements Command {
             return;
         }
 
+        if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_STOPPED) {
+            logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
+            writeLine("The server is stopped so cannot perform the request");
+            return;
+        }
+
+        if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_WRITE_LOCK) {
+            logger.info(kVMessageResponse.getStatus() + String.format("The server is locked for writing so cannot perform the request key<%s>", key));
+            writeLine("The server is locked for writing. Please try again later");
+            return;
+        }
+
         if (kVMessageResponse.getStatus() != KVMessage.StatusType.GET_SUCCESS) {
             writeLine("GET was not successful. Possibly connection hang up.");
             logger.warn(String.format("Get '%s' was not successful: '%s'. Possibly an error in the db. ", kVMessageResponse.toString()));
