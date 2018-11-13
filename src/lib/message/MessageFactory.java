@@ -54,4 +54,10 @@ public class MessageFactory {
     public static KVMessage createServerWriteLock() { return new KVMessageImpl(KVMessage.StatusType.SERVER_WRITE_LOCK);}
 
     public static KVMessage createServerNotFoundMessage() { return new KVMessageImpl(KVMessage.StatusType.SERVER_NOT_FOUND);}
+
+    public static KVMessage createServerError() { return new KVMessageImpl(KVMessage.StatusType.SERVER_ERROR);}
+
+    public static KVMessage createServerNotResponsibleMessage(String key, String value) {
+        return new KVMessageImpl(key, value, KVMessage.StatusType.SERVER_NOT_RESPONSIBLE);
+    }
 }
