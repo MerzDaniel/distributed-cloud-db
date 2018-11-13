@@ -72,8 +72,8 @@ public class ConnectionHandler implements Runnable {
 
     private KVAdminMessage handleKvAdminMessage(KVAdminMessage message) {
         logger.info(String.format(
-                "Got a message: %s with meta '%s' and metaContent '%s'",
-                message.status, message.meta.marshall(), message.metaContent.marshall())
+                "Got a message: %s with meta '%s' and serverData '%s'",
+                message.status, message.meta.marshall(), message.serverData.marshall())
         );
 
         switch (message.status) {

@@ -4,7 +4,7 @@ import client.communication.Connection;
 import lib.message.*;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -82,8 +82,8 @@ public class KVStore implements KVCommInterface{
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
 
-        MetaContent serverMetaContent = kvStoreMetaData.findKVServer(key);
-        boolean connectSuccess = this.connect(serverMetaContent.getHost(), serverMetaContent.getPort());
+        ServerData serverServerData = kvStoreMetaData.findKVServer(key);
+        boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
         if (connectSuccess) {
             this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
@@ -107,8 +107,8 @@ public class KVStore implements KVCommInterface{
     public KVMessage put(String key, String value) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
 
-        MetaContent serverMetaContent = kvStoreMetaData.findKVServer(key);
-        boolean connectSuccess = this.connect(serverMetaContent.getHost(), serverMetaContent.getPort());
+        ServerData serverServerData = kvStoreMetaData.findKVServer(key);
+        boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
         if (connectSuccess) {
             this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));

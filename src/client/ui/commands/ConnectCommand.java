@@ -4,7 +4,7 @@ import client.store.KVStore;
 import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -29,8 +29,8 @@ public class ConnectCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        MetaContent serverMetaContent = new MetaContent(this.url, this.port);
-        state.kvStore = new KVStore(new KVStoreMetaData(Arrays.asList(serverMetaContent)));
+        ServerData serverServerData = new ServerData(this.url, this.port);
+        state.kvStore = new KVStore(new KVStoreMetaData(Arrays.asList(serverServerData)));
         boolean success;
         try {
             success = state.kvStore.connect(this.url, this.port);

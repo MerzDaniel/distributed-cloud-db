@@ -3,19 +3,19 @@ package lib.message.server.metadata;
 import junit.framework.TestCase;
 import lib.message.MarshallingException;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
 
-public class MetaContentTest extends TestCase {
+public class ServerDataTest extends TestCase {
 
     @Test
     public void testMarshallKVServerMetaData() {
-        MetaContent metaContent = new MetaContent("127.0.0.1", 45000, BigInteger.ZERO);
+        ServerData serverData = new ServerData("127.0.0.1", 45000, BigInteger.ZERO);
 
-        String marshalledString = metaContent.marshall();
+        String marshalledString = serverData.marshall();
 
         final String ELEMENT_SEPARATOR = "\u001F";
         String expected = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0";
@@ -29,9 +29,9 @@ public class MetaContentTest extends TestCase {
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000";
 
-        MetaContent metaContent = MetaContent.unmarshall(kvStoreMetaDataString);
+        ServerData serverData = ServerData.unmarshall(kvStoreMetaDataString);
 
-        assertEquals(metaContent, new MetaContent("127.0.0.1", 45000, BigInteger.ZERO));
+        assertEquals(serverData, new ServerData("127.0.0.1", 45000, BigInteger.ZERO));
     }
 
     @Test(expected = MarshallingException.class)

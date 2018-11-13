@@ -1,7 +1,7 @@
 package lib.message;
 
 import junit.framework.TestCase;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -149,7 +149,7 @@ public class MessageUnmarshallerTest extends TestCase {
                 "000000";
         KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
         assertEquals(KVAdminMessage.StatusType.CONFIGURE, message.status);
-        MetaContent c = message.meta.getKvServerList().get(0);
+        ServerData c = message.meta.getKvServerList().get(0);
         assertEquals("127.0.0.1", c.getHost());
         assertEquals(50001, c.getPort());
         assertEquals(BigInteger.ZERO, c.getFromHash());
@@ -163,7 +163,7 @@ public class MessageUnmarshallerTest extends TestCase {
                 "000000";
         KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
         assertEquals(KVAdminMessage.StatusType.MOVE, message.status);
-        MetaContent c = message.metaContent;
+        ServerData c = message.serverData;
         assertEquals("127.0.0.1", c.getHost());
         assertEquals(50001, c.getPort());
         assertEquals(BigInteger.ZERO, c.getFromHash());

@@ -1,7 +1,7 @@
 package lib.message;
 
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 
 /**
  * This is the absruct structure for the messages between KVServer and ECS
@@ -9,7 +9,7 @@ import lib.metadata.MetaContent;
 public class KVAdminMessage implements IMessage {
     public final StatusType status;
     public KVStoreMetaData meta;
-    public MetaContent metaContent;
+    public ServerData serverData;
 
     public enum StatusType {
         CONFIGURE,
@@ -38,9 +38,9 @@ public class KVAdminMessage implements IMessage {
         this.status = status;
     }
 
-    public KVAdminMessage(StatusType status, MetaContent content) {
+    public KVAdminMessage(StatusType status, ServerData content) {
         this.status = status;
-        metaContent = content;
+        serverData = content;
     }
     public KVAdminMessage(StatusType status, KVStoreMetaData meta) {
         this.status = status;

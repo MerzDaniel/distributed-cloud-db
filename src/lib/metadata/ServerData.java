@@ -4,32 +4,33 @@ import lib.message.MarshallingException;
 
 import java.math.BigInteger;
 
-public class MetaContent {
+public class ServerData {
     private final static String ELEMENT_SEPARATOR = "\u001F";
 
     String host;
     int port;
+
     BigInteger fromHash = BigInteger.ZERO;
 
-    public MetaContent(String host, int port, BigInteger fromHash) {
+    public ServerData(String host, int port, BigInteger fromHash) {
         this.host = host;
         this.port = port;
         this.fromHash = fromHash;
     }
 
-    public MetaContent(String host, int port) {
+    public ServerData(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MetaContent)) {
+        if (!(o instanceof ServerData)) {
             return false;
         }
 
-        MetaContent metaContent = (MetaContent) o;
-        if (this.host.equals(metaContent.host) && port == metaContent.port && this.fromHash.equals(metaContent.fromHash)) {
+        ServerData serverData = (ServerData) o;
+        if (this.host.equals(serverData.host) && port == serverData.port && this.fromHash.equals(serverData.fromHash)) {
             return true;
         }
 
@@ -52,12 +53,12 @@ public class MetaContent {
         return host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash;
     }
 
-    public static MetaContent unmarshall(String kvServerMetaData) throws MarshallingException {
+    public static ServerData unmarshall(String kvServerMetaData) throws MarshallingException {
 
         try {
             String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
             int port = Integer.parseInt(split[1]);
-            return new MetaContent(split[0], port, new BigInteger(split[2]));
+            return new ServerData(split[0], port, new BigInteger(split[2]));
         } catch (Exception ex) {
             throw new MarshallingException(ex);
         }

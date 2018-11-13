@@ -1,7 +1,7 @@
 package server;
 
 import lib.SocketUtil;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.*;
@@ -24,7 +24,7 @@ public class KVServer implements Runnable {
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
     private final ServerState state;
-    private final MetaContent metaContent;
+    private final ServerData serverData;
 
     /**
      * Start KV Server at given port
@@ -33,8 +33,8 @@ public class KVServer implements Runnable {
      */
     public KVServer(String host, int port) {
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        metaContent = new MetaContent(host, port);
-        state = new ServerState(db, metaContent);
+        serverData = new ServerData(host, port);
+        state = new ServerState(db, serverData);
     }
 
     /**
@@ -52,9 +52,9 @@ public class KVServer implements Runnable {
     public KVServer(String host, int port, int cacheSize, CacheType cacheType) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        metaContent = new MetaContent(host, port);
+        serverData = new ServerData(host, port);
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        state = new ServerState(db, metaContent);
+        state = new ServerState(db, serverData);
     }
 
     /**
@@ -73,19 +73,19 @@ public class KVServer implements Runnable {
                     ServerState.State runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        metaContent = new MetaContent(host, port);
-        state = new ServerState(db, metaContent);
+        serverData = new ServerData(host, port);
+        state = new ServerState(db, serverData);
         state.runningState = runningState;
     }
 
     @Override
     public void run() {
-        logger.info("Start server on port " + metaContent.getPort());
+        logger.info("Start server on port " + serverData.getPort());
 
         initDb();
 
         List<Socket> openConnections = new LinkedList<>();
-        try (ServerSocket s = new ServerSocket(metaContent.getPort())) {
+        try (ServerSocket s = new ServerSocket(serverData.getPort())) {
             while (state.runningState != ServerState.State.SHUTTINGDOWN) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());

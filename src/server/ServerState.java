@@ -1,18 +1,18 @@
 package server;
 
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import server.kv.KeyValueStore;
 
 public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
     public KeyValueStore db;
-    public MetaContent currentServerMetaContent;
+    public ServerData currentServerServerData;
     public State runningState = State.UNCONFIGURED;
 
-    public ServerState(KeyValueStore db, MetaContent metaContent) {
+    public ServerState(KeyValueStore db, ServerData serverData) {
         this.db = db;
-        this.currentServerMetaContent = metaContent;
+        this.currentServerServerData = serverData;
     }
 
     public enum State {

@@ -2,7 +2,7 @@ package client.ui;
 
 import client.store.KVStore;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import client.ui.commands.ErrorCommand;
@@ -57,7 +57,7 @@ public class KVClient {
         logger = LogManager.getLogger(KVClient.class);
         state = new ApplicationState(
                 new KVStore(
-                        new KVStoreMetaData(Arrays.asList(new MetaContent("127.0.0.1", 50000)))
+                        new KVStoreMetaData(Arrays.asList(new ServerData("127.0.0.1", 50000)))
                 )
         );
         commandParser = new CommandParser();

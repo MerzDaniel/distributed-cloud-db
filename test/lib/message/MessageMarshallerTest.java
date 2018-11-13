@@ -2,7 +2,7 @@ package lib.message;
 
 import junit.framework.TestCase;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.MetaContent;
+import lib.metadata.ServerData;
 import org.junit.Test;
 
 
@@ -50,7 +50,7 @@ public class MessageMarshallerTest extends TestCase {
     public void testMarshallAdminConfigureMessage() throws MarshallingException {
         KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE);
         m.meta = new KVStoreMetaData();
-        m.meta.getKvServerList().add(new MetaContent("localhost", 50000));
+        m.meta.getKvServerList().add(new ServerData("localhost", 50000));
 
         String expected = String.format("CONFIGURE%1$slocalhost%2$s50000%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
         String result = MessageMarshaller.marshall(m);
@@ -60,7 +60,7 @@ public class MessageMarshallerTest extends TestCase {
     public void testMarshallAdminMoveMessage() throws MarshallingException {
         KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.MOVE);
         m.meta = new KVStoreMetaData();
-        m.metaContent = new MetaContent("localhost", 50000);
+        m.serverData = new ServerData("localhost", 50000);
 
         String expected = String.format("MOVE%1$slocalhost%2$s50000%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
         String result = MessageMarshaller.marshall(m);
