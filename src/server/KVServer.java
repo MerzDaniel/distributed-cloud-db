@@ -9,7 +9,6 @@ import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,7 +23,6 @@ public class KVServer implements Runnable {
     final Logger logger = LogManager.getLogger(KVServer.class);
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
-    private boolean stopRequested = false;
     private final ServerState state;
     private final MetaContent metaContent;
 
@@ -88,7 +86,7 @@ public class KVServer implements Runnable {
 
         List<Socket> openConnections = new LinkedList<>();
         try (ServerSocket s = new ServerSocket(metaContent.getPort())) {
-            while (!stopRequested) {
+            while (state.runningState != ServerState.State.SHUTTINGDOWN) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 openConnections.add(clientSocket);
@@ -99,6 +97,11 @@ public class KVServer implements Runnable {
         } finally {
             for (Socket s : openConnections) {
                 SocketUtil.tryClose(s);
+            }
+            try {
+                state.db.shutdown();
+            } catch (IOException e) {
+                logger.warn("Problem during shutting down db", e);
             }
         }
     }
@@ -127,7 +130,7 @@ public class KVServer implements Runnable {
     }
 
     public void stop() throws IOException {
-        stopRequested = true;
+        state.runningState = ServerState.State.SHUTTINGDOWN;
         state.db.shutdown();
     }
 

@@ -41,7 +41,8 @@ public class ConnectionHandler implements Runnable {
             String connectMessage = MessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
             SocketUtil.sendMessage(o, connectMessage);
 
-            while (SocketUtil.isConnected(s)) {
+            while (SocketUtil.isConnected(s) &&
+                    state.runningState != ServerState.State.SHUTTINGDOWN) {
                 IMessage response = handleIncomingMessage(i, o);
                 SocketUtil.sendMessage(o, MessageMarshaller.marshall(response));
             }
@@ -92,7 +93,8 @@ public class ConnectionHandler implements Runnable {
                 state.runningState = ServerState.State.IDLE;
                 return new KVAdminMessage(KVAdminMessage.StatusType.STOP_SUCCESS);
             case SHUT_DOWN:
-                break;
+                state.runningState = ServerState.State.SHUTTINGDOWN;
+                return new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS);
             case MOVE:
                 break;
         }
