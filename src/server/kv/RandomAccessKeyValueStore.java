@@ -26,8 +26,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     private final String RECORD_SEPARATOR = "\u001E";
 
-    public RandomAccessKeyValueStore() {
-        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db").toUri());
+    public RandomAccessKeyValueStore(String dataFileName) {
+        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dataFileName).toUri());
     }
 
     public RandomAccessKeyValueStore(File dbFile) {

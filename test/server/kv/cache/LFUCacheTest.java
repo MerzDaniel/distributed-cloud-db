@@ -13,7 +13,7 @@ public class LFUCacheTest {
 
     @Before
     public void initCache() {
-        lfuCache = new LFUCachedKeyValueStore(3);
+        lfuCache = new LFUCachedKeyValueStore(3, "db");
         this.populateCache();
     }
 

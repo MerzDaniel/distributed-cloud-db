@@ -12,7 +12,7 @@ public class FifoCacheTest {
 
     @Before
     public void initCache() {
-        fifoCache = new FifoCachedKeyValueStore(3);
+        fifoCache = new FifoCachedKeyValueStore(3, "db");
         this.populateCache();
     }
 
