@@ -23,14 +23,7 @@ public class LoadConfiguration implements Command {
     @Override
     public void execute(State state) {
         if (!configPath.exists()) {
-            logger.debug("Create new config file");
-            System.out.println("Config file does not exist. Creating a new one at '" + configPath + "' ...");
-            configPath.getParentFile().mkdirs();
-            try {
-                configPath.createNewFile();
-            } catch (IOException e) {
-                System.out.println("ERROR while creating config file.");
-            }
+            System.out.println("Config was not found at " + configPath.getAbsolutePath());
             return;
         }
 
@@ -55,7 +48,7 @@ public class LoadConfiguration implements Command {
                     String host = tokens[1];
                     int port = Integer.parseInt(tokens[2]);
                     BigInteger hash = HashUtil.getHash(name);
-                    ServerData s = new ServerData(tokens[0], tokens[1],port,hash);
+                    ServerData s = new ServerData(name, host, port, hash);
                     servers.add(s);
                 } catch (Exception e) {
                     System.out.println("Config file contains errors!");
