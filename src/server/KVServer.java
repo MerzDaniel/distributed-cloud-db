@@ -1,6 +1,7 @@
 package server;
 
 import lib.SocketUtil;
+import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -77,6 +78,8 @@ public class KVServer implements Runnable {
         serverData = new ServerData(name, host, port);
         state = new ServerState(db, serverData);
         state.runningState = runningState;
+        state.meta = new KVStoreMetaData();
+        state.meta.getKvServerList().add(serverData);
     }
 
     @Override

@@ -73,17 +73,15 @@ public class Interactions extends TestCase {
         String updatedValue = "updated";
 
         KVMessage response = null;
-        Exception ex = null;
-
         try {
             kvClient.put(key, initialValue);
             response = kvClient.put(key, updatedValue);
 
         } catch (Exception e) {
-            ex = e;
+            assertTrue(false);
         }
 
-        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.PUT_UPDATE);
+        assertEquals(KVMessage.StatusType.PUT_UPDATE, response.getStatus());
     }
 
     @Test
@@ -92,16 +90,14 @@ public class Interactions extends TestCase {
         String value = "toDelete";
 
         KVMessage response = null;
-        Exception ex = null;
-
         try {
             kvClient.put(key, value);
             response = kvClient.put(key, "null");
         } catch (Exception e) {
-            ex = e;
+            assertTrue(false);
         }
 
-        assertTrue(ex == null && response.getStatus() == KVMessage.StatusType.DELETE_SUCCESS);
+        assertEquals(KVMessage.StatusType.DELETE_SUCCESS, response.getStatus());
     }
 
     @Test
@@ -109,7 +105,6 @@ public class Interactions extends TestCase {
         String key = "foo";
         String value = "bar";
         KVMessage response = null;
-        Exception ex = null;
 
         String result = "";
         try {
@@ -117,7 +112,6 @@ public class Interactions extends TestCase {
             response = kvClient.get(key);
             result = response.getValue();
         } catch (Exception e) {
-            ex = e;
             assertTrue(e.getMessage(), false);
         }
 
