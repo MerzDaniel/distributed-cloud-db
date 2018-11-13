@@ -9,7 +9,7 @@ public class MetaContent {
 
     String host;
     int port;
-    BigInteger fromHash;
+    BigInteger fromHash = BigInteger.ZERO;
 
     public MetaContent(String host, int port, BigInteger fromHash) {
         this.host = host;

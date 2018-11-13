@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import lib.metadata.MetaContent;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class MessageUnmarshallerTest extends TestCase {
     final String RECORD_SEPARATOR = "\u001E";
     final String ELEMENT_SEPARATOR = "\u001F";
@@ -150,7 +152,7 @@ public class MessageUnmarshallerTest extends TestCase {
         MetaContent c = message.meta.getKvServerList().get(0);
         assertEquals("127.0.0.1", c.getHost());
         assertEquals(50001, c.getPort());
-        assertEquals(0, c.getFromHash());
+        assertEquals(BigInteger.ZERO, c.getFromHash());
     }
 
     @Test
@@ -164,7 +166,7 @@ public class MessageUnmarshallerTest extends TestCase {
         MetaContent c = message.metaContent;
         assertEquals("127.0.0.1", c.getHost());
         assertEquals(50001, c.getPort());
-        assertEquals(0, c.getFromHash());
+        assertEquals(BigInteger.ZERO, c.getFromHash());
     }
 }
 
