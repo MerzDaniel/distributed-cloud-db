@@ -1,5 +1,7 @@
 package ecs;
 
-public class State {
+import lib.metadata.KVStoreMetaData;
 
+public class State {
+    KVStoreMetaData meta = new KVStoreMetaData();
 }

@@ -45,6 +45,8 @@ public class ServerData {
         return fromHash;
     }
 
+    public String getName() { return name; }
+
     public String getHost() {
         return host;
     }
