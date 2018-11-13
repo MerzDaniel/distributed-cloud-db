@@ -52,4 +52,6 @@ public class MessageFactory {
     public static KVMessage creatServerStopped() { return new KVMessageImpl(KVMessage.StatusType.SERVER_STOPPED);}
 
     public static KVMessage createServerWriteLock() { return new KVMessageImpl(KVMessage.StatusType.SERVER_WRITE_LOCK);}
+
+    public static KVMessage createServerNotFoundMessage() { return new KVMessageImpl(KVMessage.StatusType.SERVER_NOT_FOUND);}
 }
