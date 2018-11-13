@@ -1,5 +1,6 @@
 package ecs.command;
 
+import ecs.Command;
 import ecs.State;
 import lib.SocketUtil;
 import lib.message.KVAdminMessage;
@@ -11,7 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class StartServersCommand implements ecs.Command {
+public class ConfigureAllCommand implements Command {
+
     @Override
     public void execute(State state) {
         boolean universeIsOk = true;
@@ -22,23 +24,21 @@ public class StartServersCommand implements ecs.Command {
                 KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
 
                 OutputStream o = s.getOutputStream();
-                KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.START);
+                KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE, state.meta);
                 SocketUtil.sendMessage(o, MessageMarshaller.marshall(msg));
 
                 KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
-                if (response.status != KVAdminMessage.StatusType.START_SUCCESS) {
+                if (response.status != KVAdminMessage.StatusType.CONFIGURE_SUCCESS) {
                     System.out.println(String.format("Error while starting server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
-                    universeIsOk = false;
                 }
-
             } catch (Exception e) {
                 System.out.println(String.format("Error while starting server %s:%d : %s", sd.getHost(), sd.getPort(), e.getMessage()));
             }
         }
 
         if (universeIsOk)
-            System.out.println("Successfully started all servers");
+            System.out.println("Successfully configured all servers");
         else
-            System.out.println("All other servers were started");
+            System.out.println("All other servers were configured successfully");
     }
 }

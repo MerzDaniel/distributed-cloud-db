@@ -1,9 +1,6 @@
 package ecs;
 
-import ecs.command.AddServerCommand;
-import ecs.command.SshCommand;
-import ecs.command.StartServersCommand;
-import ecs.command.UsageCommand;
+import ecs.command.*;
 
 public final class CommandParser {
     public static void parseLine(String line, State state) {
@@ -24,6 +21,9 @@ public final class CommandParser {
         }
         if (tokens[0].equals("start")) {
             command = new StartServersCommand();
+        }
+        if (tokens[0].equals("configure")) {
+            command = new ConfigureAllCommand();
         }
 
         if (command == null) {
