@@ -42,8 +42,13 @@ public class KVStoreMetaData {
         return new KVStoreMetaData(serverDataList);
     }
 
-    public ServerData findKVServer(String key) throws NoSuchAlgorithmException, KVServerNotFoundException {
-        BigInteger hash = HashUtil.getHash(key);
+    public ServerData findKVServer(String key) throws KVServerNotFoundException {
+        BigInteger hash;
+        try {
+            hash = HashUtil.getHash(key);
+        } catch (NoSuchAlgorithmException e) {
+            throw new KVServerNotFoundException();
+        }
 
         if (kvServerList == null || kvServerList.size() == 0) {
             throw new KVServerNotFoundException();

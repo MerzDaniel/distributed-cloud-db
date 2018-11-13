@@ -84,6 +84,7 @@ public class ConnectionHandler implements Runnable {
         switch (message.status) {
             case CONFIGURE:
                 state.meta = message.meta;
+
                 if (state.runningState == ServerState.State.UNCONFIGURED)
                     state.runningState = ServerState.State.IDLE;
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
@@ -104,7 +105,6 @@ public class ConnectionHandler implements Runnable {
                 break;
         }
 
-        // handle Admin messages
         throw new NotImplementedException();
     }
 
@@ -117,15 +117,7 @@ public class ConnectionHandler implements Runnable {
             return MessageFactory.creatServerStopped();
         }
 
-        ServerData responsibleServer;
-        try {
-            responsibleServer = state.meta.findKVServer(kvMessage.getKey());
-        } catch (KVServerNotFoundException e) {
-            return MessageFactory.createServerNotFoundMessage();
-        } catch (NoSuchAlgorithmException e) {
-            return MessageFactory.createServerError();
-        }
-        if (!state.currentServerServerData.equals(responsibleServer)) {
+        if (!isResponsible(state.currentServerServerData, kvMessage.getKey())) {
             return MessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
         }
 
@@ -170,6 +162,16 @@ public class ConnectionHandler implements Runnable {
         }
 
         return true;
+    }
+
+    private boolean isResponsible(ServerData sd, String key) {
+        ServerData responsibleServer;
+        try {
+            responsibleServer = state.meta.findKVServer(key);
+            return responsibleServer.getHost().equals(sd.getHost()) && responsibleServer.getPort() == sd.getPort();
+        } catch (KVServerNotFoundException e) {
+            return false;
+        }
     }
 }
 

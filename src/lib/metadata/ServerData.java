@@ -34,11 +34,7 @@ public class ServerData {
         }
 
         ServerData serverData = (ServerData) o;
-        if (this.host.equals(serverData.host) && port == serverData.port && this.fromHash.equals(serverData.fromHash)) {
-            return true;
-        }
-
-        return false;
+        return this.host.equals(serverData.host) && this.port == serverData.port;// && this.fromHash.equals(serverData.fromHash);
     }
 
     public BigInteger getFromHash() {
