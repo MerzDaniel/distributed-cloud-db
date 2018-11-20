@@ -84,6 +84,7 @@ public class ConnectionHandler implements Runnable {
         switch (message.status) {
             case CONFIGURE:
                 state.meta = message.meta;
+                state.currentServerServerData = message.meta.getKvServerList().get(message.currentServerIndex);
 
                 if (state.runningState == RunningState.UNCONFIGURED)
                     state.runningState = RunningState.IDLE;
