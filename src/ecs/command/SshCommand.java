@@ -6,6 +6,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import ecs.State;
 
+import java.nio.file.Paths;
+
 public class SshCommand implements ecs.Command {
     @Override
     public void execute(State state) {
@@ -17,9 +19,14 @@ public class SshCommand implements ecs.Command {
             return;
         }
         try {
-            String userName = "daniel";
-            String host = "2001:a61:2429:9000:d01f:27fa:f5e4:4f31";
+            String userName = "";
+            String host = "";
+            shell.addIdentity(Paths.get(System.getProperty("user.home"), ".ssh", "id_rsa").toString());
+//            shell.setKnownHosts(Paths.get(System.getProperty("user.home"), ".ssh", "known_hosts").toString());
             Session session = shell.getSession(userName, host, 22);
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
             session.connect(1000);
             Channel channel = session.openChannel("shell");
             channel.setOutputStream(System.out);
