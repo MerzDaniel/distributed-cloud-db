@@ -174,6 +174,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
             @Override
             public boolean hasNext() {
+                if (next != null) return true;
+
                 if (reader == null) {
                     try {
                         reader = new BufferedReader(new FileReader(DB_FILE));
@@ -205,6 +207,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
             @Override
             public AbstractMap.SimpleEntry<String, String> next() {
+                AbstractMap.SimpleEntry<String, String> next = this.next;
+                this.next = null;
                 return next;
             }
         };
