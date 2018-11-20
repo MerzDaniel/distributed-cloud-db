@@ -102,7 +102,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     @Override
     public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
-        throw new NotImplementedException();
+        return store.retrieveAllData();
     }
 
     /**
