@@ -186,7 +186,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
                 try {
                     while (true) {
                         String nextLine = reader.readLine();
-                        if (nextLine == null) break;
+                        if (nextLine == null) break; // end of file
                         next = parseLine(nextLine);
                         if (next != null) return true;
                     }
