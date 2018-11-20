@@ -2,10 +2,13 @@ package server.kv;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * This class is an implementaiton of a KeyValueStore with a {@link Reader} and a {@link Writer}
@@ -170,6 +173,11 @@ public class SimpleKeyValueStore implements KeyValueStore {
             throw new DbError(e);
         }
         return true;
+    }
+
+    @Override
+    public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
+        throw new NotImplementedException();
     }
 
     private String ioDelete(String key) throws IOException, KeyNotFoundException {

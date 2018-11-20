@@ -2,13 +2,16 @@ package server.kv;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Paths;
+import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * This class is an implementaiton of a KeyValueStore with a {@link RandomAccessFile} thus having the
@@ -162,6 +165,11 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             logger.error("IO Exception during DELETE", e);
             throw new DbError(e);
         }
+    }
+
+    @Override
+    public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
+        throw new NotImplementedException();
     }
 
     private boolean ioDelete(String key) throws IOException {

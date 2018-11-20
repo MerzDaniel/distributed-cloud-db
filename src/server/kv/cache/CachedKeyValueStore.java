@@ -5,7 +5,10 @@ import server.kv.KeyNotFoundException;
 import server.kv.KeyValueStore;
 import server.kv.SimpleKeyValueStore;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.stream.Stream;
 
 /**
  * This class represent a KeyValueStore with an embedded caching mechanism. The
@@ -95,6 +98,11 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
     @Override
     public void shutdown() throws IOException {
         store.shutdown();
+    }
+
+    @Override
+    public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
+        throw new NotImplementedException();
     }
 
     /**

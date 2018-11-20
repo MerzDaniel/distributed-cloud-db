@@ -1,6 +1,8 @@
 package server.kv;
 
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.stream.Stream;
 
 /**
  * This class defines the abstract behaviour for the KeyValueStore
@@ -51,4 +53,6 @@ public interface KeyValueStore {
      * @throws DbError if any errors happened while deleting the record from the database
      */
     boolean deleteKey(String key) throws DbError;
+
+    Stream<AbstractMap.SimpleEntry<String,String>> retrieveAllData();
 }
