@@ -25,6 +25,9 @@ public final class CommandParser {
         if (tokens[0].equals("configure")) {
             command = new ConfigureAllCommand();
         }
+        if (tokens[0].equals("status")) {
+            command = new ServerStatusCommand();
+        }
 
         if (command == null) {
             System.out.println("Unknown Command.");

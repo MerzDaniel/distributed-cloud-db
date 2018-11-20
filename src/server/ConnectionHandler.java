@@ -101,6 +101,8 @@ public class ConnectionHandler implements Runnable {
             case SHUT_DOWN:
                 state.runningState = RunningState.SHUTTINGDOWN;
                 return new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS);
+            case STATUS:
+                return new KVAdminMessage(KVAdminMessage.StatusType.STATUS_RESPONSE, state.runningState);
             case MOVE:
                 break;
         }
