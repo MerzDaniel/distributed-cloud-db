@@ -1,16 +1,14 @@
 package server.kv;
 
+import lib.StreamUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 /**
@@ -170,7 +168,48 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     @Override
     public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
-        throw new NotImplementedException();
+        Iterator<AbstractMap.SimpleEntry<String, String>> iterator = new Iterator<AbstractMap.SimpleEntry<String, String>>() {
+            BufferedReader reader;
+            AbstractMap.SimpleEntry<String, String> next = null;
+
+            @Override
+            public boolean hasNext() {
+                if (reader == null) {
+                    try {
+                        reader = new BufferedReader(new FileReader(DB_FILE));
+                    } catch (FileNotFoundException e) {
+                        logger.warn("File not found.", e);
+                        return false;
+                    }
+                }
+
+                try {
+                    while (true) {
+                        String nextLine = reader.readLine();
+                        if (nextLine == null) break;
+                        next = parseLine(nextLine);
+                        if (next != null) return true;
+                    }
+                } catch (IOException e) {
+                    logger.warn("Error while reading file", e);
+                }
+
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    logger.warn("Error while closing stream", e);
+                }
+
+                return false;
+            }
+
+            @Override
+            public AbstractMap.SimpleEntry<String, String> next() {
+                return next;
+            }
+        };
+
+        return StreamUtils.asStream(iterator, false);
     }
 
     private boolean ioDelete(String key) throws IOException {
