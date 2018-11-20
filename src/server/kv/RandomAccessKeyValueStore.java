@@ -87,10 +87,11 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             rows++;
             if (nextLine == null) break;
 
-            String[] split = nextLine.split(RECORD_SEPARATOR);
-            if (split.length != 2) continue;
-            if (split[0].equals(key)) {
-                return split[1];
+            AbstractMap.SimpleEntry<String, String> entry = parseLine(nextLine);
+
+            if (entry == null) continue;
+            if (entry.getKey().equals(key)) {
+                return entry.getValue();
             }
         }
 
@@ -181,18 +182,22 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
                 nextLine = db.readLine();
                 if (nextLine == null) break;
 
-                String[] split = nextLine.split(RECORD_SEPARATOR);
-                if (split.length != 2) continue;
-                if (split[0].equals(key)) {
-                    db.seek(linePosition);
-                    byte[] emptyLine = new byte[nextLine.length()];
-                    Arrays.fill(emptyLine, (byte) 0);
-                    db.write(emptyLine);
-                    return true;
-                }
+                AbstractMap.SimpleEntry<String, String> entry = parseLine(nextLine);
+
+                if (entry == null || !entry.getKey().equals(key)) continue;
+
+                db.seek(linePosition);
+                byte[] emptyLine = new byte[nextLine.length()];
+                Arrays.fill(emptyLine, (byte) 0);
+                db.write(emptyLine);
+                return true;
             }
         }
         return false;
     }
 
+    private AbstractMap.SimpleEntry<String, String> parseLine(String line) {
+        String[] split = line.split(RECORD_SEPARATOR);
+        return split.length == 2 ? new AbstractMap.SimpleEntry<>(split[0], split[1]) : null;
+    }
 }
