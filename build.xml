@@ -13,17 +13,17 @@
   <property name="tmp.dir" value="tmp"/>
 
   <!-- Configuration for client application -->
-  <property name="clientjar.file" value="ms3-client.jar"/>
+  <property name="clientjar.file" value="client.jar"/>
   <property name="clientmanifest.file" value="CLIENT_MANIFEST.MF"/>
   <property name="clientmain.class" value="client.Main"/>
 
   <!-- Configuration for server application -->
-  <property name="serverjar.file" value="ms3-server.jar"/>
+  <property name="serverjar.file" value="server.jar"/>
   <property name="servermanifest.file" value="SERVER_MANIFEST.MF"/>
   <property name="servermain.class" value="server.Main"/>
 
   <!-- Configuration for server application -->
-  <property name="ecsjar.file" value="ms3-ecs.jar"/>
+  <property name="ecsjar.file" value="ecs.jar"/>
   <property name="ecsmanifest.file" value="ECS_MANIFEST.MF"/>
   <property name="ecsmain.class" value="ecs.Main"/>
 
