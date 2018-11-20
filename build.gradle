@@ -3,3 +3,5 @@ group = "ui"
 version = "1.0.0"
 
 ant.importBuild 'build.xml'
+
+task stage(dependsOn: ['build-jar'])
