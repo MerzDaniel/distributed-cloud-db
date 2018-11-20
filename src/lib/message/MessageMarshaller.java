@@ -6,6 +6,9 @@ import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * This class provied the methods to marshall a {@link KVMessage} instance
  */
@@ -86,11 +89,8 @@ public final class MessageMarshaller {
 
     private static IMessage unmarshallKvAdminMessage(String[] kvMessageComponents) throws MarshallingException {
         KVAdminMessage.StatusType status = KVAdminMessage.StatusType.valueOf(kvMessageComponents[0]);
-        StringBuilder b = new StringBuilder();
-        for (int i = 1; i < kvMessageComponents.length; i++) {
-            b.append(kvMessageComponents[i]);
-        }
-        String secondPart = b.toString();
+
+        String secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
 
         switch (status) {
             case CONFIGURE:
