@@ -2,6 +2,7 @@ package server;
 
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
+import lib.server.RunningState;
 import server.kv.KeyValueStore;
 
 public class ServerState {
@@ -15,16 +16,4 @@ public class ServerState {
         this.currentServerServerData = serverData;
     }
 
-    public enum RunningState {
-        /** No meta configured */
-        UNCONFIGURED,
-        /** Configured but does not handle client requests */
-        IDLE,
-        /** Handles client READ requests */
-        READONLY,
-        /** Normally handle all requests */
-        RUNNING,
-        /** Server is shutting down will not be reachable in a few seconds */
-        SHUTTINGDOWN,
-    }
 }

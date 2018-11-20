@@ -4,6 +4,7 @@ import lib.SocketUtil;
 import lib.message.*;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
+import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.handler.GetHandler;
@@ -44,7 +45,7 @@ public class ConnectionHandler implements Runnable {
             SocketUtil.sendMessage(o, connectMessage);
 
             while (SocketUtil.isConnected(s) &&
-                    state.runningState != ServerState.RunningState.SHUTTINGDOWN) {
+                    state.runningState != RunningState.SHUTTINGDOWN) {
                 IMessage response = handleIncomingMessage(i, o);
                 SocketUtil.sendMessage(o, MessageMarshaller.marshall(response));
             }
@@ -84,21 +85,21 @@ public class ConnectionHandler implements Runnable {
             case CONFIGURE:
                 state.meta = message.meta;
 
-                if (state.runningState == ServerState.RunningState.UNCONFIGURED)
-                    state.runningState = ServerState.RunningState.IDLE;
+                if (state.runningState == RunningState.UNCONFIGURED)
+                    state.runningState = RunningState.IDLE;
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
             case START:
-                if (state.runningState != ServerState.RunningState.IDLE)
+                if (state.runningState != RunningState.IDLE)
                     return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
-                state.runningState = ServerState.RunningState.RUNNING;
+                state.runningState = RunningState.RUNNING;
                 return new KVAdminMessage(KVAdminMessage.StatusType.START_SUCCESS);
             case STOP:
-                if (!Arrays.asList(ServerState.RunningState.RUNNING, ServerState.RunningState.READONLY).contains(state.runningState))
+                if (!Arrays.asList(RunningState.RUNNING, RunningState.READONLY).contains(state.runningState))
                     return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
-                state.runningState = ServerState.RunningState.IDLE;
+                state.runningState = RunningState.IDLE;
                 return new KVAdminMessage(KVAdminMessage.StatusType.STOP_SUCCESS);
             case SHUT_DOWN:
-                state.runningState = ServerState.RunningState.SHUTTINGDOWN;
+                state.runningState = RunningState.SHUTTINGDOWN;
                 return new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS);
             case MOVE:
                 break;
@@ -109,7 +110,7 @@ public class ConnectionHandler implements Runnable {
 
     private KVMessage handleKvMessage(KVMessage kvMessage) {
         if (
-                !Arrays.asList(ServerState.RunningState.RUNNING, ServerState.RunningState.READONLY).contains(state.runningState)) {
+                !Arrays.asList(RunningState.RUNNING, RunningState.READONLY).contains(state.runningState)) {
             logger.info(String.format("Client issued %s while server is in state %s",
                     kvMessage.getStatus().toString(), state.runningState.toString())
             );
@@ -120,7 +121,7 @@ public class ConnectionHandler implements Runnable {
             return MessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
         }
 
-        if (state.runningState == ServerState.RunningState.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
+        if (state.runningState == RunningState.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
             logger.info(String.format("Client issued %s while server is in state %s",
                     kvMessage.getStatus().toString(), state.runningState.toString())
             );

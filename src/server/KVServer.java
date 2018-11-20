@@ -3,6 +3,7 @@ package server;
 import lib.SocketUtil;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
+import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.*;
@@ -71,7 +72,7 @@ public class KVServer implements Runnable {
      * @param db        the {@link KeyValueStore} associated with the KVServer instance
      */
     public KVServer(String name, String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db,
-                    ServerState.RunningState runningState) {
+                    RunningState runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
@@ -89,7 +90,7 @@ public class KVServer implements Runnable {
 
         List<Socket> openConnections = new LinkedList<>();
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
-            while (state.runningState != ServerState.RunningState.SHUTTINGDOWN) {
+            while (state.runningState != RunningState.SHUTTINGDOWN) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 openConnections.add(clientSocket);
@@ -133,7 +134,7 @@ public class KVServer implements Runnable {
     }
 
     public void stop() throws IOException {
-        state.runningState = ServerState.RunningState.SHUTTINGDOWN;
+        state.runningState = RunningState.SHUTTINGDOWN;
         state.db.shutdown();
     }
 
