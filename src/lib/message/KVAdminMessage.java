@@ -12,6 +12,7 @@ public class KVAdminMessage implements IMessage {
     public KVStoreMetaData meta;
     public ServerData serverData;
     public RunningState runningState;
+    public int currentServerIndex;
 
     public KVAdminMessage(StatusType status, RunningState rs) {
         this.status = status;
@@ -54,9 +55,10 @@ public class KVAdminMessage implements IMessage {
         serverData = content;
     }
 
-    public KVAdminMessage(StatusType status, KVStoreMetaData meta) {
+    public KVAdminMessage(StatusType status, KVStoreMetaData meta, int currentServerIndex) {
         this.status = status;
         this.meta = meta;
+        this.currentServerIndex = currentServerIndex;
     }
 
 }
