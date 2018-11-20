@@ -7,6 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +45,8 @@ public final class MessageMarshaller {
         if (adminMessage.status == KVAdminMessage.StatusType.CONFIGURE)
             return String.join(RECORD_SEPARATOR,
                     adminMessage.status.name(),
-                    adminMessage.meta.marshall()
+                    adminMessage.meta.marshall(),
+                    String.valueOf(adminMessage.currentServerIndex)
             );
 
         if (adminMessage.status == KVAdminMessage.StatusType.MOVE)
@@ -71,7 +73,7 @@ public final class MessageMarshaller {
      */
     public static IMessage unmarshall(String kvMessageString) throws MarshallingException {
         try {
-            String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR, 3);
+            String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR);
             String key;
             String value;
 
@@ -90,19 +92,21 @@ public final class MessageMarshaller {
     private static IMessage unmarshallKvAdminMessage(String[] kvMessageComponents) throws MarshallingException {
         KVAdminMessage.StatusType status = KVAdminMessage.StatusType.valueOf(kvMessageComponents[0]);
 
-        String secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+        String secondPart;
 
         switch (status) {
             case CONFIGURE:
-
+                secondPart = Arrays.stream(kvMessageComponents).limit(kvMessageComponents.length - 1).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
                 return new KVAdminMessage(
-                        status, KVStoreMetaData.unmarshall(secondPart)
+                        status, KVStoreMetaData.unmarshall(secondPart), Integer.valueOf(kvMessageComponents[kvMessageComponents.length - 1])
                 );
             case MOVE:
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
             case STATUS_RESPONSE:
-                    return new KVAdminMessage(status, RunningState.valueOf(secondPart));
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                return new KVAdminMessage(status, RunningState.valueOf(secondPart));
 
             default:
                 return new KVAdminMessage(status);

@@ -18,13 +18,14 @@ public class ConfigureAllCommand implements Command {
     public void execute(State state) {
         boolean universeIsOk = true;
 
-        for (ServerData sd : state.meta.getKvServerList()) {
+        for (int index = 0; index < state.meta.getKvServerList().size(); index++) {
+            ServerData sd = state.meta.getKvServerList().get(index);
             try (Socket s = new Socket(sd.getHost(), sd.getPort())) {
                 InputStream i = s.getInputStream();
                 KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
 
                 OutputStream o = s.getOutputStream();
-                KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE, state.meta);
+                KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE, state.meta, index);
                 SocketUtil.sendMessage(o, MessageMarshaller.marshall(msg));
 
                 KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
