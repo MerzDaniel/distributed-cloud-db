@@ -2,6 +2,7 @@ package lib.message;
 
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
+import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -49,6 +50,12 @@ public final class MessageMarshaller {
                     adminMessage.serverData.marshall()
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.STATUS_RESPONSE)
+            return String.join(RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.runningState.name()
+            );
+
         return adminMessage.status.name();
     }
 
@@ -93,6 +100,9 @@ public final class MessageMarshaller {
                 );
             case MOVE:
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
+
+            case STATUS_RESPONSE:
+                    return new KVAdminMessage(status, RunningState.valueOf(secondPart));
 
             default:
                 return new KVAdminMessage(status);
