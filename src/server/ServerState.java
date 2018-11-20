@@ -8,14 +8,14 @@ public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
     public KeyValueStore db;
     public ServerData currentServerServerData;
-    public State runningState = State.UNCONFIGURED;
+    public RunningState runningState = RunningState.UNCONFIGURED;
 
     public ServerState(KeyValueStore db, ServerData serverData) {
         this.db = db;
         this.currentServerServerData = serverData;
     }
 
-    public enum State {
+    public enum RunningState {
         /** No meta configured */
         UNCONFIGURED,
         /** Configured but does not handle client requests */

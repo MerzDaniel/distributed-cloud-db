@@ -15,7 +15,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * This class represents the KVServer instances
@@ -72,7 +71,7 @@ public class KVServer implements Runnable {
      * @param db        the {@link KeyValueStore} associated with the KVServer instance
      */
     public KVServer(String name, String host, int port, int cacheSize, CacheType cacheType, KeyValueStore db,
-                    ServerState.State runningState) {
+                    ServerState.RunningState runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
@@ -90,7 +89,7 @@ public class KVServer implements Runnable {
 
         List<Socket> openConnections = new LinkedList<>();
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
-            while (state.runningState != ServerState.State.SHUTTINGDOWN) {
+            while (state.runningState != ServerState.RunningState.SHUTTINGDOWN) {
                 Socket clientSocket = s.accept();
                 logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
                 openConnections.add(clientSocket);
@@ -134,7 +133,7 @@ public class KVServer implements Runnable {
     }
 
     public void stop() throws IOException {
-        state.runningState = ServerState.State.SHUTTINGDOWN;
+        state.runningState = ServerState.RunningState.SHUTTINGDOWN;
         state.db.shutdown();
     }
 
