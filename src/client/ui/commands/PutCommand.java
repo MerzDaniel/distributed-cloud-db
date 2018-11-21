@@ -99,4 +99,9 @@ public class PutCommand implements Command {
                 writeLine(String.format("Got unexpected response from server: %s", kVMessageResponse.getStatus()));
         }
     }
+
+    @Override
+    public String toString() {
+        return "PUT<" + key + "," + value +">";
+    }
 }

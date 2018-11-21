@@ -96,4 +96,9 @@ public class GetCommand implements Command {
 
         writeLine(String.format("Value of %s is: '%s' (%d ms)", key, kVMessageResponse.getValue(), t.time()));
     }
+
+    @Override
+    public String toString() {
+        return "GET<" + key + ">";
+    }
 }
