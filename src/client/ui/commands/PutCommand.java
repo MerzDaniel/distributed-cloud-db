@@ -37,17 +37,12 @@ public class PutCommand implements Command {
             return;
         }
 
-        if (!state.kvStore.isConnected()) {
-            writeLine("Currently not connected to a server.");
-            return;
-        }
-
         KVMessage kVMessageResponse;
         TimeWatch t = TimeWatch.start();
         try {
             kVMessageResponse = state.kvStore.put(key, value);
         } catch (IOException e) {
-            writeLine(String.format("An error occurred while executing the command PUT (%d ms)", t.time()));
+            writeLine(String.format("An error occurred during the PUT : %s (%d ms)", e.getMessage(), t.time()));
             logger.error("An error occurred while executing the command PUT, error", e);
             return;
         } catch (MarshallingException e) {
