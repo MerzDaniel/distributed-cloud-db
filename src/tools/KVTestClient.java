@@ -1,27 +1,28 @@
 package tools;
 
 import client.store.KVStore;
-import client.ui.ApplicationState;
 import lib.TimeWatch;
 import lib.message.KVMessage;
-import lib.message.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import tools.util.Command;
+import tools.util.EnroneBenchmarkDataLoader;
 import tools.util.PerformanceData;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 class KVTestClient implements Callable {
     Logger logger = LogManager.getLogger(KVTestClient.class);
     KVStore kvStore;
+    private File pathToPerformance;
 
     private void init() {
         ServerData sd = new ServerData("kitten-" + new Random().nextInt(), "127.0.0.1", 50000);
@@ -30,22 +31,21 @@ class KVTestClient implements Callable {
         );
     }
 
-    public KVTestClient() {
+    public KVTestClient(File pathToPerformance) {
+        this.pathToPerformance = pathToPerformance;
         this.init();
     }
 
     @Override
     public PerformanceData call() {
         PerformanceData perfData = new PerformanceData();
+        Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
+                EnroneBenchmarkDataLoader.loadData(pathToPerformance, false);
 
-        String threadName = Thread.currentThread().getName();
-        logger.debug(String.format("The thread %s started running", threadName));
+        dataStream.limit(Main.ROUNDS).forEach(data -> {
 
-        for (int i = 0; i < Main.ROUNDS; i++) {
-            logger.debug(String.format("Running command %d th iteration in thread  %s ", i, threadName));
-
-            String key = "", value = "";
-            Command c = new Command(key, value, "GET");
+            String key = data.getKey(), value = data.getValue().Load();
+            Command c = new Command(key, value, "PUT");
 
             TimeWatch t = TimeWatch.start();
             String response;
@@ -68,8 +68,7 @@ class KVTestClient implements Callable {
 
             perfData.entries.add(e);
 
-            logger.debug(String.format("Finished command %d th iteration in thread  %s in (%d ms) ", i, threadName, t.time()));
-        }
+        });
 
         return perfData;
     }

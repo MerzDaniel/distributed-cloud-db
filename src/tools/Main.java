@@ -65,7 +65,7 @@ public class Main {
             @Override
             public PerformanceData next() {
                 try {
-                    return new KVTestClient().call();
+                    return new KVTestClient(TEST_DATA_DIRECTORY).call();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return new PerformanceData();
