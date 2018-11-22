@@ -1,6 +1,8 @@
 package server.handler;
 
 import lib.message.KVAdminMessage;
+import lib.metadata.KVServerNotFoundException;
+import lib.metadata.ServerData;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,9 +46,22 @@ public final class AdminMessageHandler {
             case STATUS:
                 return new KVAdminMessage(KVAdminMessage.StatusType.STATUS_RESPONSE, state.runningState);
             case MOVE:
-                break;
+                state.runningState = RunningState.READONLY;
+                return moveData(state);
         }
 
         throw new NotImplementedException();
+    }
+
+    private static KVAdminMessage moveData(ServerState state) {
+        try {
+            ServerData nextServer = state.meta.findNextKvServer(state.currentServerServerData.getFromHash());
+        } catch (KVServerNotFoundException e) {
+            return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
+        }
+        state.db.retrieveAllData().parallel().forEach(
+                d -> {}
+        );
+        return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_SUCCESS);
     }
 }

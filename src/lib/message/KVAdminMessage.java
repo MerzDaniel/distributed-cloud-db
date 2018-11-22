@@ -37,6 +37,7 @@ public class KVAdminMessage implements IMessage {
          */
         MOVE,
         MOVE_SUCCESS,
+        MOVE_ERROR,
         STATUS,
         STATUS_RESPONSE,
     }
