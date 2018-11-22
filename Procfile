@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar server.jar --port $PORT --log-level INFO
+web: java -jar server.jar --port $PORT --log-level INFO
