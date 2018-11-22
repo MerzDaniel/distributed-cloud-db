@@ -13,21 +13,23 @@ public final class CommandParser {
                 command = new AddServerCommand(tokens[1], tokens[2], Integer.valueOf(tokens[3]));
             } catch (NumberFormatException e) {}
         }
-        if (tokens[0].equals("c")) {
+        if (tokens[0].equals("c"))
             command = new SshCommand();
-        }
-        if (tokens[0].equals("help")) {
+
+        else if (tokens[0].equals("help"))
             command = new UsageCommand();
-        }
-        if (tokens[0].equals("start")) {
+
+        else if (tokens[0].equals("start"))
             command = new StartServersCommand();
-        }
-        if (tokens[0].equals("configure")) {
+
+        else if (tokens[0].equals("configure"))
             command = new ConfigureAllCommand();
-        }
-        if (tokens[0].equals("status")) {
+
+        else if (tokens[0].equals("status"))
             command = new ServerStatusCommand();
-        }
+
+        else if (tokens[0].equals("remove") && tokens.length == 2)
+            command = new RemoveNodeCommand(tokens[1]);
 
         if (command == null) {
             System.out.println("Unknown Command.");
