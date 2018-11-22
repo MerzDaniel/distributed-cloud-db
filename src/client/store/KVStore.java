@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
  */
-public class KVStore implements KVCommInterface{
+public class KVStore implements KVCommInterface {
     public KVStoreMetaData kvStoreMetaData;
     final Connection connection;
 
@@ -44,7 +44,7 @@ public class KVStore implements KVCommInterface{
         boolean success = true;
         String message = connection.readMessage();
         try {
-            KVMessage kvM = (KVMessage)MessageMarshaller.unmarshall(message);
+            KVMessage kvM = (KVMessage) MessageMarshaller.unmarshall(message);
             success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
         } catch (MarshallingException e) {
             logger.warn(String.format("KVServer %s:%d returned an invalid response: '%s'", host, port, message));
@@ -76,7 +76,7 @@ public class KVStore implements KVCommInterface{
      *
      * @param key
      * @return KVMessage with information about operation success or failure
-     * @throws IOException if any I/O error happens
+     * @throws IOException          if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process
      */
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
@@ -85,14 +85,18 @@ public class KVStore implements KVCommInterface{
         ServerData serverServerData = kvStoreMetaData.findKVServer(key);
         boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
-        if (connectSuccess) {
-            this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-            String response = this.connection.readMessage();
+        if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-            return (KVMessage) MessageMarshaller.unmarshall(response);
+        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
+        String responseString = this.connection.readMessage();
+        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
+
+        if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
+            applyNewMetadata(response);
+            return get(key);
         }
 
-        return MessageFactory.createConnectErrorMessage();
+        return response;
     }
 
     /**
@@ -101,7 +105,7 @@ public class KVStore implements KVCommInterface{
      * @param key
      * @param value
      * @return KVMessage with information about operation success or failure
-     * @throws IOException if any I/O error happens
+     * @throws IOException          if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process
      */
     public KVMessage put(String key, String value) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
@@ -118,5 +122,15 @@ public class KVStore implements KVCommInterface{
         }
 
         return MessageFactory.createConnectErrorMessage();
+    }
+
+    private void applyNewMetadata(KVMessage response) {
+        logger.debug(String.format("This server is not responsible for the key %s", response.toString()));
+        try {
+            kvStoreMetaData = KVStoreMetaData.unmarshall(response.getValue());
+            logger.debug("The kvstore meta data is updated");
+        } catch (MarshallingException e) {
+            logger.error("Error occurred during unmarshalling meta data", e);
+        }
     }
 }

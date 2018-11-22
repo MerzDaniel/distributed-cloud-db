@@ -62,19 +62,6 @@ public class GetCommand implements Command {
             return;
         }
 
-        if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
-            logger.info(String.format("This server is not responsible for the key %s", kVMessageResponse.toString()));
-            try {
-                state.kvStore.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
-                logger.info("The kvstore meta data is updated");
-
-                this.execute(state);
-            } catch (MarshallingException e) {
-                logger.error("Error occurred during unmarshalling meta data", e);
-                writeLine("Unexpected error occured when executing the GET command");
-            }
-            return;
-        }
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_STOPPED) {
             logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
