@@ -2,6 +2,7 @@ package tools;
 
 import lib.StreamUtils;
 import lib.benchmark.EnroneBenchmarkDataLoader;
+import tools.util.PerformanceData;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -55,19 +56,19 @@ public class Main {
 //        for(int i = 0; i < NO_OF_CLIENTS; i++) {
 //            Future<Boolean> f = executorService.submit(new KVTestClient());
 //        }
-        Stream s = StreamUtils.asStream(new Iterator<Boolean>() {
+        Stream s = StreamUtils.asStream(new Iterator<PerformanceData>() {
             @Override
             public boolean hasNext() {
                 return true;
             }
 
             @Override
-            public Boolean next() {
+            public PerformanceData next() {
                 try {
                     return new KVTestClient().call();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return false;
+                    return new PerformanceData();
                 }
             }
         }, true);
