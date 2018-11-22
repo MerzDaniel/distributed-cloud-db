@@ -82,22 +82,24 @@ public class KVServer implements Runnable {
         state.meta.getKvServerList().add(serverData);
     }
 
+    List<Socket> openConnections = new LinkedList<>();
+
     @Override
     public void run() {
         logger.info("Start server on port " + serverData.getPort());
 
         initDb();
 
-        List<Socket> openConnections = new LinkedList<>();
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
-            while (state.runningState != RunningState.SHUTTINGDOWN) {
-                Socket clientSocket = s.accept();
-                logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
-                openConnections.add(clientSocket);
-                new Thread(new ConnectionHandler(clientSocket, state)).start();
+            Thread acceptThread = acceptConnections(s);
+            while(state.runningState != RunningState.SHUTTINGDOWN) {
+                Thread.sleep(500);
             }
+            acceptThread.stop();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("IO error on creating Socket", e);
+        } catch (InterruptedException e) {
+            logger.warn("Thread aborted", e);
         } finally {
             for (Socket s : openConnections) {
                 SocketUtil.tryClose(s);
@@ -108,6 +110,25 @@ public class KVServer implements Runnable {
                 logger.warn("Problem during shutting down db", e);
             }
         }
+    }
+
+    private Thread acceptConnections(ServerSocket s) {
+        Thread t = new Thread(() -> {
+            while (state.runningState != RunningState.SHUTTINGDOWN) {
+                Socket clientSocket;
+                try {
+                    clientSocket = s.accept();
+                } catch (IOException e) {
+                    logger.info("error on client connection");
+                    continue;
+                }
+                logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
+                openConnections.add(clientSocket);
+                new Thread(new ConnectionHandler(clientSocket, state)).start();
+            }
+        });
+        t.start();
+        return t;
     }
 
     private void initDb() {
