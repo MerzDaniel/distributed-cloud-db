@@ -2,6 +2,7 @@ package tools;
 
 import lib.StreamUtils;
 import tools.util.EnroneBenchmarkDataLoader;
+import tools.util.PerformanceData;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -16,7 +17,7 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
  * This class is only used for getting performance measures for KVClient
  */
 public class Main {
-    final static int ROUNDS = 100;
+    final static int ROUNDS = 1;
     final static int NO_OF_CLIENTS = 3;
     final static CommandType commandType = CommandType.PUT_NO_KEY_CONFLICTS;
 
@@ -55,23 +56,23 @@ public class Main {
 //        for(int i = 0; i < NO_OF_CLIENTS; i++) {
 //            Future<Boolean> f = executorService.submit(new KVTestClient());
 //        }
-        Stream s = StreamUtils.asStream(new Iterator<Boolean>() {
+        Stream s = StreamUtils.asStream(new Iterator<PerformanceData>() {
             @Override
             public boolean hasNext() {
                 return true;
             }
 
             @Override
-            public Boolean next() {
+            public PerformanceData next() {
                 try {
                     return new KVTestClient().call();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return false;
+                    return new PerformanceData();
                 }
             }
-        }, true);
-        s.limit(NO_OF_CLIENTS).count();
+        }, false);
+        s.limit(NO_OF_CLIENTS).parallel();
     }
 
 }

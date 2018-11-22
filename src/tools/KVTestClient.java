@@ -11,6 +11,7 @@ import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import tools.util.PerformanceData;
 
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ class KVTestClient implements Callable {
     }
 
     @Override
-    public Boolean call() throws Exception {
+    public PerformanceData call() throws Exception {
 
         String threadName = Thread.currentThread().getName();
         logger.debug(String.format("The thread %s started running", threadName));
@@ -74,6 +75,6 @@ class KVTestClient implements Callable {
             }
             writer.flush();
         }
-        return true;
+        return new PerformanceData();
     }
 }
