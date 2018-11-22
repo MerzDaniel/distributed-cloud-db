@@ -14,6 +14,9 @@ public class KVAdminMessage implements IMessage {
     public RunningState runningState;
     public int currentServerIndex;
 
+    public String key;
+    public String value;
+
     public KVAdminMessage(StatusType status, RunningState rs) {
         this.status = status;
         runningState = rs;
@@ -38,6 +41,8 @@ public class KVAdminMessage implements IMessage {
         MOVE,
         MOVE_SUCCESS,
         MOVE_ERROR,
+        DATA_MOVE,
+        DATA_MOVE_SUCCESS,
         STATUS,
         STATUS_RESPONSE,
     }
@@ -54,6 +59,12 @@ public class KVAdminMessage implements IMessage {
     public KVAdminMessage(StatusType status, ServerData content) {
         this.status = status;
         serverData = content;
+    }
+
+    public KVAdminMessage(StatusType status, String key, String value) {
+        this.status = status;
+        this.key = key;
+        this.value = value;
     }
 
     public KVAdminMessage(StatusType status, KVStoreMetaData meta, int currentServerIndex) {

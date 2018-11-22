@@ -61,6 +61,13 @@ public final class MessageMarshaller {
                     adminMessage.runningState.name()
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.DATA_MOVE)
+            return String.join(RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.key,
+                    adminMessage.value
+            );
+
         return adminMessage.status.name();
     }
 
@@ -107,6 +114,9 @@ public final class MessageMarshaller {
             case STATUS_RESPONSE:
                 secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
                 return new KVAdminMessage(status, RunningState.valueOf(secondPart));
+
+            case DATA_MOVE:
+                return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
 
             default:
                 return new KVAdminMessage(status);
