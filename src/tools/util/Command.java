@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 public class Command {
-    private final String key;
-    private final String value;
-    private String command;
+    public final String key;
+    public final String value;
+    public String command;
 
     public Command(String key, String value, String command) {
 
