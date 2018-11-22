@@ -114,14 +114,13 @@ public class KVStore implements KVCommInterface {
         ServerData serverServerData = kvStoreMetaData.findKVServer(key);
         boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
-        if (connectSuccess) {
-            this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-            String response = this.connection.readMessage();
+        if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-            return (KVMessage) MessageMarshaller.unmarshall(response);
-        }
+        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
+        String responseString = this.connection.readMessage();
+        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
 
-        return MessageFactory.createConnectErrorMessage();
+        return response;
     }
 
     private void applyNewMetadata(KVMessage response) {
