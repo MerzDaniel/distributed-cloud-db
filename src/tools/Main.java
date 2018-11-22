@@ -1,7 +1,7 @@
 package tools;
 
 import lib.StreamUtils;
-import lib.benchmark.EnroneBenchmarkDataLoader;
+import tools.util.EnroneBenchmarkDataLoader;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
-import static lib.benchmark.EnroneBenchmarkDataLoader.Loader;
+import static tools.util.EnroneBenchmarkDataLoader.Loader;
 
 /**
  * This class is only used for getting performance measures for KVClient
