@@ -42,8 +42,18 @@ public class KVStoreMetaData {
 
         return new KVStoreMetaData(serverDataList);
     }
+
     public ServerData findKVServer(String key) throws KVServerNotFoundException {
         return kvServerList.get(findKvServerIndex(key));
+    }
+
+    public ServerData findNextKvServer(BigInteger hash) throws KVServerNotFoundException {
+        if (kvServerList.size() <= 1) throw new KVServerNotFoundException();
+
+        for (int i = 0; i < kvServerList.size(); i++) {
+            if (kvServerList.get(i).getFromHash().compareTo(hash) > 0) return kvServerList.get(i);
+        }
+        return kvServerList.get(0);
     }
 
     private int findKvServerIndex(String key) throws KVServerNotFoundException {
