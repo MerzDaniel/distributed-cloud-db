@@ -88,4 +88,8 @@ public class KVMessageImpl implements KVMessage {
     public String toString() {
         return String.format("%s<%s,%s>", getStatus(), getKey(), getValue());
     }
+
+    public String marshall() throws MarshallingException {
+        return MessageMarshaller.marshall(this);
+    }
 }

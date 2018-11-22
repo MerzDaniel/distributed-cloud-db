@@ -62,4 +62,7 @@ public class KVAdminMessage implements IMessage {
         this.currentServerIndex = currentServerIndex;
     }
 
+    public String marshall() throws MarshallingException {
+        return MessageMarshaller.marshall(this);
+    }
 }
