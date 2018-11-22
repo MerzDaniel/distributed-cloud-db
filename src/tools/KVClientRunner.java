@@ -6,6 +6,7 @@ import client.ui.Command;
 import client.ui.CommandParser;
 import client.ui.commands.GetCommand;
 import client.ui.commands.PutCommand;
+import lib.StreamUtils;
 import lib.TimeWatch;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
@@ -16,11 +17,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * This class is only used for getting performance measures for KVClient
@@ -51,9 +56,26 @@ public class KVClientRunner {
 
 
     public static void runTest(){
-        for(int i = 0; i < NO_OF_CLIENTS; i++) {
-            Future<Boolean> f = executorService.submit(new KVTestClient());
-        }
+//        for(int i = 0; i < NO_OF_CLIENTS; i++) {
+//            Future<Boolean> f = executorService.submit(new KVTestClient());
+//        }
+        Stream s = StreamUtils.asStream(new Iterator<Boolean>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Boolean next() {
+                try {
+                    return new KVTestClient().call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }, true);
+        s.limit(NO_OF_CLIENTS).count();
     }
 
     static class KVTestClient implements Callable {
@@ -95,6 +117,7 @@ public class KVClientRunner {
 
         @Override
         public Boolean call() throws Exception {
+
             String threadName = Thread.currentThread().getName();
             logger.debug(String.format("The thread %s started running", threadName));
 
