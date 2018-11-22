@@ -34,18 +34,13 @@ public class GetCommand implements Command {
             return;
         }
 
-        if (!state.kvStore.isConnected()) {
-            writeLine("Currently not connected to a server!");
-            return;
-        }
-
         KVMessage kVMessageResponse = null;
         TimeWatch t = TimeWatch.start();
         try {
             kVMessageResponse = state.kvStore.get(key);
         } catch (IOException e) {
             logger.error("error", e);
-            writeLine(String.format("Error during GET. Possibly the connection to the db got lost (%d ms)",t.time()));
+            writeLine(String.format("An Error occurred during the GET : %s (%d ms)", e.getMessage(), t.time()));
             return;
         } catch (MarshallingException e) {
             logger.error("Error during unmarshalling.", e);
@@ -100,5 +95,10 @@ public class GetCommand implements Command {
         }
 
         writeLine(String.format("Value of %s is: '%s' (%d ms)", key, kVMessageResponse.getValue(), t.time()));
+    }
+
+    @Override
+    public String toString() {
+        return "GET<" + key + ">";
     }
 }
