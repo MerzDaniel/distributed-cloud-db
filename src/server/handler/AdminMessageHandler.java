@@ -1,6 +1,7 @@
 package server.handler;
 
-import lib.message.KVAdminMessage;
+import lib.communication.Connection;
+import lib.message.*;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import server.ServerState;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public final class AdminMessageHandler {
@@ -54,14 +56,39 @@ public final class AdminMessageHandler {
     }
 
     private static KVAdminMessage moveData(ServerState state) {
+        ServerData nextServer;
+        Connection con;
         try {
-            ServerData nextServer = state.meta.findNextKvServer(state.currentServerServerData.getFromHash());
+            nextServer = state.meta.findNextKvServer(state.currentServerServerData.getFromHash());
+            con = new Connection();
+            con.connect(nextServer.getHost(), nextServer.getPort());
+            con.readMessage();
         } catch (KVServerNotFoundException e) {
             return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
+        } catch (IOException e) {
+            return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         }
-        state.db.retrieveAllData().parallel().forEach(
-                d -> {}
-        );
+
+        long errors = state.db.retrieveAllData().parallel().map(
+                d -> {
+                    KVMessage msg = new KVMessageImpl(d.getKey(), d.getValue(), KVMessage.StatusType.PUT);
+                    try {
+                        con.sendMessage(((KVMessageImpl) msg).marshall());
+                        String responseString = con.readMessage();
+                        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
+                        if (!(response.getStatus() == KVMessage.StatusType.PUT_SUCCESS)) return false;
+                    } catch (Exception e) {
+                        logger.warn("Error while moving data!", e);
+                        return false;
+                    }
+                    return true;
+                }
+        ).filter(x -> !x).count();
+        if (errors > 0) {
+            logger.warn("Got " + errors + "errors while moving data!!!");
+            return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
+        }
+
         return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_SUCCESS);
     }
 }
