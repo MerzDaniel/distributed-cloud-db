@@ -23,6 +23,7 @@ class KVTestClient implements Callable {
     Logger logger = LogManager.getLogger(KVTestClient.class);
     KVStore kvStore;
     private File pathToPerformance;
+    private double percentageWrites;
 
     private void init() {
         ServerData sd = new ServerData("kitten-" + new Random().nextInt(), "127.0.0.1", 50000);
@@ -31,8 +32,9 @@ class KVTestClient implements Callable {
         );
     }
 
-    public KVTestClient(File pathToPerformance) {
+    public KVTestClient(File pathToPerformance, double percentageWrites) {
         this.pathToPerformance = pathToPerformance;
+        this.percentageWrites = percentageWrites;
         this.init();
     }
 
@@ -45,7 +47,8 @@ class KVTestClient implements Callable {
         dataStream.limit(Main.ROUNDS).forEach(data -> {
 
             String key = data.getKey(), value = data.getValue().Load();
-            Command c = new Command(key, value, "PUT");
+            String command = new Random().nextDouble() > percentageWrites ? "GET" : "PUT";
+            Command c = new Command(key, value, command);
 
             TimeWatch t = TimeWatch.start();
             String response;

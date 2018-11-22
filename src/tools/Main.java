@@ -19,6 +19,7 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
 public class Main {
     final static int ROUNDS = 1;
     final static int NO_OF_CLIENTS = 3;
+    final static double PERCENTAGE_WRITES = 0.2;
     final static CommandType commandType = CommandType.PUT_NO_KEY_CONFLICTS;
 
     static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
@@ -65,7 +66,7 @@ public class Main {
             @Override
             public PerformanceData next() {
                 try {
-                    return new KVTestClient(TEST_DATA_DIRECTORY).call();
+                    return new KVTestClient(TEST_DATA_DIRECTORY, PERCENTAGE_WRITES).call();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return new PerformanceData();
