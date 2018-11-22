@@ -41,7 +41,6 @@ public class RemoveNodeCommand implements Command {
             return;
         }
 
-        KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
         Connection con = new Connection();
         try {
             con.connect(from.getHost(), from.getPort());
@@ -53,12 +52,19 @@ public class RemoveNodeCommand implements Command {
         }
 
         try {
+            // move data
+            KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
             con.sendMessage(msg.marshall());
             String responseString = con.readMessage();
             KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
             if (response.status != KVAdminMessage.StatusType.MOVE_SUCCESS)
                 System.out.println("Data was not successfully moved. But I'm evil and still shutting down the node ^_^");
 
+            // reconfigure
+            state.meta.getKvServerList().remove(from);
+            new ConfigureAllCommand().execute(state);
+
+            // stop
             KVAdminMessage stopMsg = new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN);
             con.sendMessage(stopMsg.marshall());
             responseString = con.readMessage();
