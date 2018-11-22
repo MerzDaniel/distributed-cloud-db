@@ -120,6 +120,11 @@ public class KVStore implements KVCommInterface {
         String responseString = this.connection.readMessage();
         KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
 
+        if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
+            applyNewMetadata(response);
+            return put(key, value);
+        }
+
         return response;
     }
 

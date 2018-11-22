@@ -75,18 +75,6 @@ public class PutCommand implements Command {
             case PUT_ERROR:
                 writeLine("PUT was not successful: The db returned an error.");
                 break;
-            case SERVER_NOT_RESPONSIBLE:
-                logger.info(String.format("The requested server is not responsible for the key %s", kVMessageResponse.toString()));
-                try {
-                    state.kvStore.kvStoreMetaData = KVStoreMetaData.unmarshall(kVMessageResponse.getValue());
-                    logger.info("The kvstore meta data is updated");
-
-                    this.execute(state);
-                } catch (MarshallingException e) {
-                    logger.error("Error occurred during unmarshalling meta data", e);
-                    writeLine("Unexpected error occurred when executing the PUT command");
-                }
-                return;
             case SERVER_STOPPED:
                 logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
                 writeLine("The server is stopped so cannot perform the request");
