@@ -1,6 +1,6 @@
 package client.store;
 
-import client.communication.Connection;
+import lib.communication.Connection;
 import lib.message.*;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;

@@ -1,4 +1,4 @@
-package client.communication;
+package lib.communication;
 
 import lib.SocketUtil;
 import org.apache.log4j.LogManager;
