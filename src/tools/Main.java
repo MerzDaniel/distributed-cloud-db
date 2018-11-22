@@ -1,7 +1,7 @@
 package tools;
 
 import lib.StreamUtils;
-import lib.benchmark.EnroneBenchmarkDataLoader;
+import tools.util.EnroneBenchmarkDataLoader;
 import tools.util.PerformanceData;
 
 import java.io.File;
@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
-import static lib.benchmark.EnroneBenchmarkDataLoader.Loader;
+import static tools.util.EnroneBenchmarkDataLoader.Loader;
 
 /**
  * This class is only used for getting performance measures for KVClient
  */
 public class Main {
-    final static int ROUNDS = 100;
+    final static int ROUNDS = 1;
     final static int NO_OF_CLIENTS = 3;
     final static CommandType commandType = CommandType.PUT_NO_KEY_CONFLICTS;
 
@@ -71,8 +71,8 @@ public class Main {
                     return new PerformanceData();
                 }
             }
-        }, true);
-        s.limit(NO_OF_CLIENTS).count();
+        }, false);
+        s.limit(NO_OF_CLIENTS).parallel();
     }
 
 }
