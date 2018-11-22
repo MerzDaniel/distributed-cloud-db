@@ -36,6 +36,9 @@ public final class CommandParser {
         else if (tokens[0].equals("remove") && tokens.length == 2)
             command = new RemoveNodeCommand(tokens[1]);
 
+        else if (tokens[0].equals("shutdown"))
+            command = new ShutdownCommand();
+
         if (command == null) {
             System.out.println("Unknown Command.");
             new UsageCommand().execute(state);
