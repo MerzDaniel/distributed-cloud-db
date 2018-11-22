@@ -49,22 +49,18 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.STATUS_RESPONSE, state.runningState);
             case MOVE:
                 state.runningState = RunningState.READONLY;
-                return moveData(state);
+                return moveData(state, message.serverData);
         }
 
         throw new NotImplementedException();
     }
 
-    private static KVAdminMessage moveData(ServerState state) {
-        ServerData nextServer;
+    private static KVAdminMessage moveData(ServerState state, ServerData serverData) {
         Connection con;
         try {
-            nextServer = state.meta.findNextKvServer(state.currentServerServerData.getFromHash());
             con = new Connection();
-            con.connect(nextServer.getHost(), nextServer.getPort());
+            con.connect(serverData.getHost(), serverData.getPort());
             con.readMessage();
-        } catch (KVServerNotFoundException e) {
-            return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         } catch (IOException e) {
             return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         }
