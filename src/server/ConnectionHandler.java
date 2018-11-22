@@ -7,6 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.handler.AdminMessageHandler;
 import server.handler.KvMessageHandler;
+import server.kv.DbError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,7 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    private IMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException {
+    private IMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException, DbError {
         String msg = SocketUtil.readMessage(i);
         IMessage message;
         try {

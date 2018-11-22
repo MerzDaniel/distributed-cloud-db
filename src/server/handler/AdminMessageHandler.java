@@ -2,12 +2,12 @@ package server.handler;
 
 import lib.communication.Connection;
 import lib.message.*;
-import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
+import server.kv.DbError;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 public final class AdminMessageHandler {
     static Logger logger = LogManager.getLogger(AdminMessageHandler.class);
 
-    public static KVAdminMessage handleKvAdminMessage(KVAdminMessage message, ServerState state) {
+    public static KVAdminMessage handleKvAdminMessage(KVAdminMessage message, ServerState state) throws DbError {
         logger.info(String.format(
                 "Got a message: %s with meta '%s' and serverData '%s'",
                 message.status,
@@ -50,6 +50,9 @@ public final class AdminMessageHandler {
             case MOVE:
                 state.runningState = RunningState.READONLY;
                 return moveData(state, message.serverData);
+            case DATA_MOVE:
+                state.db.put(message.key, message.value);
+                return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
         }
 
         throw new NotImplementedException();
@@ -67,12 +70,12 @@ public final class AdminMessageHandler {
 
         long errors = state.db.retrieveAllData().parallel().map(
                 d -> {
-                    KVMessage msg = new KVMessageImpl(d.getKey(), d.getValue(), KVMessage.StatusType.PUT);
+                    KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE, d.getKey(), d.getValue());
                     try {
-                        con.sendMessage(((KVMessageImpl) msg).marshall());
+                        con.sendMessage(msg.marshall());
                         String responseString = con.readMessage();
-                        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
-                        if (!(response.getStatus() == KVMessage.StatusType.PUT_SUCCESS)) return false;
+                        KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
+                        if (!(response.status == KVAdminMessage.StatusType.DATA_MOVE_SUCCESS)) return false;
                     } catch (Exception e) {
                         logger.warn("Error while moving data!", e);
                         return false;
