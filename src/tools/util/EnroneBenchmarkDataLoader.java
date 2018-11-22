@@ -1,4 +1,4 @@
-package lib.benchmark;
+package tools.util;
 
 import lib.StreamUtils;
 import org.apache.log4j.LogManager;
