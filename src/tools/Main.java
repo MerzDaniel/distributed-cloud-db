@@ -52,11 +52,7 @@ public class Main {
         return null;
     }
 
-
     public static void runTest(){
-//        for(int i = 0; i < NO_OF_CLIENTS; i++) {
-//            Future<Boolean> f = executorService.submit(new KVTestClient());
-//        }
         Stream s = StreamUtils.asStream(new Iterator<PerformanceData>() {
             @Override
             public boolean hasNext() {
