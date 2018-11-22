@@ -16,6 +16,11 @@ public final class CommandParser {
         if (tokens[0].equals("c"))
             command = new SshCommand();
 
+        else if (tokens[0].equals("cs")) {
+            new ConfigureAllCommand().execute(state);
+            command = new StartServersCommand();
+        }
+
         else if (tokens[0].equals("help"))
             command = new UsageCommand();
 
