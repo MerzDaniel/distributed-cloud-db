@@ -25,7 +25,7 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
  */
 public class Main {
     final static int ROUNDS = 100;
-    final static int NO_OF_CLIENTS = 10;
+    final static int NO_OF_CLIENTS = 1;
     final static double PERCENTAGE_WRITES = 0.2;
 
     static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);

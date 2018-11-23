@@ -3,6 +3,9 @@ package ecs;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+/**
+ * Main class for ECSClient
+ */
 public class Main {
 
     static final String defaultConfigPath = Paths.get("db", "ecs.config").toString();
