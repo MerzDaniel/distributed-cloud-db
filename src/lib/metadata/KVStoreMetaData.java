@@ -10,27 +10,55 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class keeps the data about {@link server.KVServer} instances that are deployed
+ */
 public class KVStoreMetaData {
     private final static String RECORD_SEPARATOR = "\u001E";
 
     private List<ServerData> kvServerList = new ArrayList<>();
 
+    /**
+     * Create a {@link KVStoreMetaData} instance
+     *
+     * @param kvServerList list of {@link server.KVServer} instances
+     */
     public KVStoreMetaData(List<ServerData> kvServerList) {
         this.kvServerList = kvServerList;
     }
 
+    /**
+     * Create a {@link KVStoreMetaData} instance
+     */
     public KVStoreMetaData() {
 
     }
 
+    /**
+     * Get the details about {@link server.KVServer} instances
+     *
+     * @return {@Link ServerData} list
+     */
     public List<ServerData> getKvServerList() {
         return kvServerList;
     }
 
+    /**
+     * Marshall this {@link KVStoreMetaData} instance
+     *
+     * @return marshalled string
+     */
     public String marshall() {
         return getKvServerList().stream().map(it -> it.marshall()).collect(Collectors.joining(RECORD_SEPARATOR));
     }
 
+    /**
+     * Unmarshall the {@code kvStoreMetaData} string to a {@link KVStoreMetaData} instance
+     *
+     * @param kvStoreMetaData string to be unmarshalled
+     * @return {@Link KVStoreMetaData} instance
+     * @throws MarshallingException if any exception happens during unmarshalling
+     */
     public static KVStoreMetaData unmarshall(String kvStoreMetaData) throws MarshallingException {
         List<ServerData> serverDataList = new ArrayList<>();
         String[] kvServers = kvStoreMetaData.split(RECORD_SEPARATOR);
@@ -43,10 +71,24 @@ public class KVStoreMetaData {
         return new KVStoreMetaData(serverDataList);
     }
 
+    /**
+     * Find the {@Link ServerData} for given {@code key}
+     *
+     * @param key string key
+     * @return {@Link ServerData}
+     * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
+     */
     public ServerData findKVServer(String key) throws KVServerNotFoundException {
         return kvServerList.get(findKvServerIndex(key));
     }
 
+    /**
+     * Find the next {@link server.KVServer} which has the hash larger than given {@code hash}
+     *
+     * @param hash hash
+     * @return {@link server.KVServer} found larger than {@code hash}
+     * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
+     */
     public ServerData findNextKvServer(BigInteger hash) throws KVServerNotFoundException {
         if (kvServerList.size() <= 1) throw new KVServerNotFoundException();
 
