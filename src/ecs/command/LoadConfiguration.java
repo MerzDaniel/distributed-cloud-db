@@ -12,14 +12,27 @@ import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * This class loads the configuration data to the {@link server.KVServer} instances
+ */
 public class LoadConfiguration implements Command {
     File configPath;
     Logger logger = LogManager.getLogger(LoadConfiguration.class);
 
+    /**
+     * Constructor to create an instance of {@link LoadConfiguration}
+     *
+     * @param configPath path to the configuration file
+     */
     public LoadConfiguration(String configPath) {
         this.configPath = new File(configPath);
     }
 
+    /**
+     * Execute the commamnd
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         if (!configPath.exists()) {

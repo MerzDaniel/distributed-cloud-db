@@ -3,8 +3,16 @@ package ecs.command;
 import ecs.Command;
 import ecs.State;
 
+/**
+ * This class represent the command for printing the usage of other {@link Command} instances
+ */
 public class UsageCommand implements Command {
 
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         System.out.println("Usage:");

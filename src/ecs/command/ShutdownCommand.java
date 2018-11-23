@@ -11,9 +11,17 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+/**
+ * This class represent the command for shutting down a {@link server.KVServer} instance
+ */
 public class ShutdownCommand implements Command {
     Logger logger = LogManager.getLogger(ShutdownCommand.class);
 
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
 

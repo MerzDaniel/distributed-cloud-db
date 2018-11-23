@@ -11,7 +11,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * This class represent the command for starting a {@link server.KVServer} instance
+ */
 public class StartServersCommand implements ecs.Command {
+
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         boolean universeIsOk = true;
