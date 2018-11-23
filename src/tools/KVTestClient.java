@@ -45,7 +45,6 @@ class KVTestClient implements Callable {
                 EnroneBenchmarkDataLoader.loadData(pathToPerformance, false);
 
         dataStream.limit(Main.ROUNDS).forEach(data -> {
-
             String key = data.getKey(), value = data.getValue().Load();
             String command = new Random().nextDouble() > percentageWrites ? "GET" : "PUT";
             Command c = new Command(key, value, command);
@@ -58,7 +57,7 @@ class KVTestClient implements Callable {
                 response = result.getStatus().name();
             } catch (KVServerNotFoundException e) {
                 e.printStackTrace();
-                response = "GET_NotFound";
+                response = "SERVER_NOT_FOUND";
             } catch (Exception e) {
                 e.printStackTrace();
                 response = "ERROR";
