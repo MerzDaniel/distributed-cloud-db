@@ -5,6 +5,9 @@ import lib.message.MarshallingException;
 import java.math.BigInteger;
 import java.util.Random;
 
+/**
+ * This class stores the details about {@link server.KVServer} instance
+ */
 public class ServerData {
     private final static String ELEMENT_SEPARATOR = "\u001F";
 
@@ -14,6 +17,14 @@ public class ServerData {
 
     BigInteger fromHash = BigInteger.ZERO;
 
+    /**
+     * Create a {@Link ServerData} instance
+     *
+     * @param name name of the server
+     * @param host host address of the server
+     * @param port port of the server
+     * @param fromHash starting hash from which the server stores keys
+     */
     public ServerData(String name, String host, int port, BigInteger fromHash) {
         this.name = name;
         this.host = host;
@@ -21,6 +32,13 @@ public class ServerData {
         this.fromHash = fromHash;
     }
 
+    /**
+     * Create a {@Link ServerData} instance
+     *
+     * @param name name of the server
+     * @param host host address of the server
+     * @param port port of the server
+     */
     public ServerData(String name, String host, int port) {
         this.name = name;
         this.host = host;
@@ -51,10 +69,22 @@ public class ServerData {
         return port;
     }
 
+    /**
+     * Marshall this {@link ServerData} instance
+     *
+     * @return marshalled string
+     */
     public String marshall() {
         return name + ELEMENT_SEPARATOR + host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash;
     }
 
+    /**
+     * UNmarshall the {@code kvServerMetaData} string
+     *
+     * @param kvServerMetaData string to be unmarshalled
+     * @return {@link ServerData} instance
+     * @throws MarshallingException if any exception occurs during unmarshalling
+     */
     public static ServerData unmarshall(String kvServerMetaData) throws MarshallingException {
 
         try {

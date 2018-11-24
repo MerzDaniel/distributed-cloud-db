@@ -12,15 +12,27 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
-
+/**
+ * This class represent the command for removing a {@link server.KVServer} instance
+ */
 public class RemoveNodeCommand implements Command {
     private String name;
     private Logger logger = LogManager.getLogger(RemoveNodeCommand.class);
 
+    /**
+     * Constructor to create a {@link RemoveNodeCommand} instance
+     *
+     * @param name name of the server
+     */
     public RemoveNodeCommand(String name) {
         this.name = name;
     }
 
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         if (state.meta.getKvServerList().size() <= 0) {

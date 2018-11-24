@@ -2,7 +2,17 @@ package ecs;
 
 import ecs.command.*;
 
+/**
+ * This class parse the user commands from {@link EcsAdminConsole} to {@link Command} instances
+ */
 public final class CommandParser {
+
+    /**
+     * Parse the command
+     *
+     * @param line command string
+     * @param state state
+     */
     public static void parseLine(String line, State state) {
 
         String[] tokens = line.split(" ");

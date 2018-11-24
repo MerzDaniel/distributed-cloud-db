@@ -13,8 +13,17 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 
+/**
+ * This class represent the command for getting the status of a {@link server.KVServer} instance
+ */
 public class ServerStatusCommand implements Command {
     Logger l = LogManager.getLogger(ServerStatusCommand.class);
+
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         state.meta.getKvServerList().parallelStream().forEach(sd -> {

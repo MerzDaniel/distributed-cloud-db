@@ -8,7 +8,16 @@ import ecs.State;
 
 import java.nio.file.Paths;
 
+/**
+ * This class represent the command for SSH to {@link server.KVServer} instances
+ */
 public class SshCommand implements ecs.Command {
+
+    /**
+     * Execute the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         JSch shell = new JSch();

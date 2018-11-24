@@ -12,8 +12,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * This class represents  the command for configure all {@link server.KVServer} instances
+ */
 public class ConfigureAllCommand implements Command {
 
+    /**
+     * Executes the command
+     *
+     * @param state state
+     */
     @Override
     public void execute(State state) {
         boolean universeIsOk = true;

@@ -14,6 +14,7 @@ import java.net.Socket;
  */
 public class SocketUtil {
     final static Logger logger = LogManager.getLogger(SocketUtil.class);
+    private final static char GROUP_SEPARATOR = '\u001D';
 
     /**
      * Reads a message from the connection
@@ -29,7 +30,8 @@ public class SocketUtil {
                 }
                 char c = (char) val;
                 if (c == '\n') continue;
-                if (c == '\r') break;
+                if (c == '\r') continue;
+                if (c == GROUP_SEPARATOR) break;
                 buffer.append(c);
             } catch (IOException e) {
                 logger.warn("Exception occured while reading message: " + e.getMessage());
@@ -50,7 +52,7 @@ public class SocketUtil {
             for (char c : message.toCharArray()) {
                 out.write((byte) c);
             }
-            out.write('\r');
+            out.write(GROUP_SEPARATOR);
         } catch (IOException e) {
             logger.warn("Error in sendMessage(): " + e.getMessage());
             logger.warn(e.getStackTrace());
