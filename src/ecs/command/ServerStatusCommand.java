@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class ServerStatusCommand implements Command {
@@ -26,6 +27,8 @@ public class ServerStatusCommand implements Command {
                 KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
 
                 System.out.format("Server %s at %s:%d has status: %s\n", sd.getName(), sd.getHost(), sd.getPort(), response.runningState.toString());
+            }catch (ConnectException e) {
+                System.out.format("Server %s at %s:%d has could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
             } catch (Exception e) {
                 l.warn("Error", e);
                 System.out.format("Server %s at %s:%d returned an error\n", sd.getName(), sd.getHost(), sd.getPort());
