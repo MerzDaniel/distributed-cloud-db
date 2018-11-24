@@ -39,6 +39,9 @@ public final class CommandParser {
         else if (tokens[0].equals("shutdown"))
             command = new ShutdownCommand();
 
+        else if (tokens[0].equals("stop"))
+            command = new StopServersCommand();
+
         if (command == null) {
             System.out.println("Unknown Command.");
             new UsageCommand().execute(state);
