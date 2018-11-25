@@ -21,8 +21,8 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
  * This class is only used for getting performance measures for KVClient
  */
 public class Main {
-    final static int ROUNDS = 100;
-    final static int NO_OF_CLIENTS = 1;
+    final static int ROUNDS = 200;
+    final static int NO_OF_CLIENTS = 10;
     final static double PERCENTAGE_WRITES = 0.2;
 
     static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
@@ -35,6 +35,8 @@ public class Main {
             EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, true);
 
     public static void main(String[] args) {
+        if (!STATS_DIRECTORY.exists()) STATS_DIRECTORY.mkdir();
+
         runTest();
         executorService.shutdown();
     }
@@ -88,6 +90,9 @@ public class Main {
         List<PerformanceData.Entry> getErrorData = getData.stream().filter(it -> it.result.equals(KVMessage.StatusType.GET_ERROR.name())).collect(Collectors.toList());
         List<PerformanceData.Entry> getServerNotFoundData = getData.stream().filter(it -> it.result.equals("SERVER_NOT_FOUND")).collect(Collectors.toList());
         List<PerformanceData.Entry> getExceptionsData = getData.stream().filter(it -> it.result.equals("ERROR")).collect(Collectors.toList());
+        getData.sort((a,b) -> a.time > b.time ? 1 : -1);
+
+        System.out.format("######## Percentiles: %s", getPercentiles(getData, Arrays.asList(0.99, 0.95, 0.90, 0.70, 0.3)));
 
         sb.append("Performance Measured on GET")
                 .append(System.lineSeparator())
@@ -139,6 +144,16 @@ public class Main {
         }
 
         System.out.println("Performance measures have been calculated successfully :)");
+    }
+
+    static List<Long> getPercentiles(List<PerformanceData.Entry> perfData, List<Double> percentils) {
+        perfData.sort((p1, p2) -> p1.time > p2.time ? 1 : -1);
+
+        List<Long> result = new LinkedList<>();
+        percentils.forEach(p -> {
+            result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time);
+        });
+        return result;
     }
 
     static {
