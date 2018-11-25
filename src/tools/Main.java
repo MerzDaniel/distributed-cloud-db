@@ -31,7 +31,8 @@ public class Main {
     final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.csv").toUri());
 
     final static File TEST_DATA_DIRECTORY = new File(Paths.get("resources/till-beck-140mb").toUri());
-    final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream = EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, true);
+    final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream =
+            EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, true);
 
     public static void main(String[] args) {
         runTest();

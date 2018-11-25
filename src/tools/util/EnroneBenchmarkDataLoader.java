@@ -36,7 +36,8 @@ public final class EnroneBenchmarkDataLoader {
                     current = fileList.remove(fileList.size() - 1);
                 }
 
-                String key = uniqueKeys ? current.getAbsolutePath() : current.getName();
+                String randomKeyPrefix = String.valueOf((int)new Random().nextDouble() * 10);
+                String key = randomKeyPrefix + (uniqueKeys ? current.getAbsolutePath() : current.getName());
                 next = new AbstractMap.SimpleEntry<>(key, new Loader((current)));
                 return true;
             }
