@@ -146,8 +146,9 @@ public class MessageUnmarshallerTest extends TestCase {
         String s = "CONFIGURE" + RECORD_SEPARATOR +
                 "server" + ELEMENT_SEPARATOR +
                 "127.0.0.1" + ELEMENT_SEPARATOR +
-                "50001" + ELEMENT_SEPARATOR+
-                "000000";
+                "50001" + ELEMENT_SEPARATOR +
+                "000000" + RECORD_SEPARATOR +
+                "0";
         KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
         assertEquals(KVAdminMessage.StatusType.CONFIGURE, message.status);
         ServerData c = message.meta.getKvServerList().get(0);
