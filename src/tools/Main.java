@@ -163,8 +163,5 @@ public class Main {
         return result;
     }
 
-    static {
-        System.setProperty("log4j.configurationFile", "log4j2-tools.properties.xml");
-    }
 
 }
