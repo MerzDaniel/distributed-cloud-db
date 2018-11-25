@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 public final class SshService {
     public static void startKvServer(ServerData sd) throws JSchException, IOException {
         String userName = "clouddb";
-        String host = "192.168.178.37";
+        String host = sd.getHost();
 
         Session session = connect(userName, host);
         System.out.format("ssh is connected: %b\n", session.isConnected());
@@ -25,7 +25,7 @@ public final class SshService {
 //
         String cachingType = " --cache-type " + CacheType.LFU.name();
         String cachingSize = " --cache-size " + 10;
-        String port = " --port " + 40000;
+        String port = " --port " + sd.getPort();
         String command = "java -jar server.jar" + cachingType + cachingSize + port + " &";
 
         channel.setCommand(command);

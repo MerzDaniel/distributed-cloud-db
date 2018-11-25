@@ -29,6 +29,9 @@ public final class CommandParser {
             command = new StartServersCommand();
         }
 
+        else if (tokens[0].equals("startup"))
+            command = new StartupServers();
+
         else if (tokens[0].equals("help"))
             command = new UsageCommand();
 

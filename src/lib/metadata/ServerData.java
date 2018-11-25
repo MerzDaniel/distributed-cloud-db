@@ -3,7 +3,6 @@ package lib.metadata;
 import lib.message.MarshallingException;
 
 import java.math.BigInteger;
-import java.util.Random;
 
 /**
  * This class stores the details about {@link server.KVServer} instance
@@ -76,6 +75,11 @@ public class ServerData {
      */
     public String marshall() {
         return name + ELEMENT_SEPARATOR + host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s:%d", name, host, port);
     }
 
     /**
