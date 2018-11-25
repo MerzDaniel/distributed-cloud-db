@@ -14,15 +14,12 @@ public final class SshService {
         String host = sd.getHost();
 
         Session session = connect(userName, host);
-        System.out.format("ssh is connected: %b\n", session.isConnected());
 
 //            copyFile(session);
 
         ChannelExec channel = (ChannelExec) session.openChannel("exec");
+//        InputStream in = channel.getInputStream();
 
-        InputStream in = channel.getInputStream();
-//            channel.setOutputStream(System.out);
-//
         String cachingType = " --cache-type " + CacheType.LFU.name();
         String cachingSize = " --cache-size " + 10;
         String port = " --port " + sd.getPort();

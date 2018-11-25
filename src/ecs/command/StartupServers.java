@@ -18,15 +18,18 @@ public class StartupServers implements Command {
         state.meta.getKvServerList().stream().parallel().forEach(sd -> {
             try {
                 getStatus(sd);
+                System.out.format("%s is already startup.", sd.toString());
                 return; // server can be reached therefor doesn't need to be started
             } catch (IOException e) {
-                System.out.format("Server %s at %s:%d has could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
+                // we have to start the server
             } catch (MarshallingException e) {
                 l.warn("Error", e);
-                System.out.format("Server %s at %s:%d returned an error\n", sd.getName(), sd.getHost(), sd.getPort());
+                System.out.format("Server %s returned an error\n", sd.toString());
+                return;
             }
 
             try {
+                System.out.format("Starting up %s ...", sd.toString());
                 startKvServer(sd);
             } catch (Exception e) {
                 System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
