@@ -12,7 +12,7 @@ import java.math.BigInteger;
 public class ServerDataTest extends TestCase {
 
     @Test
-    public void testMarshallKVServerMetaData() {
+    public void testMarshallServerData() {
         ServerData serverData = new ServerData("server", "127.0.0.1", 45000, BigInteger.ZERO);
 
         String marshalledString = serverData.marshall();
@@ -25,7 +25,7 @@ public class ServerDataTest extends TestCase {
     }
 
     @Test
-    public void testUnMarshallKVServerMetaData() throws MarshallingException {
+    public void testUnMarshallServerData() throws MarshallingException {
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "server" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000";
 
@@ -35,7 +35,7 @@ public class ServerDataTest extends TestCase {
     }
 
     @Test(expected = MarshallingException.class)
-    public void testUnMarshallKVServerMetaDataThrowsException() {
+    public void testUnMarshallServerDataThrowsException() {
         final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "127.0.0.1" + ELEMENT_SEPARATOR + "qwe12" + ELEMENT_SEPARATOR + "0";
 
