@@ -21,7 +21,7 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
  * This class is only used for getting performance measures for KVClient
  */
 public class Main {
-    final static int ROUNDS = 200;
+    final static int ROUNDS = 15;
     final static int NO_OF_CLIENTS = 10;
     final static double PERCENTAGE_WRITES = 0.2;
 
@@ -30,11 +30,13 @@ public class Main {
     final static File STATS_DIRECTORY = new File(Paths.get("stats").toUri());
     final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.csv").toUri());
 
-    final static File TEST_DATA_DIRECTORY = new File(Paths.get("resources/till-beck-140mb").toUri());
+    static File TEST_DATA_DIRECTORY;
     final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream =
             EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, true);
 
     public static void main(String[] args) {
+        TEST_DATA_DIRECTORY = new File(args[0]);
+
         if (!STATS_DIRECTORY.exists()) STATS_DIRECTORY.mkdir();
 
         runTest();
@@ -69,6 +71,9 @@ public class Main {
         }
 
         StringBuilder sb = new StringBuilder();
+        List<Double> percentiles = Arrays.asList(0.99, 0.95, 0.90, 0.70, 0.3);
+        List<PerformanceData.Entry> allData = pfList.stream().flatMap(it -> it.entries.stream()).collect(Collectors.toList());
+        List<Long> allPercentiles = calculatePercentiles(allData, percentiles);
 
         System.out.println("Calculating performance measures.......................");
         sb.append("Performance Test Measures")
@@ -79,10 +84,10 @@ public class Main {
                 .append(System.lineSeparator())
                 .append("No of rounds for each client : " + ROUNDS)
                 .append(System.lineSeparator())
+                .append(String.format("Percentiles GET: %s : %s", percentiles, allPercentiles))
                 .append(System.lineSeparator());
 
 
-        List<PerformanceData.Entry> allData = pfList.stream().flatMap(it -> it.entries.stream()).collect(Collectors.toList());
 
         List<PerformanceData.Entry> getData = allData.stream().filter(it -> it.method.equals("GET")).collect(Collectors.toList());
         List<PerformanceData.Entry> getSuccessData = getData.stream().filter(it -> it.result.equals(KVMessage.StatusType.GET_SUCCESS.name())).collect(Collectors.toList());
@@ -90,13 +95,13 @@ public class Main {
         List<PerformanceData.Entry> getErrorData = getData.stream().filter(it -> it.result.equals(KVMessage.StatusType.GET_ERROR.name())).collect(Collectors.toList());
         List<PerformanceData.Entry> getServerNotFoundData = getData.stream().filter(it -> it.result.equals("SERVER_NOT_FOUND")).collect(Collectors.toList());
         List<PerformanceData.Entry> getExceptionsData = getData.stream().filter(it -> it.result.equals("ERROR")).collect(Collectors.toList());
-        getData.sort((a,b) -> a.time > b.time ? 1 : -1);
 
-        System.out.format("######## Percentiles: %s", getPercentiles(getData, Arrays.asList(0.99, 0.95, 0.90, 0.70, 0.3)));
+        List<Long> getPercentiles = calculatePercentiles(getData, percentiles);
 
         sb.append("Performance Measured on GET")
                 .append(System.lineSeparator())
                 .append("------------------------------------------------------")
+                .append(String.format("Percentiles GET: %s : %s", percentiles, getPercentiles))
                 .append(System.lineSeparator())
                 .append(String.format("Total %d GET requests executed with average response time %f", getData.size(), getData.size() > 0 ? getData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
                 .append(System.lineSeparator())
@@ -118,10 +123,12 @@ public class Main {
         List<PerformanceData.Entry> putErrorData = putData.stream().filter(it -> it.result.equals(KVMessage.StatusType.PUT_ERROR.name())).collect(Collectors.toList());
         List<PerformanceData.Entry> putServerNotFoundData = putData.stream().filter(it -> it.result.equals("SERVER_NOT_FOUND")).collect(Collectors.toList());
         List<PerformanceData.Entry> putExceptionsData = putData.stream().filter(it -> it.result.equals("ERROR")).collect(Collectors.toList());
+        List<Long> putPercentiles = calculatePercentiles(putData, percentiles);
 
         sb.append("Performance Measured on PUT")
                 .append(System.lineSeparator())
                 .append("------------------------------------------------------")
+                .append(String.format("Percentiles PUT: %s : %s", percentiles, putPercentiles))
                 .append(System.lineSeparator())
                 .append(String.format("Total %d PUT requests executed with average response time %f", putData.size(), putData.size() > 0 ? putData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
                 .append(System.lineSeparator())
@@ -146,8 +153,8 @@ public class Main {
         System.out.println("Performance measures have been calculated successfully :)");
     }
 
-    static List<Long> getPercentiles(List<PerformanceData.Entry> perfData, List<Double> percentils) {
-        perfData.sort((p1, p2) -> p1.time > p2.time ? 1 : -1);
+    static List<Long> calculatePercentiles(List<PerformanceData.Entry> perfData, List<Double> percentils) {
+        perfData.sort((p1, p2) -> p1.time < p2.time ? 1 : -1);
 
         List<Long> result = new LinkedList<>();
         percentils.forEach(p -> {
