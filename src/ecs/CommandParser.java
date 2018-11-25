@@ -23,8 +23,6 @@ public final class CommandParser {
                 command = new AddServerCommand(tokens[1], tokens[2], Integer.valueOf(tokens[3]));
             } catch (NumberFormatException e) {}
         }
-        if (tokens[0].equals("c"))
-            command = new SshCommand();
 
         else if (tokens[0].equals("cs")) {
             new ConfigureAllCommand().execute(state);
