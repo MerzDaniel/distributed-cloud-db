@@ -18,7 +18,7 @@ public class StartupServers implements Command {
         state.meta.getKvServerList().stream().parallel().forEach(sd -> {
             try {
                 getStatus(sd);
-                return; // server can be reached
+                return; // server can be reached therefor doesn't need to be started
             } catch (IOException e) {
                 System.out.format("Server %s at %s:%d has could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
             } catch (MarshallingException e) {

@@ -45,7 +45,7 @@ public class LoadConfiguration implements Command {
             for (Iterator<String> it = reader.lines().iterator(); it.hasNext(); ) {
                 String line = it.next();
                 String[] tokens = line.split(" ");
-                if (tokens.length > 0 && tokens[0].equals("#"))
+                if (tokens.length == 0 || tokens[0].equals("") || tokens[0].equals("#") || tokens[0].startsWith("#") )
                     continue;
                 if (tokens.length != 3) {
                     logger.error("Wrong layout in config file: '" + line + "'");
