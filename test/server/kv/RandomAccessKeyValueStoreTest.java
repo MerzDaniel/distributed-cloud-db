@@ -18,7 +18,7 @@ public class RandomAccessKeyValueStoreTest {
     @Before
     public void setup() throws IOException {
         kvStore = new RandomAccessKeyValueStore(dbFile);
-        kvStore.init();
+        kvStore.init("kittyHawk");
     }
     @After
     public void tearDown() throws Exception {

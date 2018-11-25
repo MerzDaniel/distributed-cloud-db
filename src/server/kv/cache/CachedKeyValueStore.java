@@ -21,7 +21,7 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     public CachedKeyValueStore(int cacheSize, String dataFileName) {
         this.cacheSize = cacheSize;
-        store = new SimpleKeyValueStore(dataFileName);
+        store = new SimpleKeyValueStore();
     }
 
     public CachedKeyValueStore(int cacheSize, KeyValueStore store) {
@@ -30,8 +30,8 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void init() throws IOException {
-        store.init();
+    public void init(String dbName) throws IOException {
+        store.init(dbName);
     }
 
     /**

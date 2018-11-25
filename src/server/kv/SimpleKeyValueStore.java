@@ -20,15 +20,14 @@ public class SimpleKeyValueStore implements KeyValueStore {
     final Logger logger = LogManager.getLogger(SimpleKeyValueStore.class);
 
     final File DB_DIRECTORY = new File(Paths.get("db").toUri());
-    final File DB_FILE;
+    File DB_FILE;
     final File TEMP_DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "temp_db").toUri());
 
     Reader reader;
     Writer writer;
     private final String RECORD_SEPARATOR = "\u001E";
 
-    public SimpleKeyValueStore(String dataFileName) {
-        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dataFileName).toUri());
+    public SimpleKeyValueStore() {
     }
 
     public SimpleKeyValueStore(Reader reader, Writer writer, String dataFileName) {
@@ -38,9 +37,10 @@ public class SimpleKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void init() throws IOException {
+    public void init(String dbName) throws IOException {
         DB_DIRECTORY.mkdirs();
         try {
+            DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
             if (!DB_FILE.exists()) {
                 logger.info("Creating db file: " + DB_FILE.getAbsolutePath());
                 DB_FILE.createNewFile();

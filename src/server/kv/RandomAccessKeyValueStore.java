@@ -27,8 +27,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     private final String RECORD_SEPARATOR = "\u001E";
 
-    public RandomAccessKeyValueStore(String dataFileName) {
-        DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dataFileName).toUri());
+    public RandomAccessKeyValueStore() {
+
     }
 
     public RandomAccessKeyValueStore(File dbFile) {
@@ -36,8 +36,9 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     @Override
-    public void init() throws IOException {
+    public void init(String dbName) throws IOException {
         try {
+            DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
             DB_FILE.getParentFile().mkdirs();
             db = new RandomAccessFile(DB_FILE, "rw");
         } catch (IOException e) {
