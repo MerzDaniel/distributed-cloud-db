@@ -1,10 +1,6 @@
 package ecs.command;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages_es;
+import com.jcraft.jsch.*;
 import ecs.State;
 
 import java.nio.file.Paths;
@@ -27,14 +23,25 @@ public class SshCommand implements ecs.Command {
 
             Session session = connect(userName, host);
 
+//            copyFile(session);
+
             Channel channel = session.openChannel("shell");
+//            channel.setInputStream(new I);
             channel.setOutputStream(System.out);
 
 //            channel.setInputStream(InputStream stream = new ByteArrayInputStream(exampleString.getBytes(StandardCharsets.UTF_8)););
             System.out.println(session.isConnected());
         } catch (JSchException e) {
             e.printStackTrace();
+//        } catch (SftpException e) {
+//            System.out.println("sftp exception");
         }
+    }
+
+    private void copyFile(Session session) throws JSchException, SftpException {
+        ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
+        sftpChannel.connect();
+        sftpChannel.put("I:/demo/myOutFile.txt", "/tmp/QA_Auto/myOutFile.zip");
     }
 
     private Session connect(String user, String host) throws JSchException {
