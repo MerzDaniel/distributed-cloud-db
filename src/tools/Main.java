@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,8 +51,13 @@ public class Main {
     public static void runTest(){
         List<PerformanceData> pfList = new ArrayList<>();
         System.out.println("Please bare with us, tests are being running............................");
+
+        List<Future<PerformanceData>> list = new LinkedList<>();
         for (int i = 0; i < NO_OF_CLIENTS; i++) {
             Future<PerformanceData> pf = executorService.submit(new KVTestClient(TEST_DATA_DIRECTORY, PERCENTAGE_WRITES));
+            list.add(pf);
+        }
+        for (Future<PerformanceData> pf : list) {
             try {
                 pfList.add(pf.get());
             } catch (InterruptedException | ExecutionException e) {
