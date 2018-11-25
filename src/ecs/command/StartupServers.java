@@ -18,7 +18,7 @@ public class StartupServers implements Command {
         state.meta.getKvServerList().stream().parallel().forEach(sd -> {
             try {
                 getStatus(sd);
-                System.out.format("%s is already startup.", sd.toString());
+                System.out.format("%s is already startup.\n", sd.toString());
                 return; // server can be reached therefor doesn't need to be started
             } catch (IOException e) {
                 // we have to start the server
@@ -29,7 +29,7 @@ public class StartupServers implements Command {
             }
 
             try {
-                System.out.format("Starting up %s ...", sd.toString());
+                System.out.format("Starting up %s ...\n", sd.toString());
                 startKvServer(sd);
             } catch (Exception e) {
                 System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
