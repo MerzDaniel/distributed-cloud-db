@@ -2,7 +2,10 @@ package ecs.command;
 
 import com.jcraft.jsch.*;
 import ecs.State;
+import server.kv.CacheType;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 /**
@@ -22,19 +25,34 @@ public class SshCommand implements ecs.Command {
             String host = "192.168.178.37";
 
             Session session = connect(userName, host);
+            System.out.format("ssh is connected: %b\n", session.isConnected());
 
 //            copyFile(session);
 
-            Channel channel = session.openChannel("shell");
-//            channel.setInputStream(new I);
-            channel.setOutputStream(System.out);
+            ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
-//            channel.setInputStream(InputStream stream = new ByteArrayInputStream(exampleString.getBytes(StandardCharsets.UTF_8)););
-            System.out.println(session.isConnected());
+            InputStream in = channel.getInputStream();
+//            channel.setOutputStream(System.out);
+//
+            String cachingType = " --cache-type " + CacheType.LFU.name();
+            String cachingSize = " --cache-size " + 10;
+            String port = " --port " + 40000;
+            String command = "java -jar server.jar" + cachingType + cachingSize + port + " &";
+
+            channel.setCommand(command);
+            channel.connect();
+
+            channel.disconnect();
+            session.disconnect();
+
         } catch (JSchException e) {
             e.printStackTrace();
 //        } catch (SftpException e) {
 //            System.out.println("sftp exception");
+        } catch (IOException e) {
+            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
         }
     }
 
