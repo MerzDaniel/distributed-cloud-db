@@ -34,7 +34,7 @@ public class ServerStatusCommand implements Command {
                 RunningState runningState = getStatus(sd);
                 System.out.format("Server %s at %s:%d has status: %s\n", sd.getName(), sd.getHost(), sd.getPort(), runningState.toString());
             }catch (ConnectException e) {
-                System.out.format("Server %s at %s:%d has could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
+                System.out.format("Server %s at %s:%d could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
             } catch (Exception e) {
                 l.warn("Error", e);
                 System.out.format("Server %s at %s:%d returned an error\n", sd.getName(), sd.getHost(), sd.getPort());
