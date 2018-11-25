@@ -151,7 +151,7 @@ public final class MessageMarshaller {
             key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
             value = null;
         } else if (kvMessageComponents.length > 3){
-            key = kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
+            key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
             List<String> kvMsgCompList = Arrays.asList(kvMessageComponents);
             value = kvMsgCompList.subList(2, kvMsgCompList.size()).stream().collect(Collectors.joining(RECORD_SEPARATOR));
         } else {
