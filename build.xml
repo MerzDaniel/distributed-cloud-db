@@ -27,6 +27,11 @@
   <property name="ecsmanifest.file" value="ECS_MANIFEST.MF"/>
   <property name="ecsmain.class" value="ecs.Main"/>
 
+  <!-- Configuration for perf application -->
+  <property name="perfjar.file" value="perf.jar"/>
+  <property name="perfmanifest.file" value="PERF_MANIFEST.MF"/>
+  <property name="perfmain.class" value="tools.Main"/>
+
   <!-- path to libraries-->
   <path id="external.jars">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -63,6 +68,8 @@
     <delete file="${servermanifest.file}"/>
     <delete file="${ecsjar.file}"/>
     <delete file="${ecsmanifest.file}"/>
+    <delete file="${perfjar.file}"/>
+    <delete file="${perfmanifest.file}"/>
   </target>
 
   <target name="cleanall" depends="clean"/>
@@ -141,8 +148,26 @@
     </jar>
   </target>
 
+  <!-- build server jar -->
+  <target name="build-perf-jar" depends="build">
+    <delete file="${perfjar.file}"/>
+    <delete file="${perfmanifest.file}"/>
+
+    <manifest file="${perfmanifest.file}">
+      <attribute name="built-by" value="${user.name}"/>
+      <attribute name="Main-Class" value="${perfmain.class}"/>
+      <attribute name="Class-Path" value="${project.classpath}"/>
+    </manifest>
+
+    <jar destfile="${perfjar.file}" basedir="${build.dir}"
+         manifest="${perfmanifest.file}">
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+      <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+    </jar>
+  </target>
+
   <!-- generate separate jar files for client and server application -->
-  <target name="build-jar" depends="build-client-jar, build-server-jar, build-ecs-jar"/>
+  <target name="build-jar" depends="build-client-jar, build-server-jar, build-ecs-jar, build-perf-jar"/>
 
   <!-- run test cases -->
   <target name="test" depends="build-tests">
