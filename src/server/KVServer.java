@@ -34,7 +34,7 @@ public class KVServer implements Runnable {
      * @param port given port for storage server to operate
      */
     public KVServer(String name, String host, int port) {
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore(name);
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
         serverData = new ServerData(name, host, port);
         state = new ServerState(db, serverData);
     }
@@ -55,7 +55,7 @@ public class KVServer implements Runnable {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore(name);
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
         state = new ServerState(db, serverData);
     }
 
@@ -132,25 +132,19 @@ public class KVServer implements Runnable {
     }
 
     private void initDb() {
-        try {
-            state.db.init();
-            switch (cacheType) {
-                case FIFO:
-                    logger.info("Setting up FIFO caching");
-                    state.db = new FifoCachedKeyValueStore(cacheSize, state.db);
-                    break;
-                case LRU:
-                    logger.info("Setting up LRU caching");
-                    state.db = new LRUCachedKeyValueStore(cacheSize, state.db);
-                    break;
-                case LFU:
-                    logger.info("Setting up LFU caching");
-                    state.db = new LFUCachedKeyValueStore(cacheSize, state.db);
-                    break;
-            }
-        } catch (IOException e) {
-            logger.error("Error while initializing database", e);
-            System.exit(1);
+        switch (cacheType) {
+            case FIFO:
+                logger.info("Setting up FIFO caching");
+                state.db = new FifoCachedKeyValueStore(cacheSize, state.db);
+                break;
+            case LRU:
+                logger.info("Setting up LRU caching");
+                state.db = new LRUCachedKeyValueStore(cacheSize, state.db);
+                break;
+            case LFU:
+                logger.info("Setting up LFU caching");
+                state.db = new LFUCachedKeyValueStore(cacheSize, state.db);
+                break;
         }
     }
 

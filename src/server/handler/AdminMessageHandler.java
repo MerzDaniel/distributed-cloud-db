@@ -31,6 +31,13 @@ public final class AdminMessageHandler {
 
                 if (state.runningState == RunningState.UNCONFIGURED)
                     state.runningState = RunningState.IDLE;
+
+                try {
+                    state.db.init(state.currentServerServerData.getName());
+                } catch (IOException e) {
+                    logger.error("error occurred during initializing the db");
+                    throw new DbError(e);
+                }
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
             case START:
                 if (state.runningState != RunningState.IDLE)

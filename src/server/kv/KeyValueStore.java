@@ -8,7 +8,13 @@ import java.util.stream.Stream;
  * This class defines the abstract behaviour for the KeyValueStore
  */
 public interface KeyValueStore {
-    void init() throws IOException;
+
+    /**
+     * Init the KeyValueStore with dbName
+     * @param dbName database name
+     * @throws IOException if any I/O exception occurs when initialize the KeyValueStore
+     */
+    void init(String dbName) throws IOException;
 
     /**
      * shut downs the {@link KeyValueStore} by closing instances of any {@link java.io.Writer} or {@link java.io.Reader}
