@@ -28,7 +28,7 @@ public class Main {
     static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
 
     final static File STATS_DIRECTORY = new File(Paths.get("stats").toUri());
-    final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.csv").toUri());
+    final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.txt").toUri());
 
     static File TEST_DATA_DIRECTORY;
     final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream =
