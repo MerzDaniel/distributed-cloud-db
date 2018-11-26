@@ -39,4 +39,10 @@ public final class KvService {
         return (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
     }
 
+    public static boolean makeReadonly(ServerData sd, Connection con) throws MarshallingException, IOException {
+        KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MAKE_READONLY);
+        con.sendMessage(msg.marshall());
+        String responseString = con.readMessage();
+        return ((KVAdminMessage) MessageMarshaller.unmarshall(responseString)).status == KVAdminMessage.StatusType.MAKE_SUCCESS;
+    }
 }

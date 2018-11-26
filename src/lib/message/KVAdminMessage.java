@@ -29,6 +29,9 @@ public class KVAdminMessage implements IMessage {
         START,                    /* Start a KVServer */
         START_SUCCESS,            /* Starting the KVServer is success */
         START_ERROR,            /* Starting the KVServer is not success  */
+        MAKE_READONLY,
+        MAKE_SUCCESS,
+        MAKE_ERROR,
         STOP,                    /* Stop a KVServer */
         STOP_SUCCESS,           /* Stoping the KVServer is success */
         STOP_ERROR,            /* Stoping the KVServer is not success */
