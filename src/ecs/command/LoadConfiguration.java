@@ -4,6 +4,7 @@ import ecs.Command;
 import ecs.State;
 import lib.hash.HashUtil;
 import lib.metadata.ServerData;
+import lib.server.CacheType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,10 +48,10 @@ public class LoadConfiguration implements Command {
                 String[] tokens = line.split(" ");
                 if (tokens.length == 0 || tokens[0].equals("") || tokens[0].equals("#") || tokens[0].startsWith("#") )
                     continue;
-                if (tokens.length != 3) {
+                if (tokens.length < 3 || tokens.length == 4 || tokens.length > 5) {
                     logger.error("Wrong layout in config file: '" + line + "'");
-                    System.out.println("Config file layout is wrong. Should be '<name> <host> <port>'");
-                    System.exit(0);
+                    System.out.println("Wrong line in the config file (name,host,port,cachetype,cachesize): " + line);
+                    continue;
                 }
 
                 boolean nameExists = servers.stream().anyMatch(s -> s.getName().equals(tokens[0]));
@@ -62,8 +63,16 @@ public class LoadConfiguration implements Command {
                     String name = tokens[0];
                     String host = tokens[1];
                     int port = Integer.parseInt(tokens[2]);
+                    CacheType type = CacheType.LFU;
+                    int cacheSize = 1000;
+                    if (tokens.length > 3) {
+                        type = CacheType.valueOf(tokens[3]);
+                        cacheSize = Integer.parseInt(tokens[4]);
+                    }
                     BigInteger hash = HashUtil.getHash(name);
                     ServerData s = new ServerData(name, host, port, hash);
+                    s.setCacheType(type); s.setCacheSize(cacheSize);
+
                     servers.add(s);
                 } catch (Exception e) {
                     System.out.println("Config file contains errors!");

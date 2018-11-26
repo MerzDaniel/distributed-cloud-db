@@ -1,6 +1,7 @@
 package lib.metadata;
 
 import lib.message.MarshallingException;
+import lib.server.CacheType;
 
 import java.math.BigInteger;
 
@@ -13,6 +14,10 @@ public class ServerData {
     String name;
     String host;
     int port;
+
+
+    CacheType cacheType;
+    int cacheSize;
 
     BigInteger fromHash = BigInteger.ZERO;
 
@@ -68,6 +73,21 @@ public class ServerData {
         return port;
     }
 
+    public CacheType getCacheType() {
+        return cacheType;
+    }
+
+    public void setCacheType(CacheType cacheType) {
+        this.cacheType = cacheType;
+    }
+
+    public int getCacheSize() {
+        return cacheSize;
+    }
+
+    public void setCacheSize(int cacheSize) {
+        this.cacheSize = cacheSize;
+    }
     /**
      * Marshall this {@link ServerData} instance
      *
