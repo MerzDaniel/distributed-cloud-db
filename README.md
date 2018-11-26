@@ -15,7 +15,7 @@ Run the server
 Run the client
 `java -jar client.jar`
 
-Run the ECS (make sure ecs.config file is available in the root folder)
+Run the ECS (make sure `ecs.config` file is available in the root folder)
 `java -jar ecs.jar`
 
 ## Folder structure
