@@ -15,11 +15,11 @@ public class AllTests {
 
     static {
         try {
-            File dbFile = new File(Paths.get("tmp", "INTEGRATION_TEST_DB").toUri());
-            if (dbFile.exists()) dbFile.delete();
-            KeyValueStore db = new RandomAccessKeyValueStore(dbFile);
-            db.init("dbname" + Math.random());
-            KVServer s = new KVServer("server", "localhost",50000, 10, CacheType.FIFO, db, RunningState.RUNNING);
+            KeyValueStore db = new RandomAccessKeyValueStore();
+            db.init("dbname");
+            if (((RandomAccessKeyValueStore) db).DB_FILE.exists()) ((RandomAccessKeyValueStore) db).DB_FILE.delete();
+
+            KVServer s = new KVServer("server", "localhost", 50000, 10, CacheType.FIFO, db, RunningState.RUNNING);
             new Thread(s).start();
         } catch (Exception e) {
             e.printStackTrace();
