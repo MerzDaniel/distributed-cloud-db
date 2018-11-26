@@ -1,14 +1,19 @@
 package ecs.command;
 
+import com.jcraft.jsch.JSchException;
 import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
+import ecs.service.SshService;
+import lib.communication.Connection;
 import lib.hash.HashUtil;
+import lib.message.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
 import lib.server.RunningState;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
@@ -46,6 +51,15 @@ public class AddServerCommand implements Command {
         newServer.setCacheType(cacheType);
         newServer.setCacheSize(cacheSize);
 
+        System.out.println("Starting up the server process (waiting for 15s)...");
+        try {
+            SshService.startKvServer(newServer);
+            Thread.sleep(15000);
+        } catch (Exception e) {
+            System.out.println("Exception while starting the server: " + e.getMessage());
+            return;
+        }
+
         if (state.meta.getKvServerList().size() == 0) {
             state.meta.getKvServerList().add(newServer);
             System.out.println("Was added as first server to the list.");
@@ -60,7 +74,7 @@ public class AddServerCommand implements Command {
         try {
             influencedStatus = KvService.getStatus(influencedServer);
         } catch (Exception e) {
-            System.out.println("Error while getting status of server! Did not move data or anything");
+            System.out.println("Could not reach server influenced server: " + influencedServer.toString());
             return;
         }
         if (influencedStatus == RunningState.UNCONFIGURED) {
@@ -68,6 +82,20 @@ public class AddServerCommand implements Command {
             return;
         }
 
+        Connection con = new Connection();
+        try {
+            con.connect(influencedServer.getHost(), influencedServer.getPort());
+        } catch (IOException e) {
+            System.out.println("Could not connect to server: " + influencedServer.toString());
+            return;
+        }
+        try {
+            KvService.moveData(newServer, con, true);
+        } catch (Exception e) {
+            System.out.println("Error while moving data" + e.getMessage());
+            return;
+        }
 
+        System.out.println("Move relevant data to the new node!");
     }
 }

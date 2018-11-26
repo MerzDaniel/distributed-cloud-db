@@ -32,10 +32,11 @@ public final class KvService {
         }
 
     }
-    public static KVAdminMessage moveData(ServerData to, Connection con) throws IOException, MarshallingException {
+    public static KVAdminMessage moveData(ServerData to, Connection con, boolean softMove) throws IOException, MarshallingException {
         KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
         con.sendMessage(msg.marshall());
         String responseString = con.readMessage();
         return (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
     }
+
 }

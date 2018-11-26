@@ -70,7 +70,7 @@ public class RemoveNodeCommand implements Command {
         try {
             // move data
             TimeWatch moveTimer = TimeWatch.start();
-            KVAdminMessage response = moveData(to, con);
+            KVAdminMessage response = moveData(to, con, false);
             String responseString;
             if (response.status != KVAdminMessage.StatusType.MOVE_SUCCESS)
                 System.out.println("Data was not successfully moved. But I'm evil and still shutting down the node ^_^");
