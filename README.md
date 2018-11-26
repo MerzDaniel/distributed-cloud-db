@@ -6,7 +6,7 @@ A distributed key-value database for the master praktikum "Cloud Databases"
 Run tests: 
 `ant test`
 
-Build jars for server and client: 
+Build jars for server, client and ecs: 
 `ant build-jar`
 
 Run the server
@@ -23,42 +23,12 @@ Run the ECS (make sure `ecs.config` file is available in the root folder)
 - `test` contains all tests
 - `logs` contains logs
 - `db` contains dbs
-- `docs` contains the test descriptions
+- `docs` contains the performance evaluation
 - `tools` contains performance tools
 
-## Steps
+## dev tasks
 
-## Todo List
-STEP 1
-- Lib 
-  - Consistent Hashing (Table, key->entry, )
-    - calcServerHash, calcKeyHash, getResponsibleServer
-  - ClientMessaging
-    - new messages for server state
-  - ECSAdminMessages
-    - Messages: Start,Stop,Shutdown, locking, moveData, update(metadata)
-- KV Client 
-  - Handle new messages in GET/PUT
-- ECS
-  - Lib
-    - Run Jar with parameters
-    - SSH
-    - ServerCommunication
-    - Configuration File
-  - ClientInterface
-- KV SERVER
-  - KV
-    - DB file rename with server hash
-    - extend with WriteLock
-  - Startup: Wait for configuration
-  
-STEP 2
-- Performance measurements
-
-STEP 3
-Performance optimizations, Report
-
-## Optimizations
+### Optimizations
 - COMMUNICATION: Message ids for parallel GET requests
 - DB: separated KEY file for managing keys 
   - Tuple: <KEY,bytePosition>
@@ -70,7 +40,6 @@ Performance optimizations, Report
 - CLIENT: Try reconnect
 - Message compression
 
-## Care about possible Bugs
-- Escaping in DB-file
+### Care about possible Bugs
 - Escaping in messages
 - Interrupted messaging / hanging client
