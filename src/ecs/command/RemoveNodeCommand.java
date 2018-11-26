@@ -44,7 +44,7 @@ public class RemoveNodeCommand implements Command {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getName().equals(name)) {
                 from = list.get(i);
-                to = list.get(i + 1 % list.size());
+                to = list.get((i + 1) % list.size());
                 break;
             }
         }
