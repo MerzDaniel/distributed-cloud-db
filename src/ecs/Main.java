@@ -8,7 +8,7 @@ import java.nio.file.Paths;
  */
 public class Main {
 
-    static final String defaultConfigPath = Paths.get("db", "ecs.config").toString();
+    static final String defaultConfigPath = Paths.get("ecs.config").toString();
 
     public static void main(String[] args) throws IOException {
         new EcsAdminConsole(defaultConfigPath).start();
