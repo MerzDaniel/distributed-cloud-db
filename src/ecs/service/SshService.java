@@ -22,7 +22,8 @@ public final class SshService {
         String cachingType = " --cache-type " + sd.getCacheType();
         String cachingSize = " --cache-size " + sd.getCacheSize();
         String port = " --port " + sd.getPort();
-        String command = "java -jar server.jar" + cachingType + cachingSize + port + " &";
+        String logging = " --log-level ERROR";
+        String command = "java -jar server.jar" + cachingType + cachingSize + port + logging + " &";
 
         channel.setCommand(command);
         channel.connect();
