@@ -1,6 +1,7 @@
 package ecs;
 
 import ecs.command.*;
+import lib.server.CacheType;
 
 /**
  * This class parse the user commands from {@link EcsAdminConsole} to {@link Command} instances
@@ -18,13 +19,7 @@ public final class CommandParser {
         String[] tokens = line.split(" ");
         Command command = null;
 
-        if (tokens[0].equals("add") && tokens.length == 4) {
-            try {
-                command = new AddServerCommand(tokens[1], tokens[2], Integer.valueOf(tokens[3]));
-            } catch (NumberFormatException e) {}
-        }
-
-        else if (tokens[0].equals("cs")) {
+        if (tokens[0].equals("cs")) {
             new ConfigureAllCommand().execute(state);
             command = new StartServersCommand();
         }
@@ -52,6 +47,12 @@ public final class CommandParser {
 
         else if (tokens[0].equals("stop"))
             command = new StopServersCommand();
+
+        else if (tokens[0].equals("add") && tokens.length == 6) {
+            try {
+                command = new AddServerCommand(tokens[1], tokens[2], Integer.parseInt(tokens[3]), CacheType.valueOf(tokens[4]), Integer.parseInt(tokens[5]));
+            } catch(Exception e) {}
+        }
 
         if (command == null) {
             System.out.println("Unknown Command.");
