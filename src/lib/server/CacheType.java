@@ -1,4 +1,4 @@
-package server.kv;
+package lib.server;
 
 /**
  * This class contains the different cache implementation types

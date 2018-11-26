@@ -3,7 +3,7 @@ package integration;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import lib.server.RunningState;
-import server.kv.CacheType;
+import lib.server.CacheType;
 import server.KVServer;
 import server.kv.KeyValueStore;
 import server.kv.RandomAccessKeyValueStore;

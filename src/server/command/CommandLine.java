@@ -1,7 +1,7 @@
 package server.command;
 
 import org.apache.logging.log4j.Level;
-import server.kv.CacheType;
+import lib.server.CacheType;
 
 /**
  * The class repersents a command line arguments passed to the application startup

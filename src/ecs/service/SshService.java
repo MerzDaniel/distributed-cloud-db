@@ -2,10 +2,9 @@ package ecs.service;
 
 import com.jcraft.jsch.*;
 import lib.metadata.ServerData;
-import server.kv.CacheType;
+import lib.server.CacheType;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Paths;
 
 public final class SshService {

@@ -3,6 +3,7 @@ package server;
 import lib.SocketUtil;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
+import lib.server.CacheType;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

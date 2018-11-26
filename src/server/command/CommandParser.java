@@ -3,7 +3,7 @@ package server.command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Level;
-import server.kv.CacheType;
+import lib.server.CacheType;
 
 import java.util.Arrays;
 import java.util.List;
