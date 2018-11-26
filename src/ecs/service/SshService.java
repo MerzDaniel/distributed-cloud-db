@@ -19,8 +19,8 @@ public final class SshService {
         ChannelExec channel = (ChannelExec) session.openChannel("exec");
 //        InputStream in = channel.getInputStream();
 
-        String cachingType = " --cache-type " + CacheType.LFU.name();
-        String cachingSize = " --cache-size " + 10;
+        String cachingType = " --cache-type " + sd.getCacheType();
+        String cachingSize = " --cache-size " + sd.getCacheSize();
         String port = " --port " + sd.getPort();
         String command = "java -jar server.jar" + cachingType + cachingSize + port + " &";
 
