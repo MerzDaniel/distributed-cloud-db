@@ -4,11 +4,12 @@ import client.store.KVStore;
 import junit.framework.TestCase;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
+import org.junit.Ignore;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-
+@Ignore
 public class Connections extends TestCase {
 
 
