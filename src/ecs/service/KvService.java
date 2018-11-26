@@ -1,6 +1,7 @@
 package ecs.service;
 
 import lib.SocketUtil;
+import lib.communication.Connection;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
 import lib.message.MessageMarshaller;
@@ -30,5 +31,11 @@ public final class KvService {
             return response.runningState;
         }
 
+    }
+    public static KVAdminMessage moveData(ServerData to, Connection con) throws IOException, MarshallingException {
+        KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
+        con.sendMessage(msg.marshall());
+        String responseString = con.readMessage();
+        return (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
     }
 }

@@ -13,6 +13,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
+
+import static ecs.service.KvService.moveData;
+
 /**
  * This class represent the command for removing a {@link server.KVServer} instance
  */
@@ -67,10 +70,8 @@ public class RemoveNodeCommand implements Command {
         try {
             // move data
             TimeWatch moveTimer = TimeWatch.start();
-            KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
-            con.sendMessage(msg.marshall());
-            String responseString = con.readMessage();
-            KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
+            KVAdminMessage response = moveData(to, con);
+            String responseString;
             if (response.status != KVAdminMessage.StatusType.MOVE_SUCCESS)
                 System.out.println("Data was not successfully moved. But I'm evil and still shutting down the node ^_^");
             System.out.format("Move data took %dms.\n", moveTimer.time());
@@ -95,4 +96,5 @@ public class RemoveNodeCommand implements Command {
             return;
         }
     }
+
 }
