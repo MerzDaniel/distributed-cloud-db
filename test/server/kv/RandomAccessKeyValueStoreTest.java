@@ -13,17 +13,17 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomAccessKeyValueStoreTest {
-    File dbFile = new File(Paths.get("tmp", "TEST_DB").toUri());
     RandomAccessKeyValueStore kvStore;
     @Before
     public void setup() throws IOException {
-        kvStore = new RandomAccessKeyValueStore(dbFile);
+        kvStore = new RandomAccessKeyValueStore();
         kvStore.init("kittyHawk");
+        kvStore.DB_FILE.delete();
     }
     @After
     public void tearDown() throws Exception {
         kvStore.shutdown();
-        if (!dbFile.delete()) throw new Exception("What the hell");
+        if (!kvStore.DB_FILE.delete()) throw new Exception("What the hell");
     }
 
     @Test
@@ -68,9 +68,9 @@ public class RandomAccessKeyValueStoreTest {
 
     @Test
     public void shouldWriteFile() throws DbError {
-        assertEquals(0, dbFile.length());
+        assertEquals(0, kvStore.DB_FILE.length());
         kvStore.put("key", "value");
-        assertTrue(dbFile.length() > 0);
+        assertTrue(kvStore.DB_FILE.length() > 0);
     }
 
     @Test
