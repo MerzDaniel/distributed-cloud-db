@@ -2,6 +2,7 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
+import lib.TimeWatch;
 import lib.communication.Connection;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
@@ -65,12 +66,14 @@ public class RemoveNodeCommand implements Command {
 
         try {
             // move data
+            TimeWatch moveTimer = TimeWatch.start();
             KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
             con.sendMessage(msg.marshall());
             String responseString = con.readMessage();
             KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
             if (response.status != KVAdminMessage.StatusType.MOVE_SUCCESS)
                 System.out.println("Data was not successfully moved. But I'm evil and still shutting down the node ^_^");
+            System.out.format("Move data took %dms.\n", moveTimer.time());
 
             // reconfigure
             state.meta.getKvServerList().remove(from);
