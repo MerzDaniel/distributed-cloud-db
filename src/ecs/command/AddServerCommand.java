@@ -51,6 +51,7 @@ public class AddServerCommand implements Command {
         newServer.setCacheType(cacheType);
         newServer.setCacheSize(cacheSize);
 
+        // ## start server
         System.out.println("Starting up the server process (waiting for 15s)...");
         try {
             SshService.startKvServer(newServer);
@@ -62,7 +63,21 @@ public class AddServerCommand implements Command {
 
         if (state.meta.getKvServerList().size() == 0) {
             state.meta.getKvServerList().add(newServer);
-            System.out.println("Was added as first server to the list.");
+            System.out.println("Was added as first server to the list. Is unconfigure");
+            return;
+        }
+
+        Connection newServerCon = new Connection();
+        try {
+            newServerCon.connect(newServer.getHost(), newServer.getPort());
+        } catch (IOException e) {
+            System.out.println("Could not connect to server: " + newServer.toString());
+            return;
+        }
+        try {
+            KvService.makeReadonly(newServer, newServerCon);
+        } catch (Exception e) {
+            System.out.println("Error.");
             return;
         }
 
@@ -82,15 +97,20 @@ public class AddServerCommand implements Command {
             return;
         }
 
-        Connection con = new Connection();
+        Connection influencedServerCon = new Connection();
         try {
-            con.connect(influencedServer.getHost(), influencedServer.getPort());
+            influencedServerCon.connect(influencedServer.getHost(), influencedServer.getPort());
         } catch (IOException e) {
             System.out.println("Could not connect to server: " + influencedServer.toString());
             return;
         }
         try {
-            KvService.moveData(newServer, con, true);
+            KvService.makeReadonly(influencedServer, influencedServerCon);
+            new ConfigureAllCommand().execute(state);
+
+            KvService.moveData(newServer, influencedServerCon, true);
+
+            new StartServersCommand().execute(state);
         } catch (Exception e) {
             System.out.println("Error while moving data" + e.getMessage());
             return;
