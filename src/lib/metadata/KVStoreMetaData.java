@@ -90,7 +90,9 @@ public class KVStoreMetaData {
      * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
      */
     public ServerData findNextKvServer(BigInteger hash) throws KVServerNotFoundException {
-        if (kvServerList.size() <= 1) throw new KVServerNotFoundException();
+        if (kvServerList.size() == 0) throw new KVServerNotFoundException();
+
+        sortKvServers();
 
         for (int i = 0; i < kvServerList.size(); i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0) return kvServerList.get(i);
@@ -112,7 +114,7 @@ public class KVStoreMetaData {
 
         if (kvServerList.size() == 1) return 0;
 
-        kvServerList.sort(Comparator.comparing(ServerData::getFromHash));
+        sortKvServers();
         for (int i = 0; i < kvServerList.size() - 1; i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) <= 0
                     && hash.compareTo(kvServerList.get(i + 1).getFromHash()) < 0)
@@ -120,6 +122,10 @@ public class KVStoreMetaData {
         }
         //for the scenario where the hash value of key is larger than the last kvServer(ServerData)
         return kvServerList.size() - 1;
+    }
+
+    private void sortKvServers() {
+        kvServerList.sort(Comparator.comparing(ServerData::getFromHash));
     }
 
 }
