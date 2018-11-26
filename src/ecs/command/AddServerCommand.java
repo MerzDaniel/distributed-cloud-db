@@ -51,33 +51,37 @@ public class AddServerCommand implements Command {
         newServer.setCacheType(cacheType);
         newServer.setCacheSize(cacheSize);
 
-        // ## start server
-        System.out.println("Starting up the server process (waiting for 15s)...");
+        Connection newServerCon = new Connection();
+        RunningState newServerState;
         try {
-            SshService.startKvServer(newServer);
-            Thread.sleep(15000);
+            newServerCon.connect(newServer.getHost(), newServer.getPort());
+            newServerCon.readMessage();
+            newServerState = KvService.getStatus(newServer);
         } catch (Exception e) {
-            System.out.println("Exception while starting the server: " + e.getMessage());
-            return;
+            System.out.println("Could not connect to server: " + newServer.toString());
+            // ## start server
+            System.out.println("Starting up the server process (waiting for 15s)...");
+            try {
+                SshService.startKvServer(newServer);
+                Thread.sleep(15000);
+                newServerState = KvService.getStatus(newServer);
+            } catch (Exception ex) {
+                System.out.println("Exception while starting the server: " + ex.getMessage());
+                return;
+            }
+        }
+        if (newServerState != RunningState.UNCONFIGURED) {
+            try {
+                KvService.makeReadonly(newServer, newServerCon);
+            } catch (Exception e) {
+                System.out.println("Error. While making the server readonly");
+                return;
+            }
         }
 
         if (state.meta.getKvServerList().size() == 0) {
             state.meta.getKvServerList().add(newServer);
             System.out.println("Was added as first server to the list. Is unconfigure");
-            return;
-        }
-
-        Connection newServerCon = new Connection();
-        try {
-            newServerCon.connect(newServer.getHost(), newServer.getPort());
-        } catch (IOException e) {
-            System.out.println("Could not connect to server: " + newServer.toString());
-            return;
-        }
-        try {
-            KvService.makeReadonly(newServer, newServerCon);
-        } catch (Exception e) {
-            System.out.println("Error.");
             return;
         }
 
@@ -100,12 +104,16 @@ public class AddServerCommand implements Command {
         Connection influencedServerCon = new Connection();
         try {
             influencedServerCon.connect(influencedServer.getHost(), influencedServer.getPort());
+            influencedServerCon.readMessage();
         } catch (IOException e) {
             System.out.println("Could not connect to server: " + influencedServer.toString());
             return;
         }
         try {
             KvService.makeReadonly(influencedServer, influencedServerCon);
+
+            // #### move data
+            state.meta.getKvServerList().add(newServer);
             new ConfigureAllCommand().execute(state);
 
             KvService.moveData(newServer, influencedServerCon, true);
