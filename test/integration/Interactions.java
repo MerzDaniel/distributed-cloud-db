@@ -29,7 +29,7 @@ public class Interactions extends TestCase {
 
 
     @Test
-    public void testPut() {
+    public void Put() {
         String key = "foofoofoo";
         String value = "bar";
         KVMessage response = null;
@@ -49,7 +49,7 @@ public class Interactions extends TestCase {
     }
 
     @Test
-    public void testPutDisconnected() {
+    public void PutDisconnected() {
         kvClient.disconnect();
         String key = "asdlfkjasdf";
         String value = "bar";
