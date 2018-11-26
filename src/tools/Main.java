@@ -26,36 +26,28 @@ public class Main {
         System.setProperty("log4j.configurationFile", "log4j2-tools.properties.xml");
     }
 
-    final static int ROUNDS = 100;
-    final static int NO_OF_CLIENTS = 10;
+    static int ROUNDS;
+    static int NO_OF_CLIENTS;
     final static double PERCENTAGE_WRITES = 0.2;
 
-    static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
+    static ExecutorService executorService;
 
     final static File STATS_DIRECTORY = new File(Paths.get("stats").toUri());
     final static File STATS_TXT_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.txt").toUri());
+    final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.csv").toUri());
 
     static File TEST_DATA_DIRECTORY;
-    final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream =
-            EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, true);
 
     public static void main(String[] args) {
         TEST_DATA_DIRECTORY = new File(args[0]);
+        NO_OF_CLIENTS = Integer.parseInt(args[1]);
+        ROUNDS = Integer.parseInt(args[2]);
+        executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
 
         if (!STATS_DIRECTORY.exists()) STATS_DIRECTORY.mkdir();
 
         runTest();
         executorService.shutdown();
-    }
-
-    private static AbstractMap.SimpleEntry<String, Loader> getKeyValue() {
-        Iterator<AbstractMap.SimpleEntry<String, Loader>> it = testDataStream.iterator();
-
-        if (it.hasNext()) {
-            return it.next();
-        }
-
-        return null;
     }
 
     public static void runTest(){
@@ -75,7 +67,6 @@ public class Main {
             }
         }
 
-        StringBuilder sb = new StringBuilder();
         List<Double> percentiles = Arrays.asList(0.99, 0.95, 0.90, 0.80, 0.5);
         long[] sizePerTime = pfList.stream().collect(Collector.of(
                 () -> new long[2],
@@ -93,7 +84,9 @@ public class Main {
         List<PerformanceData.Entry> allData = pfList.stream().flatMap(it -> it.entries.stream()).collect(Collectors.toList());
         List<Long> allPercentiles = calculatePercentiles(allData, percentiles);
 
+
         System.out.println("Calculating performance measures.......................");
+        StringBuilder sb = new StringBuilder();
         sb.append("Performance Test Measures")
                 .append(System.lineSeparator())
                 .append("===================================================================")
@@ -119,6 +112,7 @@ public class Main {
         sb.append("Performance Measured on GET")
                 .append(System.lineSeparator())
                 .append("------------------------------------------------------")
+                .append(System.lineSeparator())
                 .append(String.format("Percentiles GET: %s : %s", percentiles, getPercentiles))
                 .append(System.lineSeparator())
                 .append(String.format("Total %d GET requests executed with average response time %f", getData.size(), getData.size() > 0 ? getData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
@@ -146,6 +140,7 @@ public class Main {
         sb.append("Performance Measured on PUT")
                 .append(System.lineSeparator())
                 .append("------------------------------------------------------")
+                .append(System.lineSeparator())
                 .append(String.format("Percentiles PUT: %s : %s", percentiles, putPercentiles))
                 .append(System.lineSeparator())
                 .append(String.format("Total %d PUT requests executed with average response time %f", putData.size(), putData.size() > 0 ? putData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
@@ -168,16 +163,18 @@ public class Main {
             e.printStackTrace();
         }
 
+
         System.out.println("Performance measures have been calculated successfully :)");
     }
 
     static List<Long> calculatePercentiles(List<PerformanceData.Entry> perfData, List<Double> percentils) {
-        perfData.sort((p1, p2) -> p1.time < p2.time ? 1 : -1);
-
         List<Long> result = new LinkedList<>();
-        percentils.forEach(p -> {
-            result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time);
-        });
+
+        if (perfData.isEmpty()) return result;
+        perfData.sort((p1, p2) -> p1.time < p2.time ? 1 : -1);
+        percentils.forEach(p ->
+            result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time)
+        );
         return result;
     }
 

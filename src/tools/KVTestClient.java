@@ -26,7 +26,9 @@ class KVTestClient implements Callable {
     private double percentageWrites;
 
     private void init() {
-        ServerData sd = new ServerData("not initialized", "picloud.local", 40000);
+//        String host = "localhost";
+        String host = "192.168.178.27";
+        ServerData sd = new ServerData("not initialized", host, 40000);
         kvStore = new KVStore(
                 new KVStoreMetaData(Arrays.asList(sd))
         );
@@ -58,11 +60,11 @@ class KVTestClient implements Callable {
                 result = c.run(kvStore);
                 response = result.getStatus().name();
             } catch (KVServerNotFoundException e) {
-                e.printStackTrace();
                 response = "SERVER_NOT_FOUND";
+                logger.warn("Server not found", e);
             } catch (Exception e) {
-                e.printStackTrace();
                 response = "ERROR";
+                logger.warn("ERROR: ", e);
             }
 
             PerformanceData.Entry e = new PerformanceData.Entry();
