@@ -10,10 +10,13 @@ Build jars for server and client:
 `ant build-jar`
 
 Run the server
-`java -jar ms2-server.jar --port 50000 --cache-type LFU --cache-size 10 --log-level WARN`
+`java -jar server.jar --port 50000 --cache-type LFU --cache-size 10 --log-level WARN`
 
 Run the client
-`java -jar ms2-client.jar`
+`java -jar client.jar`
+
+Run the ECS (make sure ecs.config file is available in the root folder)
+`java -jar ecs.jar`
 
 ## Folder structure
 - `src` contains all source code
@@ -21,6 +24,7 @@ Run the client
 - `logs` contains logs
 - `db` contains dbs
 - `docs` contains the test descriptions
+- `tools` contains performance tools
 
 ## Steps
 
