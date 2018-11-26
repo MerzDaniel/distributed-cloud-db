@@ -14,8 +14,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public final class StatusService {
-    private static Logger l = LogManager.getLogger(StatusService.class);
+public final class KvService {
+    private static Logger l = LogManager.getLogger(KvService.class);
 
     public static RunningState getStatus(ServerData sd) throws IOException, MarshallingException {
 

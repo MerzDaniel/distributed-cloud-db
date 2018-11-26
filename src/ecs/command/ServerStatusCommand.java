@@ -2,19 +2,13 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import lib.SocketUtil;
-import lib.message.KVAdminMessage;
-import lib.message.MessageMarshaller;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ConnectException;
-import java.net.Socket;
 
-import static ecs.service.StatusService.getStatus;
+import static ecs.service.KvService.getStatus;
 
 /**
  * This class represent the command for getting the status of a {@link server.KVServer} instance

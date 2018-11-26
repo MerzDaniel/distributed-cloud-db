@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import static ecs.service.SshService.startKvServer;
-import static ecs.service.StatusService.getStatus;
+import static ecs.service.KvService.getStatus;
 
 public class StartupServers implements Command {
     private Logger l = LogManager.getLogger(StopServersCommand.class);

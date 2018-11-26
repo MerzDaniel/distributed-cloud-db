@@ -2,15 +2,13 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import ecs.service.StatusService;
+import ecs.service.KvService;
 import lib.hash.HashUtil;
-import lib.message.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
 import lib.server.RunningState;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
@@ -60,7 +58,7 @@ public class AddServerCommand implements Command {
             influencedServer = state.meta.findNextKvServer(hash);
         } catch (KVServerNotFoundException e) {}
         try {
-            influencedStatus = StatusService.getStatus(influencedServer);
+            influencedStatus = KvService.getStatus(influencedServer);
         } catch (Exception e) {
             System.out.println("Error while getting status of server! Did not move data or anything");
             return;
