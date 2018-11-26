@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static tools.util.EnroneBenchmarkDataLoader.Loader;
@@ -21,14 +22,18 @@ import static tools.util.EnroneBenchmarkDataLoader.Loader;
  * This class is only used for getting performance measures for KVClient
  */
 public class Main {
-    final static int ROUNDS = 15;
+    static {
+        System.setProperty("log4j.configurationFile", "log4j2-tools.properties.xml");
+    }
+
+    final static int ROUNDS = 100;
     final static int NO_OF_CLIENTS = 10;
     final static double PERCENTAGE_WRITES = 0.2;
 
     static ExecutorService executorService = Executors.newFixedThreadPool(NO_OF_CLIENTS);
 
     final static File STATS_DIRECTORY = new File(Paths.get("stats").toUri());
-    final static File STATS_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.txt").toUri());
+    final static File STATS_TXT_FILE = new File(Paths.get(STATS_DIRECTORY.toString(), "stats.txt").toUri());
 
     static File TEST_DATA_DIRECTORY;
     final static Stream<AbstractMap.SimpleEntry<String, Loader>> testDataStream =
@@ -71,7 +76,20 @@ public class Main {
         }
 
         StringBuilder sb = new StringBuilder();
-        List<Double> percentiles = Arrays.asList(0.99, 0.95, 0.90, 0.70, 0.3);
+        List<Double> percentiles = Arrays.asList(0.99, 0.95, 0.90, 0.80, 0.5);
+        long[] sizePerTime = pfList.stream().collect(Collector.of(
+                () -> new long[2],
+                (acc, perf) -> {
+                    acc[0] += perf.entries.size();
+                    acc[1] += perf.elapsedTime;
+                },
+                (acc1, acc2) -> {
+                    acc1[0] += acc2[0];
+                    acc1[1] += acc2[1];
+                    return acc1;
+                },
+                acc -> acc
+        ));
         List<PerformanceData.Entry> allData = pfList.stream().flatMap(it -> it.entries.stream()).collect(Collectors.toList());
         List<Long> allPercentiles = calculatePercentiles(allData, percentiles);
 
@@ -144,7 +162,7 @@ public class Main {
                 .append(System.lineSeparator())
                 .append(System.lineSeparator());
 
-        try (FileWriter f = new FileWriter(STATS_FILE)){
+        try (FileWriter f = new FileWriter(STATS_TXT_FILE)){
             f.write(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();

@@ -26,7 +26,7 @@ class KVTestClient implements Callable {
     private double percentageWrites;
 
     private void init() {
-        ServerData sd = new ServerData("kitten-" + new Random().nextInt(), "127.0.0.1", 50000);
+        ServerData sd = new ServerData("not initialized", "picloud.local", 40000);
         kvStore = new KVStore(
                 new KVStoreMetaData(Arrays.asList(sd))
         );
@@ -44,12 +44,14 @@ class KVTestClient implements Callable {
         Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
                 EnroneBenchmarkDataLoader.loadData(pathToPerformance, false);
 
+        TimeWatch wholeTime = TimeWatch.start();
+
         dataStream.limit(Main.ROUNDS).forEach(data -> {
             String key = data.getKey(), value = data.getValue().Load();
             String command = new Random().nextDouble() > percentageWrites ? "GET" : "PUT";
             Command c = new Command(key, value, command);
 
-            TimeWatch t = TimeWatch.start();
+            TimeWatch requestWatch = TimeWatch.start();
             String response;
             try {
                 KVMessage result = null;
@@ -65,13 +67,14 @@ class KVTestClient implements Callable {
 
             PerformanceData.Entry e = new PerformanceData.Entry();
             e.method = c.command;
-            e.time = t.time();
+            e.time = requestWatch.time();
             e.result = response;
 
             perfData.entries.add(e);
 
         });
 
+        perfData.elapsedTime = wholeTime.time();
         return perfData;
     }
 }
