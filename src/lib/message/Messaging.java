@@ -1,6 +1,7 @@
 package lib.message;
 
 import lib.communication.Connection;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -14,6 +15,10 @@ public class Messaging {
     Iterator<IMessage> messageIterator;
 
     public Messaging() {
+    }
+
+    public void connect(ServerData sd) throws IOException {
+        connect(sd.getHost(), sd.getPort());
     }
 
     public void connect(String host, int port) throws IOException {
@@ -42,7 +47,10 @@ public class Messaging {
         while(con.isConnected()) {
             try {
                 String msg = con.readMessage();
-                if (msg.length() == 0) continue;
+                if (msg.length() == 0) {
+                    logger.debug(String.format("Empty message from "));
+                    continue;
+                }
                 return MessageMarshaller.unmarshall(msg);
             } catch (IOException e) {
                 logger.warn(e);
