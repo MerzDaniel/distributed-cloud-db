@@ -24,10 +24,6 @@ public class LFUCachedKeyValueStore extends CachedKeyValueStore {
 
     Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
-    public LFUCachedKeyValueStore(int cacheSize, String dataFileName) {
-        super(cacheSize, dataFileName);
-    }
-
     public LFUCachedKeyValueStore(int cacheSize, KeyValueStore store) {
         super(cacheSize, store);
     }

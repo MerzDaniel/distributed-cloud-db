@@ -24,10 +24,6 @@ public class FifoCachedKeyValueStore extends CachedKeyValueStore {
     List<String> cachePriority = new LinkedList<>();
     Hashtable<String, CacheEntry> cache = new Hashtable<>();
 
-    public FifoCachedKeyValueStore(int cacheSize, String dataFileName) {
-        super(cacheSize, dataFileName);
-    }
-
     public FifoCachedKeyValueStore(int cacheSize, KeyValueStore store) {
         super(cacheSize, store);
     }

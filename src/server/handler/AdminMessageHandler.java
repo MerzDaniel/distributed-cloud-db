@@ -2,6 +2,7 @@ package server.handler;
 
 import lib.communication.Connection;
 import lib.message.*;
+import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
@@ -40,7 +41,7 @@ public final class AdminMessageHandler {
                 }
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
             case START:
-                if (state.runningState != RunningState.IDLE)
+                if (state.runningState == RunningState.UNCONFIGURED)
                     return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
                 state.runningState = RunningState.RUNNING;
                 return new KVAdminMessage(KVAdminMessage.StatusType.START_SUCCESS);
@@ -56,7 +57,10 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.STATUS_RESPONSE, state.runningState);
             case MOVE:
                 state.runningState = RunningState.READONLY;
-                return moveData(state, message.serverData);
+                return moveData(state, message.serverData, false);
+            case MOVE_SOFT:
+                state.runningState = RunningState.READONLY;
+                return moveData(state, message.serverData, true);
             case DATA_MOVE:
                 state.db.put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
@@ -65,7 +69,7 @@ public final class AdminMessageHandler {
         throw new NotImplementedException();
     }
 
-    private static KVAdminMessage moveData(ServerState state, ServerData serverData) {
+    private static KVAdminMessage moveData(ServerState state, ServerData serverData, boolean softMove) {
         Connection con;
         try {
             con = new Connection();
@@ -77,6 +81,15 @@ public final class AdminMessageHandler {
 
         long errors = state.db.retrieveAllData().parallel().map(
                 d -> {
+                    try {
+                        if (softMove && state.meta.findKVServer(d.getKey()) == state.currentServerServerData) {
+                            // for soft move only move data that this server is not responsible for
+                            return true;
+                        }
+                    } catch (KVServerNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
                     KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE, d.getKey(), d.getValue());
                     try {
                         con.sendMessage(msg.marshall());
