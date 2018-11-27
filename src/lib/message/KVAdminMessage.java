@@ -23,6 +23,7 @@ public class KVAdminMessage implements IMessage {
     }
 
     public enum StatusType {
+        INIT,
         CONFIGURE,
         CONFIGURE_SUCCESS,
         CONFIGURE_ERROR,
