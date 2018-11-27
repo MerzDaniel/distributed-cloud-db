@@ -11,7 +11,7 @@ public class DbIndex {
 
     private Dictionary<String, IndexEntry> index;
 
-    public IndexEntry getKey(String key) {
+    public IndexEntry getEntry(String key) {
         return index.get(key);
     }
 
@@ -35,7 +35,12 @@ public class DbIndex {
     }
 
     public static class IndexEntry implements Serializable {
-        public int location;
+        public int offset;
         public int length;
+
+        public IndexEntry(int offset, int length) {
+            this.offset = offset;
+            this.length = length;
+        }
     }
 }

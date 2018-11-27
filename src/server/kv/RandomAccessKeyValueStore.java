@@ -36,7 +36,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         try {
             DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
             DB_FILE.getParentFile().mkdirs();
-            INDEX_FILE = new File(Paths.get(DB_DIRECTORY.toString(),"index_" + dbName).toUri());
+            INDEX_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_" + dbName).toUri());
             index = DbIndex.LoadFromFile(INDEX_FILE);
             db = new RandomAccessFile(DB_FILE, "rw");
         } catch (IOException e) {
@@ -79,24 +79,17 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     private String ioGet(String key) throws IOException, KeyNotFoundException {
         // go back to start of file
-        db.seek(0);
+        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "r")) {
+            DbIndex.IndexEntry indexEntry = index.getEntry(key);
+            if (indexEntry == null) throw new KeyNotFoundException();
 
-        int rows = 0;
-        while (true) {
-            String nextLine = db.readLine();
-            rows++;
-            if (nextLine == null) break;
-
-            AbstractMap.SimpleEntry<String, String> entry = parseLine(nextLine);
-
-            if (entry == null) continue;
-            if (entry.getKey().equals(key)) {
-                return entry.getValue();
-            }
+            db.seek(indexEntry.offset);
+            String line = db.readLine();
+            AbstractMap.SimpleEntry<String, String> entry = parseLine(line);
+            // todo: Fix problem for key that is deleted while reading it
+            if (entry == null) throw new KeyNotFoundException();
+            return entry.getValue();
         }
-
-        logger.debug(String.format("Parsed %drows without finding the key %s", rows, key));
-        throw new KeyNotFoundException();
     }
 
     /**
@@ -108,6 +101,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      */
     @Override
     public synchronized boolean put(String key, String value) throws DbError {
+        // todo think about parallel puts!!
         boolean deleted;
         try {
             deleted = ioDelete(key);
@@ -127,6 +121,10 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     private boolean ioPut(String key, String value) throws IOException {
         String newLine = key + RECORD_SEPARATOR + value + System.lineSeparator();
 
+
+        int offset = (int) DB_FILE.length();
+        int length = newLine.length();
+        index.putKey(key, new DbIndex.IndexEntry(offset, length));
         try (FileWriter writer = new FileWriter(DB_FILE, true)) {
             writer.append(newLine).flush();
         }
@@ -142,12 +140,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      */
     @Override
     public boolean hasKey(String key) throws DbError {
-        try {
-            get(key);
-        } catch (KeyNotFoundException e) {
-            return false;
-        }
-        return true;
+        return index.hasKey(key);
     }
 
     /**
@@ -219,26 +212,14 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     private boolean ioDelete(String key) throws IOException {
-        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
-            long linePosition = 0;
-            String nextLine;
-            while (true) {
-                linePosition = db.getFilePointer();
-                nextLine = db.readLine();
-                if (nextLine == null) break;
-
-                AbstractMap.SimpleEntry<String, String> entry = parseLine(nextLine);
-
-                if (entry == null || !entry.getKey().equals(key)) continue;
-
-                db.seek(linePosition);
-                byte[] emptyLine = new byte[nextLine.length()];
-                Arrays.fill(emptyLine, (byte) 0);
-                db.write(emptyLine);
-                return true;
-            }
+        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "w")) {
+            DbIndex.IndexEntry indexEntry = index.getEntry(key);
+            db.seek(indexEntry.offset);
+            byte[] emptyLine = new byte[indexEntry.length];
+            Arrays.fill(emptyLine, (byte) 0);
+            db.write(emptyLine);
+            return true;
         }
-        return false;
     }
 
     private AbstractMap.SimpleEntry<String, String> parseLine(String line) {
