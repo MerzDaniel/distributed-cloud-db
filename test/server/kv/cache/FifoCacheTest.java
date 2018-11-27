@@ -3,6 +3,7 @@ package server.kv.cache;
 import org.junit.Before;
 import org.junit.Test;
 import server.kv.KeyNotFoundException;
+import server.kv.RandomAccessKeyValueStore;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -12,7 +13,8 @@ public class FifoCacheTest {
 
     @Before
     public void initCache() {
-        fifoCache = new FifoCachedKeyValueStore(3, "db");
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        fifoCache = new FifoCachedKeyValueStore(3, db);
         this.populateCache();
     }
 
