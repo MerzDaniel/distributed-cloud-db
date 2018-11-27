@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class KVStore implements KVCommInterface {
     public KVStoreMetaData kvStoreMetaData;
-    final Connection connection;
+    final Messaging connection;
 
     private final Logger logger = LogManager.getLogger(KVStore.class);
 
@@ -27,7 +27,7 @@ public class KVStore implements KVCommInterface {
      */
     public KVStore(KVStoreMetaData kvStoreMetaData) {
         this.kvStoreMetaData = kvStoreMetaData;
-        this.connection = new Connection();
+        this.connection = new Messaging();
     }
 
     /**
@@ -39,20 +39,11 @@ public class KVStore implements KVCommInterface {
      * @throws IOException if any error occurred while establishing the connection
      */
     public boolean connect(String host, int port) throws IOException {
+
         this.connection.connect(host, port);
 
-        boolean success = true;
-        String message = connection.readMessage();
-        try {
-            KVMessage kvM = (KVMessage) MessageMarshaller.unmarshall(message);
-            success = kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
-        } catch (MarshallingException e) {
-            logger.warn(String.format("KVServer %s:%d returned an invalid response: '%s'", host, port, message));
-            disconnect();
-            success = false;
-        }
-        if (!success) disconnect();
-        return success;
+        KVMessage kvM = (KVMessage) connection.readMessage();
+        return kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
     /**
@@ -79,7 +70,7 @@ public class KVStore implements KVCommInterface {
      * @throws IOException          if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process
      */
-    public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
+    public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException  {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
 
         ServerData serverServerData = kvStoreMetaData.findKVServer(key);
@@ -87,9 +78,8 @@ public class KVStore implements KVCommInterface {
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-        String responseString = this.connection.readMessage();
-        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
+        this.connection.sendMessage(kvMessageRequest);
+        KVMessage response = (KVMessage) this.connection.readMessage();
 
         if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
             applyNewMetadata(response);
@@ -116,9 +106,8 @@ public class KVStore implements KVCommInterface {
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-        this.connection.sendMessage(MessageMarshaller.marshall(kvMessageRequest));
-        String responseString = this.connection.readMessage();
-        KVMessage response = (KVMessage) MessageMarshaller.unmarshall(responseString);
+        this.connection.sendMessage(kvMessageRequest);
+        KVMessage response = (KVMessage) this.connection.readMessage();
 
         if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
             applyNewMetadata(response);

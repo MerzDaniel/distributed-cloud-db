@@ -21,8 +21,7 @@ public class ErrorCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        logger.error(ex.getMessage());
-        logger.error(ex.getStackTrace());
+        logger.error(ex.getMessage(), ex);
 
         writeLine("Oh no some unexpected error occured :(");
     }
