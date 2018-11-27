@@ -39,12 +39,27 @@ public class Messaging {
             }
         };
     }
-    public IMessage readMessage() {
+
+    public IMessage readMessage() throws IOException {
+        if (!con.isConnected()) throw new IOException();
         return messageIterator.next();
     }
 
+    public void sendMessage(IMessage msg) throws MarshallingException, IOException {
+        con.sendMessage(msg.marshall());
+    }
+
+    public boolean isConnected() {
+        return con.isConnected();
+    }
+
+    public void disconnect() {
+        con.disconnect();
+        messageIterator = null;
+    }
+
     private static IMessage readNextMessage(Connection con) {
-        while(con.isConnected()) {
+        while (con.isConnected()) {
             try {
                 String msg = con.readMessage();
                 if (msg.length() == 0) {
