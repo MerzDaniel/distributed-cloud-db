@@ -3,8 +3,6 @@ package server.kv.cache;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.kv.KeyValueStore;
-import server.kv.SimpleKeyValueStore;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -18,11 +16,6 @@ public abstract class CachedKeyValueStore implements KeyValueStore {
 
     private KeyValueStore store;
     int cacheSize;
-
-    public CachedKeyValueStore(int cacheSize, String dataFileName) {
-        this.cacheSize = cacheSize;
-        store = new SimpleKeyValueStore();
-    }
 
     public CachedKeyValueStore(int cacheSize, KeyValueStore store) {
         this.cacheSize = cacheSize;
