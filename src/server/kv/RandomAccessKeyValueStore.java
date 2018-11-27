@@ -22,16 +22,13 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     final File DB_DIRECTORY = new File(Paths.get("db").toUri());
 
     public File DB_FILE;
+    public File INDEX_FILE;
     RandomAccessFile db;
+    DbIndex index;
 
     private final String RECORD_SEPARATOR = "\u001E";
 
     public RandomAccessKeyValueStore() {
-
-    }
-
-    public RandomAccessKeyValueStore(File dbFile) {
-        DB_FILE = dbFile;
     }
 
     @Override
@@ -39,10 +36,14 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         try {
             DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
             DB_FILE.getParentFile().mkdirs();
+            INDEX_FILE = new File(Paths.get(DB_DIRECTORY.toString(),"index_" + dbName).toUri());
+            index = DbIndex.LoadFromFile(INDEX_FILE);
             db = new RandomAccessFile(DB_FILE, "rw");
         } catch (IOException e) {
             logger.error("Error while initializing database", e);
             throw e;
+        } catch (ClassNotFoundException e) {
+            logger.error("Could not load index CLASSNOTFOUND", e);
         }
     }
 
@@ -55,6 +56,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     public void shutdown() throws IOException {
         if (db != null)
             db.close();
+        index.save(INDEX_FILE);
     }
 
     /**
