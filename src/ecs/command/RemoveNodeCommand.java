@@ -5,7 +5,6 @@ import ecs.State;
 import lib.TimeWatch;
 import lib.communication.Connection;
 import lib.message.KVAdminMessage;
-import lib.message.MarshallingException;
 import lib.message.MessageMarshaller;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
@@ -39,12 +38,12 @@ public class RemoveNodeCommand implements Command {
      */
     @Override
     public void execute(State state) {
-        if (state.meta.getKvServerList().size() <= 0) {
+        if (state.storeMeta.getKvServerList().size() <= 0) {
             System.out.println("Cannot remove a node when less than 2 are running");
             return;
         }
         ServerData from = null, to = null;
-        List<ServerData> list = state.meta.getKvServerList();
+        List<ServerData> list = state.storeMeta.getKvServerList();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getName().equals(name)) {
                 from = list.get(i);
@@ -77,7 +76,7 @@ public class RemoveNodeCommand implements Command {
             System.out.format("Move data took %dms.\n", moveTimer.time());
 
             // reconfigure
-            state.meta.getKvServerList().remove(from);
+            state.storeMeta.getKvServerList().remove(from);
             new ConfigureAllCommand().execute(state);
 
             // stop

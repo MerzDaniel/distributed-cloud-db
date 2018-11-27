@@ -25,7 +25,7 @@ public class StartServersCommand implements ecs.Command {
     public void execute(State state) {
         boolean universeIsOk = true;
 
-        for (ServerData sd : state.meta.getKvServerList()) {
+        for (ServerData sd : state.storeMeta.getKvServerList()) {
             try (Socket s = new Socket(sd.getHost(), sd.getPort())) {
                 InputStream i = s.getInputStream();
                 KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));

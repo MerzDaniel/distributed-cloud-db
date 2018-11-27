@@ -23,7 +23,7 @@ public class KVStore implements KVCommInterface {
     /**
      * Creates a new KVStore
      *
-     * @param kvStoreMetaData meta data about the KVStore
+     * @param kvStoreMetaData storeMeta data about the KVStore
      */
     public KVStore(KVStoreMetaData kvStoreMetaData) {
         this.kvStoreMetaData = kvStoreMetaData;
@@ -132,9 +132,9 @@ public class KVStore implements KVCommInterface {
         logger.debug(String.format("This server is not responsible for the key %s", response.toString()));
         try {
             kvStoreMetaData = KVStoreMetaData.unmarshall(response.getValue());
-            logger.debug("The kvstore meta data is updated");
+            logger.debug("The kvstore storeMeta data is updated");
         } catch (MarshallingException e) {
-            logger.error("Error occurred during unmarshalling meta data", e);
+            logger.error("Error occurred during unmarshalling storeMeta data", e);
         }
     }
 }

@@ -23,7 +23,7 @@ public class ServerStatusCommand implements Command {
      */
     @Override
     public void execute(State state) {
-        state.meta.getKvServerList().parallelStream().forEach(sd -> {
+        state.storeMeta.getKvServerList().parallelStream().forEach(sd -> {
             try {
                 RunningState runningState = getStatus(sd);
                 System.out.format("Server %s at %s:%d has status: %s\n", sd.getName(), sd.getHost(), sd.getPort(), runningState.toString());

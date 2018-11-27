@@ -79,8 +79,8 @@ public class LoadConfiguration implements Command {
                     return;
                 }
 
-                state.meta.getKvServerList().clear();
-                state.meta.getKvServerList().addAll(servers);
+                state.poolMeta.getKvServerList().clear();
+                state.poolMeta.getKvServerList().addAll(servers);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

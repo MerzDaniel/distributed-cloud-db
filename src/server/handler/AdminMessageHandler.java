@@ -19,7 +19,7 @@ public final class AdminMessageHandler {
 
     public static KVAdminMessage handleKvAdminMessage(KVAdminMessage message, ServerState state) throws DbError {
         logger.info(String.format(
-                "Got a message: %s with meta '%s' and serverData '%s'",
+                "Got a message: %s with storeMeta '%s' and serverData '%s'",
                 message.status,
                 message.meta != null ? message.meta.marshall() : "",
                 message.serverData != null ? message.serverData.marshall() : "")

@@ -25,7 +25,7 @@ public class ShutdownCommand implements Command {
     @Override
     public void execute(State state) {
 
-        state.meta.getKvServerList().stream().parallel().forEach(s -> {
+        state.storeMeta.getKvServerList().stream().parallel().forEach(s -> {
             KVAdminMessage stopMsg = new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN);
             Connection con = new Connection();
             boolean success = false;
