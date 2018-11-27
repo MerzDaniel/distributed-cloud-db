@@ -15,7 +15,7 @@ public class StartupServers implements Command {
     private Logger l = LogManager.getLogger(StopServersCommand.class);
     @Override
     public void execute(State state) {
-        state.meta.getKvServerList().stream().parallel().forEach(sd -> {
+        state.storeMeta.getKvServerList().stream().parallel().forEach(sd -> {
             try {
                 getStatus(sd);
                 System.out.format("%s is already startup.\n", sd.toString());

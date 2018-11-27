@@ -19,7 +19,7 @@ public class StopServersCommand implements Command {
     public void execute(State state) {
         logger.info("Stop all servers");
 
-        state.meta.getKvServerList().stream().parallel().forEach(sd -> {
+        state.storeMeta.getKvServerList().stream().parallel().forEach(sd -> {
             try (Socket s = new Socket(sd.getHost(), sd.getPort())) {
                 SocketUtil.readMessage(s.getInputStream()); // connection success msg
 

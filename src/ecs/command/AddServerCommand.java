@@ -1,13 +1,11 @@
 package ecs.command;
 
-import com.jcraft.jsch.JSchException;
 import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
 import ecs.service.SshService;
 import lib.communication.Connection;
 import lib.hash.HashUtil;
-import lib.message.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
@@ -79,8 +77,8 @@ public class AddServerCommand implements Command {
             }
         }
 
-        if (state.meta.getKvServerList().size() == 0) {
-            state.meta.getKvServerList().add(newServer);
+        if (state.storeMeta.getKvServerList().size() == 0) {
+            state.storeMeta.getKvServerList().add(newServer);
             System.out.println("Was added as first server to the list. Is unconfigure");
             return;
         }
@@ -88,7 +86,7 @@ public class AddServerCommand implements Command {
         ServerData influencedServer = null;
         RunningState influencedStatus;
         try {
-            influencedServer = state.meta.findNextKvServer(hash);
+            influencedServer = state.storeMeta.findNextKvServer(hash);
         } catch (KVServerNotFoundException e) {}
         try {
             influencedStatus = KvService.getStatus(influencedServer);
@@ -113,7 +111,7 @@ public class AddServerCommand implements Command {
             KvService.makeReadonly(influencedServer, influencedServerCon);
 
             // #### move data
-            state.meta.getKvServerList().add(newServer);
+            state.storeMeta.getKvServerList().add(newServer);
             new ConfigureAllCommand().execute(state);
 
             KvService.moveData(newServer, influencedServerCon, true);
