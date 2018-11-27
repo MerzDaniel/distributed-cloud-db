@@ -3,6 +3,7 @@ package server.kv.cache;
 import org.junit.Before;
 import org.junit.Test;
 import server.kv.KeyNotFoundException;
+import server.kv.RandomAccessKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 
 import static junit.framework.Assert.assertEquals;
@@ -13,7 +14,8 @@ public class LFUCacheTest {
 
     @Before
     public void initCache() {
-        lfuCache = new LFUCachedKeyValueStore(3, "db");
+        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
+        lfuCache = new LFUCachedKeyValueStore(3, db);
         this.populateCache();
     }
 
