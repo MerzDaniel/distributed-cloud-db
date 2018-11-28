@@ -81,6 +81,9 @@ public class LoadConfiguration implements Command {
 
                 state.poolMeta.getKvServerList().clear();
                 state.poolMeta.getKvServerList().addAll(servers);
+                //todo removed after init command
+                state.storeMeta.getKvServerList().clear();
+                state.storeMeta.getKvServerList().addAll(servers);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
