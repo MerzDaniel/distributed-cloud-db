@@ -46,10 +46,6 @@ public class GetCommand implements Command {
             logger.error("Error during unmarshalling.", e);
             writeLine("Response from the server was invalid.");
             return;
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Error during hashing.", e);
-            writeLine("An unexpected error occurred while GET");
-            return;
         } catch (KVServerNotFoundException e) {
             logger.error(String.format("Couldn't find the server responsible for the key <%s>", key), e);
             writeLine("Couldn't find the server to connect");

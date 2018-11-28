@@ -22,6 +22,7 @@ public class Messaging {
     }
 
     public void connect(String host, int port) throws IOException {
+        con = new Connection();
         con.connect(host, port);
         messageIterator = new Iterator<IMessage>() {
             IMessage nextMsg;
@@ -35,13 +36,16 @@ public class Messaging {
 
             @Override
             public IMessage next() {
-                return nextMsg;
+                IMessage result = nextMsg;
+                nextMsg = null;
+                return result;
             }
         };
     }
 
     public IMessage readMessage() throws IOException {
-        if (!con.isConnected()) throw new IOException();
+        if (!con.isConnected() || !messageIterator.hasNext()) throw new IOException();
+
         return messageIterator.next();
     }
 
@@ -63,15 +67,15 @@ public class Messaging {
             try {
                 String msg = con.readMessage();
                 if (msg.length() == 0) {
-                    logger.debug(String.format("Empty message from "));
+                    logger.debug(String.format("Empty message"));
                     continue;
                 }
                 return MessageMarshaller.unmarshall(msg);
             } catch (IOException e) {
-                logger.warn(e);
+                logger.warn("IO Exception will close Messaging!", e);
                 break;
             } catch (MarshallingException e) {
-                logger.warn(e);
+                logger.warn("Marsharhalling exception!", e);
                 continue;
             }
         }
