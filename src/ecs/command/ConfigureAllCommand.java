@@ -2,6 +2,7 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
+import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
 import lib.metadata.ServerData;
 
@@ -27,10 +28,14 @@ public class ConfigureAllCommand implements Command {
             ServerData sd = state.storeMeta.getKvServerList().get(index);
 
             try {
-                configure(sd, state.storeMeta, index);
+                KVAdminMessage response = configure(sd, state.storeMeta, index);
+                if (!response.status.equals(KVAdminMessage.StatusType.CONFIGURE_SUCCESS)) {
+                    universeIsOk = false;
+                    System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
+                }
             } catch (IOException | MarshallingException e) {
                 universeIsOk = false;
-                System.out.println(String.format("Error while starting server %s:%d : %s", sd.getHost(), sd.getPort(), e.getMessage()));
+                System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), e.getMessage()));
             }
         }
 
