@@ -4,7 +4,6 @@ import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
 import ecs.service.SshService;
-import lib.communication.Connection;
 import lib.hash.HashUtil;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;

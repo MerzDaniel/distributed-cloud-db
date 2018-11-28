@@ -1,7 +1,7 @@
 package server.handler;
 
-import lib.communication.Connection;
-import lib.message.*;
+import lib.message.KVAdminMessage;
+import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -70,11 +70,10 @@ public final class AdminMessageHandler {
     }
 
     private static KVAdminMessage moveData(ServerState state, ServerData serverData, boolean softMove) {
-        Connection con;
+        Messaging con;
         try {
-            con = new Connection();
+            con = new Messaging();
             con.connect(serverData.getHost(), serverData.getPort());
-            con.readMessage();
         } catch (IOException e) {
             return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         }
@@ -92,9 +91,8 @@ public final class AdminMessageHandler {
 
                     KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE, d.getKey(), d.getValue());
                     try {
-                        con.sendMessage(msg.marshall());
-                        String responseString = con.readMessage();
-                        KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
+                        con.sendMessage(msg);
+                        KVAdminMessage response = (KVAdminMessage) con.readMessage();
                         if (!(response.status == KVAdminMessage.StatusType.DATA_MOVE_SUCCESS)) return false;
                     } catch (Exception e) {
                         logger.warn("Error while moving data!", e);

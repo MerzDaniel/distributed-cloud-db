@@ -1,7 +1,9 @@
 package client.store;
 
-import lib.communication.Connection;
-import lib.message.*;
+import lib.message.KVMessage;
+import lib.message.MarshallingException;
+import lib.message.MessageFactory;
+import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
