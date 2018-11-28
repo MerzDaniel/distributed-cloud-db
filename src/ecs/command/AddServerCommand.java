@@ -6,6 +6,7 @@ import ecs.service.KvService;
 import ecs.service.SshService;
 import lib.communication.Connection;
 import lib.hash.HashUtil;
+import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
@@ -49,7 +50,7 @@ public class AddServerCommand implements Command {
         newServer.setCacheType(cacheType);
         newServer.setCacheSize(cacheSize);
 
-        Connection newServerCon = new Connection();
+        Messaging newServerCon = new Messaging();
         RunningState newServerState;
         try {
             newServerCon.connect(newServer.getHost(), newServer.getPort());
@@ -99,7 +100,7 @@ public class AddServerCommand implements Command {
             return;
         }
 
-        Connection influencedServerCon = new Connection();
+        Messaging influencedServerCon = new Messaging();
         try {
             influencedServerCon.connect(influencedServer.getHost(), influencedServer.getPort());
             influencedServerCon.readMessage();

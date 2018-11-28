@@ -6,6 +6,7 @@ import lib.communication.Connection;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
 import lib.message.MessageMarshaller;
+import lib.message.Messaging;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -27,13 +28,12 @@ public class ShutdownCommand implements Command {
 
         state.storeMeta.getKvServerList().stream().parallel().forEach(s -> {
             KVAdminMessage stopMsg = new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN);
-            Connection con = new Connection();
+            Messaging con = new Messaging();
             boolean success = false;
             try {
                 con.connect(s.getHost(), s.getPort());
-                con.readMessage();
-                con.sendMessage(stopMsg.marshall());
-                KVAdminMessage msg = (KVAdminMessage) MessageMarshaller.unmarshall(con.readMessage());
+                con.sendMessage(stopMsg);
+                KVAdminMessage msg = (KVAdminMessage) con.readMessage();
                 success = msg.status == KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS;
             } catch (IOException e) {
                 logger.warn("Error", e);

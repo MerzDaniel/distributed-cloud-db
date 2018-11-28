@@ -21,7 +21,7 @@ public class Messaging {
         connect(sd.getHost(), sd.getPort());
     }
 
-    public void connect(String host, int port) throws IOException {
+    public boolean connect(String host, int port) throws IOException {
         con = new Connection();
         con.connect(host, port);
         messageIterator = new Iterator<IMessage>() {
@@ -41,6 +41,7 @@ public class Messaging {
                 return result;
             }
         };
+        return ((KVMessage)readMessage()).getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
     public IMessage readMessage() throws IOException {

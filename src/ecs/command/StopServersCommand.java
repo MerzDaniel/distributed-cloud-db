@@ -5,6 +5,7 @@ import ecs.State;
 import lib.SocketUtil;
 import lib.message.KVAdminMessage;
 import lib.message.MessageMarshaller;
+import lib.message.Messaging;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -20,11 +21,12 @@ public class StopServersCommand implements Command {
         logger.info("Stop all servers");
 
         state.storeMeta.getKvServerList().stream().parallel().forEach(sd -> {
-            try (Socket s = new Socket(sd.getHost(), sd.getPort())) {
-                SocketUtil.readMessage(s.getInputStream()); // connection success msg
+            try {
+                Messaging s = new Messaging();
+                s.connect(sd.getHost(), sd.getPort());
 
-                SocketUtil.sendMessage(s.getOutputStream(), new KVAdminMessage(KVAdminMessage.StatusType.STOP).marshall());
-                KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(s.getInputStream()));
+                s.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.STOP));
+                KVAdminMessage response = (KVAdminMessage) s.readMessage();
                 if (response.status != KVAdminMessage.StatusType.STOP_SUCCESS) {
                     System.out.format("Error: Server %s %s:%d could NOT be put into IDLE mode\n", sd.getName(), sd.getHost(), sd.getPort());
                     return;

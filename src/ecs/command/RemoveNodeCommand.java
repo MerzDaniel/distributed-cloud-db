@@ -6,6 +6,7 @@ import lib.TimeWatch;
 import lib.communication.Connection;
 import lib.message.KVAdminMessage;
 import lib.message.MessageMarshaller;
+import lib.message.Messaging;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -56,7 +57,7 @@ public class RemoveNodeCommand implements Command {
             return;
         }
 
-        Connection con = new Connection();
+        Messaging con = new Messaging();
         try {
             con.connect(from.getHost(), from.getPort());
             con.readMessage();
@@ -81,9 +82,8 @@ public class RemoveNodeCommand implements Command {
 
             // stop
             KVAdminMessage stopMsg = new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN);
-            con.sendMessage(stopMsg.marshall());
-            responseString = con.readMessage();
-            response = (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
+            con.sendMessage(stopMsg);
+            response = (KVAdminMessage) con.readMessage();
             if (response.status != KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS)
                 System.out.println("Was not successfully shutdown");
             else

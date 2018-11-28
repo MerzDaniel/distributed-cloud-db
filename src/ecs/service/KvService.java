@@ -2,10 +2,7 @@ package ecs.service;
 
 import lib.SocketUtil;
 import lib.communication.Connection;
-import lib.message.KVAdminMessage;
-import lib.message.KVMessage;
-import lib.message.MarshallingException;
-import lib.message.MessageMarshaller;
+import lib.message.*;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -34,34 +31,27 @@ public final class KvService {
         }
 
     }
-    public static KVAdminMessage moveData(ServerData to, Connection con, boolean softMove) throws IOException, MarshallingException {
-        KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MOVE, to);
-        con.sendMessage(msg.marshall());
-        String responseString = con.readMessage();
-        return (KVAdminMessage) MessageMarshaller.unmarshall(responseString);
+    public static KVAdminMessage moveData(ServerData to, Messaging messaging, boolean softMove) throws IOException, MarshallingException {
+        KVAdminMessage.StatusType statusType = softMove ? KVAdminMessage.StatusType.MOVE_SOFT : KVAdminMessage.StatusType.MOVE;
+        KVAdminMessage msg = new KVAdminMessage(statusType, to);
+        messaging.sendMessage(msg);
+        return (KVAdminMessage)messaging.readMessage();
     }
 
-    public static boolean makeReadonly(ServerData sd, Connection con) throws MarshallingException, IOException {
+    public static boolean makeReadonly(ServerData sd, Messaging messaging) throws MarshallingException, IOException {
         KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MAKE_READONLY);
-        con.sendMessage(msg.marshall());
-        String responseString = con.readMessage();
-        return ((KVAdminMessage) MessageMarshaller.unmarshall(responseString)).status == KVAdminMessage.StatusType.MAKE_SUCCESS;
+        messaging.sendMessage(msg);
+        return ((KVAdminMessage) messaging.readMessage()).status == KVAdminMessage.StatusType.MAKE_SUCCESS;
     }
 
     public static KVAdminMessage configure(ServerData sd, KVStoreMetaData meta, int index) throws IOException, MarshallingException {
-        Socket s = new Socket(sd.getHost(), sd.getPort());
-        InputStream i = s.getInputStream();
-        KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
+        Messaging messaging = new Messaging();
+        messaging.connect(sd.getHost(), sd.getPort());
 
-        if (!connectionSuccessMsg.getStatus().equals(KVMessage.StatusType.CONNECT_SUCCESSFUL)) {
-            return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_ERROR);
-        }
-
-        OutputStream o = s.getOutputStream();
         KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE, meta, index);
-        SocketUtil.sendMessage(o, MessageMarshaller.marshall(msg));
+        messaging.sendMessage(msg);
 
-        KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
+        KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
         return response;
     }
 }

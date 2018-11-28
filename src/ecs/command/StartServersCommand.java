@@ -5,6 +5,7 @@ import lib.SocketUtil;
 import lib.message.KVAdminMessage;
 import lib.message.KVMessage;
 import lib.message.MessageMarshaller;
+import lib.message.Messaging;
 import lib.metadata.ServerData;
 
 import java.io.InputStream;
@@ -26,15 +27,13 @@ public class StartServersCommand implements ecs.Command {
         boolean universeIsOk = true;
 
         for (ServerData sd : state.storeMeta.getKvServerList()) {
-            try (Socket s = new Socket(sd.getHost(), sd.getPort())) {
-                InputStream i = s.getInputStream();
-                KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
-
-                OutputStream o = s.getOutputStream();
+            try {
+                Messaging s = new Messaging();
+                s.connect(sd.getHost(), sd.getPort());
                 KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.START);
-                SocketUtil.sendMessage(o, MessageMarshaller.marshall(msg));
+                s.sendMessage(msg);
 
-                KVAdminMessage response = (KVAdminMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
+                KVAdminMessage response = (KVAdminMessage) s.readMessage();
                 if (response.status != KVAdminMessage.StatusType.START_SUCCESS) {
                     System.out.println(String.format("Error while starting server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
                     universeIsOk = false;
