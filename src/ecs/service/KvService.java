@@ -53,7 +53,7 @@ public final class KvService {
         InputStream i = s.getInputStream();
         KVMessage connectionSuccessMsg = (KVMessage) MessageMarshaller.unmarshall(SocketUtil.readMessage(i));
 
-        if (connectionSuccessMsg.getStatus().equals(KVMessage.StatusType.CONNECT_SUCCESSFUL)) {
+        if (!connectionSuccessMsg.getStatus().equals(KVMessage.StatusType.CONNECT_SUCCESSFUL)) {
             return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_ERROR);
         }
 
