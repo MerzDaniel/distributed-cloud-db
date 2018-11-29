@@ -2,6 +2,7 @@ package server.kv;
 
 import java.io.*;
 import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class DbIndex {
 
@@ -29,7 +30,9 @@ public class DbIndex {
     }
 
     public static DbIndex LoadFromFile(File indexFile) throws IOException, ClassNotFoundException {
-        if (!indexFile.exists()) indexFile.createNewFile();
+        if (!indexFile.exists()) {
+            return new DbIndex(new Hashtable<>());
+        }
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(indexFile));
         return new DbIndex((Dictionary<String, IndexEntry>) ois.readObject());
     }
