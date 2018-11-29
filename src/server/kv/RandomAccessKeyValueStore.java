@@ -212,7 +212,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     private boolean ioDelete(String key) throws IOException {
-        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "w")) {
+        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
             DbIndex.IndexEntry indexEntry = index.getEntry(key);
             db.seek(indexEntry.offset);
             byte[] emptyLine = new byte[indexEntry.length];
