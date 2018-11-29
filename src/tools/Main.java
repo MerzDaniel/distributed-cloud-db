@@ -95,7 +95,7 @@ public class Main {
                 .append(System.lineSeparator())
                 .append("No of rounds for each client : " + ROUNDS)
                 .append(System.lineSeparator())
-                .append(String.format("Percentiles GET: %s : %s", percentiles, allPercentiles))
+                .append(String.format("Percentiles of ALL requests: %s : %s", percentiles, allPercentiles))
                 .append(System.lineSeparator());
 
 
