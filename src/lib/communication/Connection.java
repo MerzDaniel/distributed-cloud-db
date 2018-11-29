@@ -53,7 +53,7 @@ public class Connection {
      */
     public void disconnect() {
         if (socket == null) return;
-        logger.info(
+        logger.debug(
                 String.format(
                         "Closing connection from %s:%d",
                         socket.getInetAddress(), socket.getPort()
