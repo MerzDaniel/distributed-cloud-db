@@ -54,10 +54,9 @@ public class GetCommand implements Command {
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.GET_NOT_FOUND) {
             logger.info(kVMessageResponse.getStatus() + String.format(": The requested key<%s> is not found in the database", key));
-            writeLine(String.format("The key '%s' was not found in the database", key));
+            writeLine(String.format("The key '%s' was not found in the database (%dms)", key, t.time()));
             return;
         }
-
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_STOPPED) {
             logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
