@@ -23,18 +23,21 @@ public class Messaging {
     }
 
     public boolean connect(String host, int port) throws IOException {
-        con = new Connection();
-        con.connect(host, port);
-        return connect(con);
+        Connection c = new Connection();
+        c.connect(host, port);
+        connect(c);
+        return ((KVMessage)readMessage()).getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
     public boolean connect(Socket s) throws IOException {
         Connection c = new Connection();
         c.use(s);
-        return connect(c);
+        connect(c);
+        return true;
     }
 
-    private boolean connect(Connection con) throws IOException {
+    private void connect(Connection con) {
+        this.con = con;
         messageIterator = new Iterator<IMessage>() {
             IMessage nextMsg;
 
@@ -52,7 +55,6 @@ public class Messaging {
                 return result;
             }
         };
-        return ((KVMessage)readMessage()).getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
     public IMessage readMessage() throws IOException {
