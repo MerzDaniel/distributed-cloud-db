@@ -1,22 +1,22 @@
 package tools;
 
 import lib.message.KVMessage;
-import tools.util.EnroneBenchmarkDataLoader;
 import tools.util.PerformanceData;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import static tools.util.EnroneBenchmarkDataLoader.Loader;
 
 /**
  * This class is only used for getting performance measures for KVClient
@@ -50,7 +50,7 @@ public class Main {
         executorService.shutdown();
     }
 
-    public static void runTest(){
+    public static void runTest() {
         List<PerformanceData> pfList = new ArrayList<>();
         System.out.println("Please bare with us, tests are being running............................");
 
@@ -99,7 +99,6 @@ public class Main {
                 .append(System.lineSeparator());
 
 
-
         List<PerformanceData.Entry> getData = allData.stream().filter(it -> it.method.equals("GET")).collect(Collectors.toList());
         List<PerformanceData.Entry> getSuccessData = getData.stream().filter(it -> it.result.equals(KVMessage.StatusType.GET_SUCCESS.name())).collect(Collectors.toList());
         List<PerformanceData.Entry> getNotFoundData = getData.stream().filter(it -> it.result.equals(KVMessage.StatusType.GET_NOT_FOUND.name())).collect(Collectors.toList());
@@ -107,27 +106,27 @@ public class Main {
         List<PerformanceData.Entry> getServerNotFoundData = getData.stream().filter(it -> it.result.equals("SERVER_NOT_FOUND")).collect(Collectors.toList());
         List<PerformanceData.Entry> getExceptionsData = getData.stream().filter(it -> it.result.equals("ERROR")).collect(Collectors.toList());
 
-        List<Long> getPercentiles = calculatePercentiles(getData, percentiles);
-
         sb.append("Performance Measured on GET")
                 .append(System.lineSeparator())
-                .append("------------------------------------------------------")
-                .append(System.lineSeparator())
-                .append(String.format("Percentiles GET: %s : %s", percentiles, getPercentiles))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET requests executed with average response time %f", getData.size(), getData.size() > 0 ? getData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET_SUCCESS responses received with average response time %f", getSuccessData.size(), getSuccessData.size() > 0 ? getSuccessData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET_NOT_FOUND responses received with average response time %f", getNotFoundData.size(), getNotFoundData.size() > 0 ? getNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET_ERROR responses received with average response time %f", getErrorData.size(), getErrorData.size() > 0 ? getErrorData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET_SERVER_NOT_FOUND responses received with average response time %f", getServerNotFoundData.size(), getServerNotFoundData.size() > 0 ? getServerNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d GET_EXCEPTION responses received with average response time %f", getExceptionsData.size(), getExceptionsData.size() > 0 ? getExceptionsData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(System.lineSeparator());
+                .append("------------------------------------------------------\n")
+                .append(String.format("Total %d GET requests executed with average response time %f %s\n",
+                        getData.size(), getData.size() > 0 ? getData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getData, percentiles)))
+                .append(String.format("Total %d GET_SUCCESS responses received with average response time %f %s\n",
+                        getSuccessData.size(), getSuccessData.size() > 0 ? getSuccessData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getSuccessData, percentiles)))
+                .append(String.format("Total %d GET_NOT_FOUND responses received with average response time %f %s\n",
+                        getNotFoundData.size(), getNotFoundData.size() > 0 ? getNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getNotFoundData, percentiles)))
+                .append(String.format("Total %d GET_ERROR responses received with average response time %f %s\n",
+                        getErrorData.size(), getErrorData.size() > 0 ? getErrorData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getErrorData, percentiles)))
+                .append(String.format("Total %d GET_SERVER_NOT_FOUND responses received with average response time %f %s\n",
+                        getServerNotFoundData.size(), getServerNotFoundData.size() > 0 ? getServerNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getServerNotFoundData, percentiles)))
+                .append(String.format("Total %d GET_EXCEPTION responses received with average response time %f %s\n",
+                        getExceptionsData.size(), getExceptionsData.size() > 0 ? getExceptionsData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(getExceptionsData, percentiles)));
 
         List<PerformanceData.Entry> putData = allData.stream().filter(it -> it.method.equals("PUT")).collect(Collectors.toList());
         List<PerformanceData.Entry> putSuccessData = putData.stream().filter(it -> it.result.equals(KVMessage.StatusType.PUT_SUCCESS.name())).collect(Collectors.toList());
@@ -135,29 +134,31 @@ public class Main {
         List<PerformanceData.Entry> putErrorData = putData.stream().filter(it -> it.result.equals(KVMessage.StatusType.PUT_ERROR.name())).collect(Collectors.toList());
         List<PerformanceData.Entry> putServerNotFoundData = putData.stream().filter(it -> it.result.equals("SERVER_NOT_FOUND")).collect(Collectors.toList());
         List<PerformanceData.Entry> putExceptionsData = putData.stream().filter(it -> it.result.equals("ERROR")).collect(Collectors.toList());
-        List<Long> putPercentiles = calculatePercentiles(putData, percentiles);
 
         sb.append("Performance Measured on PUT")
                 .append(System.lineSeparator())
                 .append("------------------------------------------------------")
-                .append(System.lineSeparator())
-                .append(String.format("Percentiles PUT: %s : %s", percentiles, putPercentiles))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT requests executed with average response time %f", putData.size(), putData.size() > 0 ? putData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT_SUCCESS responses received with average response time %f", putSuccessData.size(), putSuccessData.size() > 0 ? putSuccessData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT_UPDATE responses received with average response time %f", putupdateData.size(), putupdateData.size() > 0 ? putupdateData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT_ERROR responses received with average response time %f", putErrorData.size(), putErrorData.size() > 0 ? putErrorData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT_SERVER_NOT_FOUND responses received with average response time %f", putServerNotFoundData.size(), putServerNotFoundData.size() > 0 ? putServerNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
-                .append(String.format("Total %d PUT_EXCEPTION responses received with average response time %f", putExceptionsData.size(), putExceptionsData.size() > 0 ? putExceptionsData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0))
-                .append(System.lineSeparator())
+                .append(String.format("\nTotal %d PUT requests executed with average response time %f %s\n",
+                        putData.size(), putData.size() > 0 ? putData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putData, percentiles)))
+                .append(String.format("Total %d PUT_SUCCESS responses received with average response time %f %s\n",
+                        putSuccessData.size(), putSuccessData.size() > 0 ? putSuccessData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putSuccessData, percentiles)))
+                .append(String.format("Total %d PUT_UPDATE responses received with average response time %f %s\n",
+                        putupdateData.size(), putupdateData.size() > 0 ? putupdateData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putupdateData, percentiles)))
+                .append(String.format("Total %d PUT_ERROR responses received with average response time %f %s\n",
+                        putErrorData.size(), putErrorData.size() > 0 ? putErrorData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putErrorData, percentiles)))
+                .append(String.format("Total %d PUT_SERVER_NOT_FOUND responses received with average response time %f %s\n",
+                        putServerNotFoundData.size(), putServerNotFoundData.size() > 0 ? putServerNotFoundData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putServerNotFoundData, percentiles)))
+                .append(String.format("Total %d PUT_EXCEPTION responses received with average response time %f %s\n",
+                        putExceptionsData.size(), putExceptionsData.size() > 0 ? putExceptionsData.stream().mapToDouble(it -> it.time).average().getAsDouble() : 0.0,
+                        calculatePercentiles(putExceptionsData, percentiles)))
                 .append(System.lineSeparator());
 
-        try (FileWriter f = new FileWriter(STATS_TXT_FILE)){
+        try (FileWriter f = new FileWriter(STATS_TXT_FILE)) {
             f.write(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -177,9 +178,9 @@ public class Main {
             if (p1.time == p2.time)
                 return 0;
             return -1;
-        } );
+        });
         percentils.forEach(p ->
-            result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time)
+                result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time)
         );
         return result;
     }
