@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class KVStore implements KVCommInterface {
     public KVStoreMetaData kvStoreMetaData;
-    final Messaging connection;
+    final Messaging messaging;
 
     private final Logger logger = LogManager.getLogger(KVStore.class);
 
@@ -29,7 +29,7 @@ public class KVStore implements KVCommInterface {
      */
     public KVStore(KVStoreMetaData kvStoreMetaData) {
         this.kvStoreMetaData = kvStoreMetaData;
-        this.connection = new Messaging();
+        this.messaging = new Messaging();
     }
 
     /**
@@ -42,9 +42,9 @@ public class KVStore implements KVCommInterface {
      */
     public boolean connect(String host, int port) throws IOException {
 
-        this.connection.connect(host, port);
+        this.messaging.connect(host, port);
 
-        KVMessage kvM = (KVMessage) connection.readMessage();
+        KVMessage kvM = (KVMessage) messaging.readMessage();
         return kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
@@ -54,14 +54,14 @@ public class KVStore implements KVCommInterface {
      * @return the connection status
      */
     public boolean isConnected() {
-        return connection.isConnected();
+        return messaging.isConnected();
     }
 
     /**
      * Disconnect the client from the backend
      */
     public void disconnect() {
-        this.connection.disconnect();
+        this.messaging.disconnect();
     }
 
     /**
@@ -80,8 +80,8 @@ public class KVStore implements KVCommInterface {
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-        this.connection.sendMessage(kvMessageRequest);
-        KVMessage response = (KVMessage) this.connection.readMessage();
+        this.messaging.sendMessage(kvMessageRequest);
+        KVMessage response = (KVMessage) this.messaging.readMessage();
 
         if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
             applyNewMetadata(response);
@@ -108,8 +108,8 @@ public class KVStore implements KVCommInterface {
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
-        this.connection.sendMessage(kvMessageRequest);
-        KVMessage response = (KVMessage) this.connection.readMessage();
+        this.messaging.sendMessage(kvMessageRequest);
+        KVMessage response = (KVMessage) this.messaging.readMessage();
 
         if (response.getStatus() == KVMessage.StatusType.SERVER_NOT_RESPONSIBLE) {
             applyNewMetadata(response);
