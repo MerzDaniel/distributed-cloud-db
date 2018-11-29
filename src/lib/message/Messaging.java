@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Iterator;
 
 public class Messaging {
@@ -17,13 +18,23 @@ public class Messaging {
     public Messaging() {
     }
 
-    public void connect(ServerData sd) throws IOException {
-        connect(sd.getHost(), sd.getPort());
+    public boolean connect(ServerData sd) throws IOException {
+        return connect(sd.getHost(), sd.getPort());
     }
 
     public boolean connect(String host, int port) throws IOException {
         con = new Connection();
         con.connect(host, port);
+        return connect(con);
+    }
+
+    public boolean connect(Socket s) throws IOException {
+        Connection c = new Connection();
+        c.use(s);
+        return connect(c);
+    }
+
+    private boolean connect(Connection con) throws IOException {
         messageIterator = new Iterator<IMessage>() {
             IMessage nextMsg;
 

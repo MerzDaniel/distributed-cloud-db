@@ -24,9 +24,17 @@ public class Connection {
      * Connects to a host and port.
      */
     public void connect(String host, int port) throws IOException {
-        logger.info(String.format("Connect to %s:%d", host, port));
+        logger.debug(String.format("Connect to %s:%d", host, port));
 
         socket = new Socket(host, port);
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
+    }
+
+    public void use(Socket s) throws IOException {
+        logger.debug(String.format("Use %s:%d", s.getInetAddress(), s.getPort()));
+
+        socket = s;
         in = socket.getInputStream();
         out = socket.getOutputStream();
     }
