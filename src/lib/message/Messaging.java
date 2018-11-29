@@ -76,7 +76,7 @@ public class Messaging {
         messageIterator = null;
     }
 
-    private static IMessage readNextMessage(Connection con) {
+    private IMessage readNextMessage(Connection con) {
         while (con.isConnected()) {
             try {
                 String msg = con.readMessage();
@@ -86,7 +86,8 @@ public class Messaging {
                 }
                 return MessageMarshaller.unmarshall(msg);
             } catch (IOException e) {
-                logger.warn("IO Exception will close Messaging!", e);
+                logger.info("Connection seems to be closed", e);
+                disconnect();
                 break;
             } catch (MarshallingException e) {
                 logger.warn("Marsharhalling exception!", e);
