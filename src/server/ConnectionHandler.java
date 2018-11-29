@@ -34,15 +34,23 @@ public class ConnectionHandler implements Runnable {
      */
     @Override
     public void run() {
-        try (InputStream i = s.getInputStream(); OutputStream o = s.getOutputStream()) {
+        try {
+            Messaging messaging = new Messaging();
+            messaging.connect(s);
 
-            String connectMessage = MessageMarshaller.marshall(MessageFactory.creatConnectionSuccessful());
-            SocketUtil.sendMessage(o, connectMessage);
+            messaging.sendMessage(MessageFactory.creatConnectionSuccessful());
 
-            while (SocketUtil.isConnected(s) &&
+            while (messaging.isConnected() &&
                     state.runningState != RunningState.SHUTTINGDOWN) {
-                IMessage response = handleIncomingMessage(i, o);
-                SocketUtil.sendMessage(o, MessageMarshaller.marshall(response));
+                IMessage request = messaging.readMessage();
+
+                IMessage response;
+                if (request instanceof KVMessage)
+                    response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
+                else
+                    response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
+
+                messaging.sendMessage(response);
             }
         } catch (Exception e) {
             logger.warn("Error during communication with an open connection:" + e.getMessage(), e);
@@ -50,23 +58,5 @@ public class ConnectionHandler implements Runnable {
             tryClose(s);
         }
     }
-
-    private IMessage handleIncomingMessage(InputStream i, OutputStream o) throws IOException, DbError {
-        String msg = SocketUtil.readMessage(i);
-        IMessage message;
-        try {
-            message = MessageMarshaller.unmarshall(msg);
-        } catch (MarshallingException e) {
-            logger.info("Got invalid message");
-            return new KVMessageImpl(null, null, KVMessage.StatusType.INVALID_MESSAGE);
-        }
-
-        if (message instanceof KVMessage)
-            return KvMessageHandler.handleKvMessage((KVMessage) message, state);
-
-        return AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) message, state);
-
-    }
-
 }
 
