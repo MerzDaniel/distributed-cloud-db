@@ -171,7 +171,13 @@ public class Main {
         List<Long> result = new LinkedList<>();
 
         if (perfData.isEmpty()) return result;
-        perfData.sort((p1, p2) -> p1.time < p2.time ? 1 : -1);
+        perfData.sort((p1, p2) -> {
+            if (p1.time < p2.time)
+                return 1;
+            if (p1.time == p2.time)
+                return 0;
+            return -1;
+        } );
         percentils.forEach(p ->
             result.add(perfData.stream().skip((long) (perfData.size() * (1 - (p)) - 1)).findAny().get().time)
         );
