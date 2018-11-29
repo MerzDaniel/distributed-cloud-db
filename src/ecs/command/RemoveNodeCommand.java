@@ -58,7 +58,6 @@ public class RemoveNodeCommand implements Command {
         Messaging con = new Messaging();
         try {
             con.connect(from.getHost(), from.getPort());
-            con.readMessage();
         } catch (IOException e) {
             logger.warn("Error.", e);
             System.out.println("Error while connecting to the server.");

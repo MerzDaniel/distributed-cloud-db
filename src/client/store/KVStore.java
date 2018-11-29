@@ -41,11 +41,7 @@ public class KVStore implements KVCommInterface {
      * @throws IOException if any error occurred while establishing the connection
      */
     public boolean connect(String host, int port) throws IOException {
-
-        this.messaging.connect(host, port);
-
-        KVMessage kvM = (KVMessage) messaging.readMessage();
-        return kvM.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+        return this.messaging.connect(host, port);
     }
 
     /**

@@ -53,7 +53,6 @@ public class AddServerCommand implements Command {
         RunningState newServerState;
         try {
             newServerCon.connect(newServer.getHost(), newServer.getPort());
-            newServerCon.readMessage();
             newServerState = KvService.getStatus(newServer);
         } catch (Exception e) {
             System.out.println("Could not connect to server: " + newServer.toString());
@@ -102,7 +101,6 @@ public class AddServerCommand implements Command {
         Messaging influencedServerCon = new Messaging();
         try {
             influencedServerCon.connect(influencedServer.getHost(), influencedServer.getPort());
-            influencedServerCon.readMessage();
         } catch (IOException e) {
             System.out.println("Could not connect to server: " + influencedServer.toString());
             return;
