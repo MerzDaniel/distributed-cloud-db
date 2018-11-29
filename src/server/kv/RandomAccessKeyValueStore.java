@@ -102,19 +102,24 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     @Override
     public synchronized boolean put(String key, String value) throws DbError {
         // todo think about parallel puts!!
-        boolean deleted;
-        try {
-            deleted = ioDelete(key);
-        } catch (IOException e) {
-            logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
-            throw new DbError(e);
+        boolean deleted = false;
+
+        if (hasKey(key)) {
+            try {
+                deleted = ioDelete(key);
+            } catch (IOException e) {
+                logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
+                throw new DbError(e);
+            }
         }
+
         try {
             ioPut(key, value);
         } catch (IOException e) {
             logger.error("IO Exception during PUT", e);
             throw new DbError(e);
         }
+
         return deleted;
     }
 
@@ -212,6 +217,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     }
 
     private boolean ioDelete(String key) throws IOException {
+        if (!index.hasKey(key)) return false;
+
         try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
             DbIndex.IndexEntry indexEntry = index.getEntry(key);
             db.seek(indexEntry.offset);
