@@ -90,7 +90,7 @@ public class Connection {
             try {
                 int val = in.read();
                 if (val == -1) {
-                    logger.info("readLine(): end of stream reached");
+                    // end of stream
                     break;
                 }
                 char c = (char) val;
@@ -105,6 +105,8 @@ public class Connection {
             }
         }
         String msg = buffer.toString();
+        if (msg.length() == 0) throw new IOException("Stream is closed");
+
         logger.info("Received a message from the server: " + msg);
         return msg;
     }
