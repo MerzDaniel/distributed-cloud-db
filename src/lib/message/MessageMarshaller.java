@@ -55,6 +55,12 @@ public final class MessageMarshaller {
                     adminMessage.serverData.marshall()
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.MOVE_SOFT)
+            return String.join(RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.serverData.marshall()
+            );
+
         if (adminMessage.status == KVAdminMessage.StatusType.STATUS_RESPONSE)
             return String.join(RECORD_SEPARATOR,
                     adminMessage.status.name(),
@@ -107,7 +113,12 @@ public final class MessageMarshaller {
                 return new KVAdminMessage(
                         status, KVStoreMetaData.unmarshall(secondPart), Integer.valueOf(kvMessageComponents[kvMessageComponents.length - 1])
                 );
+
             case MOVE:
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
+
+            case MOVE_SOFT:
                 secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
