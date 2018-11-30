@@ -4,7 +4,6 @@ import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
 import ecs.service.SshService;
-import lib.hash.HashUtil;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
@@ -12,23 +11,16 @@ import lib.server.CacheType;
 import lib.server.RunningState;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 
 /**
  * This class represents the command for adding a new server
  */
 public class AddServerCommand implements Command {
-    private String name;
-    private final String host;
-    private final int port;
     private final CacheType cacheType;
     private final int cacheSize;
 
-    public AddServerCommand(String name, String host, int port, CacheType cacheType, int cacheSize) {
-        this.name = name;
-        this.host = host;
-        this.port = port;
+    public AddServerCommand(int cacheSize, CacheType cacheType) {
         this.cacheType = cacheType;
         this.cacheSize = cacheSize;
     }
@@ -40,12 +32,13 @@ public class AddServerCommand implements Command {
      */
     @Override
     public void execute(State state) {
-        BigInteger hash = null;
-        try {
-            hash = HashUtil.getHash(name);
-        } catch (NoSuchAlgorithmException e) {
+        if (state.poolMeta.getKvServerList().size() == 0) {
+            System.out.println("No free servers are available. All are used already");
         }
-        ServerData newServer = new ServerData(name, host, port, hash);
+
+        Collections.shuffle(state.poolMeta.getKvServerList());
+        ServerData newServer = state.poolMeta.getKvServerList().remove(0);
+
         newServer.setCacheType(cacheType);
         newServer.setCacheSize(cacheSize);
 
@@ -85,7 +78,7 @@ public class AddServerCommand implements Command {
         ServerData influencedServer = null;
         RunningState influencedStatus;
         try {
-            influencedServer = state.storeMeta.findNextKvServer(hash);
+            influencedServer = state.storeMeta.findNextKvServer(newServer.getFromHash());
         } catch (KVServerNotFoundException e) {}
         try {
             influencedStatus = KvService.getStatus(influencedServer);
