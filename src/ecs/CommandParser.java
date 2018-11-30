@@ -54,6 +54,10 @@ public final class CommandParser {
             } catch(Exception e) {}
         }
 
+        else if (tokens[0].equals("init") && tokens.length == 4)
+            try {
+                command = new InitCommand(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), CacheType.valueOf(tokens[3]));
+            } catch (Exception e) {}
         if (command == null) {
             System.out.println("Unknown Command.");
             new UsageCommand().execute(state);

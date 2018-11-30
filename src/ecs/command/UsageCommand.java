@@ -16,6 +16,8 @@ public class UsageCommand implements Command {
     @Override
     public void execute(State state) {
         System.out.println("Usage:");
+        System.out.println("  init <no-of-servers> <cache-size> <cache-type>");
+        System.out.println("                           : initialize the KVStore");
         System.out.println("  add <name> <host> <port> <cache-type> <cache-size>");
         System.out.println("                           : [Not fully working] Add a new Storage server. It will be added to the config.");
         System.out.println("  remove <name>            : Remove the server");
