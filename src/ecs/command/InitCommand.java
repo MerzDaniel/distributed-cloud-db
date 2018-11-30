@@ -14,6 +14,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,11 +55,11 @@ public class InitCommand implements Command {
             return;
         }
 
-        List<ServerData> kvServerMetaData = state.poolMeta.getKvServerList().subList(0, noOfServers);
-        state.storeMeta = new KVStoreMetaData(kvServerMetaData);
+        state.storeMeta = new KVStoreMetaData();
+        state.storeMeta.getKvServerList().addAll(state.poolMeta.getKvServerList().subList(0, noOfServers));
 
         for (int index = 0; index < state.storeMeta.getKvServerList().size(); index++) {
-            ServerData sd = kvServerMetaData.get(index);
+            ServerData sd = state.storeMeta.getKvServerList().get(index);
             sd.setCacheSize(this.cacheSize);
             sd.setCacheType(this.cacheType);
 
@@ -107,5 +108,6 @@ public class InitCommand implements Command {
 
         //todo
         //store cluster   information to the cluster.config
+        state.poolMeta.getKvServerList().removeAll(state.storeMeta.getKvServerList());
     }
 }
