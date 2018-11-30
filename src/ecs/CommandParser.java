@@ -39,8 +39,8 @@ public final class CommandParser {
         else if (tokens[0].equals("status"))
             command = new ServerStatusCommand();
 
-        else if (tokens[0].equals("remove") && tokens.length == 2)
-            command = new RemoveNodeCommand(tokens[1]);
+        else if (tokens[0].equals("remove"))
+            command = new RemoveNodeCommand();
 
         else if (tokens[0].equals("shutdown"))
             command = new ShutdownCommand();
