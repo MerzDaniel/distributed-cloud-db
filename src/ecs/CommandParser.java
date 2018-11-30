@@ -48,9 +48,9 @@ public final class CommandParser {
         else if (tokens[0].equals("stop"))
             command = new StopServersCommand();
 
-        else if (tokens[0].equals("add") && tokens.length == 6) {
+        else if (tokens[0].equals("add") && tokens.length == 3) {
             try {
-                command = new AddServerCommand(tokens[1], tokens[2], Integer.parseInt(tokens[3]), CacheType.valueOf(tokens[4]), Integer.parseInt(tokens[5]));
+                command = new AddServerCommand(Integer.parseInt(tokens[1]), CacheType.valueOf(tokens[2]));
             } catch(Exception e) {}
         }
 
