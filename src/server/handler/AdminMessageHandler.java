@@ -64,7 +64,11 @@ public final class AdminMessageHandler {
             case DATA_MOVE:
                 state.db.put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
+            case MAKE_READONLY:
+                state.runningState = RunningState.READONLY;
+                return new KVAdminMessage(KVAdminMessage.StatusType.MAKE_SUCCESS);
         }
+
 
         throw new NotImplementedException();
     }
