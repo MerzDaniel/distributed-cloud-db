@@ -10,13 +10,12 @@ import lib.message.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
+import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static ecs.service.SshService.startKvServer;
 import static ecs.service.KvService.getStatus;
@@ -64,9 +63,13 @@ public class InitCommand implements Command {
             sd.setCacheType(this.cacheType);
 
             try {
-                getStatus(sd);
-                System.out.format("%s is already startup.\n", sd.toString());
-                continue; // server can be reached therefor doesn't need to be started
+                RunningState serverState = getStatus(sd);
+
+                if (serverState.equals(RunningState.RUNNING)){
+                    System.out.format("%s is already running.\n", sd.toString());
+                    continue;
+                }
+
             } catch (IOException e) {
                 //we need to start the server
             } catch (MarshallingException e) {
