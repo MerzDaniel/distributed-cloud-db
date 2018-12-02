@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public final class SshService {
-    public static void startKvServer(ServerData sd) throws JSchException, IOException {
+    public static void startKvServer(ServerData sd) throws JSchException, IOException, SftpException {
         String userName = "clouddb";
         String host = sd.getHost();
 
         Session session = connect(userName, host);
 
-//            copyFile(session);
+        copyFile(session);
 
         ChannelExec channel = (ChannelExec) session.openChannel("exec");
 //        InputStream in = channel.getInputStream();
@@ -33,7 +33,7 @@ public final class SshService {
     }
     private static Session connect(String user, String host) throws JSchException {
         JSch shell = new JSch();
-        shell.setKnownHosts("C:\\Users\\daniel\\.ssh\\known_hosts");
+        shell.setKnownHosts(Paths.get(System.getProperty("user.home"), ".ssh", "known_hosts").toString());
         shell.addIdentity(Paths.get(System.getProperty("user.home"), ".ssh", "id_rsa").toString());
 //            shell.setKnownHosts(Paths.get(System.getProperty("user.home"), ".ssh", "known_hosts").toString());
         Session session = shell.getSession(user, host, 22);
@@ -44,10 +44,10 @@ public final class SshService {
         return session;
     }
 
-    private void copyFile(Session session) throws JSchException, SftpException {
+    private static void copyFile(Session session) throws JSchException, SftpException {
         ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
         sftpChannel.connect();
-        sftpChannel.put("I:/demo/myOutFile.txt", "/tmp/QA_Auto/myOutFile.zip");
+        sftpChannel.put("server.jar", Paths.get(System.getProperty("user.home")).toString());
     }
 
 

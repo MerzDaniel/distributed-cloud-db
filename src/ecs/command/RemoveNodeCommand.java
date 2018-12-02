@@ -5,12 +5,13 @@ import ecs.State;
 import lib.TimeWatch;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
+import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 
 import static ecs.service.KvService.moveData;
 
@@ -18,16 +19,13 @@ import static ecs.service.KvService.moveData;
  * This class represent the command for removing a {@link server.KVServer} instance
  */
 public class RemoveNodeCommand implements Command {
-    private String name;
     private Logger logger = LogManager.getLogger(RemoveNodeCommand.class);
 
     /**
      * Constructor to create a {@link RemoveNodeCommand} instance
      *
-     * @param name name of the server
      */
-    public RemoveNodeCommand(String name) {
-        this.name = name;
+    public RemoveNodeCommand() {
     }
 
     /**
@@ -41,15 +39,18 @@ public class RemoveNodeCommand implements Command {
             System.out.println("Cannot remove a node when less than 2 are running");
             return;
         }
-        ServerData from = null, to = null;
-        List<ServerData> list = state.storeMeta.getKvServerList();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getName().equals(name)) {
-                from = list.get(i);
-                to = list.get((i + 1) % list.size());
-                break;
-            }
+
+        Collections.shuffle(state.storeMeta.getKvServerList());
+        ServerData from = state.storeMeta.getKvServerList().remove(0);
+
+        ServerData to = null;
+        try {
+            to = state.storeMeta.findNextKvServer(from.getFromHash());
+        } catch (KVServerNotFoundException e) {
+            logger.error("Error.", e);
+            System.out.println("Error while removing the server.");
         }
+
         if (from == null || to == null) {
             System.out.println("Server does not exist and can therefor not be removed.");
             return;

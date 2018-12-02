@@ -39,8 +39,8 @@ public final class CommandParser {
         else if (tokens[0].equals("status"))
             command = new ServerStatusCommand();
 
-        else if (tokens[0].equals("remove") && tokens.length == 2)
-            command = new RemoveNodeCommand(tokens[1]);
+        else if (tokens[0].equals("remove"))
+            command = new RemoveNodeCommand();
 
         else if (tokens[0].equals("shutdown"))
             command = new ShutdownCommand();
@@ -48,12 +48,16 @@ public final class CommandParser {
         else if (tokens[0].equals("stop"))
             command = new StopServersCommand();
 
-        else if (tokens[0].equals("add") && tokens.length == 6) {
+        else if (tokens[0].equals("add") && tokens.length == 3) {
             try {
-                command = new AddServerCommand(tokens[1], tokens[2], Integer.parseInt(tokens[3]), CacheType.valueOf(tokens[4]), Integer.parseInt(tokens[5]));
+                command = new AddServerCommand(Integer.parseInt(tokens[1]), CacheType.valueOf(tokens[2]));
             } catch(Exception e) {}
         }
 
+        else if (tokens[0].equals("init") && tokens.length == 4)
+            try {
+                command = new InitCommand(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), CacheType.valueOf(tokens[3]));
+            } catch (Exception e) {}
         if (command == null) {
             System.out.println("Unknown Command.");
             new UsageCommand().execute(state);
