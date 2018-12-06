@@ -23,8 +23,14 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
 
     public File DB_FILE;
     public File INDEX_FILE;
+    public File DB_REPLICA_1_FILE;
+    public File INDEX_REPLICA_1_FILE;
+    public File DB_REPLICA_2_FILE;
+    public File INDEX_REPLICA_2_FILE;
     RandomAccessFile db;
     DbIndex index;
+    DbIndex indexReplica1;
+    DbIndex indexReplica2;
 
     private final String RECORD_SEPARATOR = "\u001E";
 
@@ -34,10 +40,20 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     @Override
     public void init(String dbName) throws IOException {
         try {
-            DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
             DB_FILE.getParentFile().mkdirs();
+
+            DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
+            DB_REPLICA_1_FILE= new File(Paths.get(DB_DIRECTORY.toString(), "db_replica_1_" + dbName).toUri());
+            DB_REPLICA_2_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_replica_2_" + dbName).toUri());
+
             INDEX_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_" + dbName).toUri());
+            INDEX_REPLICA_1_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_replica_1" + dbName).toUri());
+            INDEX_REPLICA_2_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_replica_2" + dbName).toUri());
+
             index = DbIndex.LoadFromFile(INDEX_FILE);
+            indexReplica1 = DbIndex.LoadFromFile(INDEX_REPLICA_1_FILE);
+            indexReplica2 = DbIndex.LoadFromFile(INDEX_REPLICA_2_FILE);
+
             db = new RandomAccessFile(DB_FILE, "rw");
         } catch (IOException e) {
             logger.error("Error while initializing database", e);
@@ -57,6 +73,8 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         if (db != null)
             db.close();
         index.save(INDEX_FILE);
+        indexReplica1.save(INDEX_REPLICA_1_FILE);
+        indexReplica2.save(INDEX_REPLICA_2_FILE);
     }
 
     /**
