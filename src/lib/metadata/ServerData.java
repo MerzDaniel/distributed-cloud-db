@@ -1,5 +1,6 @@
 package lib.metadata;
 
+import lib.Constants;
 import lib.message.MarshallingException;
 import lib.server.CacheType;
 
@@ -9,12 +10,10 @@ import java.math.BigInteger;
  * This class stores the details about {@link server.KVServer} instance
  */
 public class ServerData {
-    private final static String ELEMENT_SEPARATOR = "\u001F";
 
     String name;
     String host;
     int port;
-
 
     CacheType cacheType;
     int cacheSize;
@@ -94,7 +93,7 @@ public class ServerData {
      * @return marshalled string
      */
     public String marshall() {
-        return name + ELEMENT_SEPARATOR + host + ELEMENT_SEPARATOR + port + ELEMENT_SEPARATOR + fromHash;
+        return name + Constants.ELEMENT_SEPARATOR + host + Constants.ELEMENT_SEPARATOR + port + Constants.ELEMENT_SEPARATOR + fromHash;
     }
 
     @Override
@@ -112,7 +111,7 @@ public class ServerData {
     public static ServerData unmarshall(String kvServerMetaData) throws MarshallingException {
 
         try {
-            String[] split = kvServerMetaData.split(ELEMENT_SEPARATOR);
+            String[] split = kvServerMetaData.split(Constants.ELEMENT_SEPARATOR);
             int port = Integer.parseInt(split[2]);
             BigInteger hash = new BigInteger(split[3]);
             return new ServerData(split[0], split[1], port, hash);

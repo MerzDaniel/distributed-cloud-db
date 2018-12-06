@@ -73,7 +73,6 @@ public class Messaging {
 
     public void disconnect() {
         con.disconnect();
-        messageIterator = null;
     }
 
     private IMessage readNextMessage(Connection con) {
@@ -86,7 +85,7 @@ public class Messaging {
                 }
                 return MessageMarshaller.unmarshall(msg);
             } catch (IOException e) {
-                logger.info("Connection seems to be closed", e);
+                logger.debug("Connection seems to be closed", e);
                 disconnect();
                 break;
             } catch (MarshallingException e) {

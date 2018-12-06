@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import static lib.Constants.RECORD_SEPARATOR;
+
 /**
  * This class is an implementaiton of a KeyValueStore with a {@link RandomAccessFile} thus having the
  * capability of reading and writing exact positions of the file without have to read all lines
@@ -31,8 +33,6 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     DbIndex index;
     DbIndex indexReplica1;
     DbIndex indexReplica2;
-
-    private final String RECORD_SEPARATOR = "\u001E";
 
     public RandomAccessKeyValueStore() {
     }

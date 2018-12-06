@@ -11,11 +11,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static lib.Constants.RECORD_SEPARATOR;
+
 /**
  * This class keeps the data about {@link server.KVServer} instances that are deployed
  */
 public class KVStoreMetaData {
-    private final static String RECORD_SEPARATOR = "\u001E";
 
     private List<ServerData> kvServerList = new ArrayList<>();
 
