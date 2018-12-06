@@ -50,6 +50,12 @@ public class KVAdminMessage implements IMessage {
         DATA_MOVE_SUCCESS,
         STATUS,
         STATUS_RESPONSE,
+        PUT_REPLICATE,
+        PUT_REPLICATE_SUCCESS,
+        PUT_REPLICATE_ERROR,
+        DELETE_REPLICATE,
+        DELETE_REPLICATE_SUCCESS,
+        DELETE_REPLICATE_ERROR,
     }
 
     /**
