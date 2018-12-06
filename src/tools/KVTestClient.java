@@ -26,9 +26,9 @@ class KVTestClient implements Callable {
     private double percentageWrites;
 
     private void init() {
-//        String host = "localhost";
-        String host = "192.168.178.27";
-        ServerData sd = new ServerData("not initialized", host, 40000);
+        String host = "localhost";
+//        String host = "192.168.178.27";
+        ServerData sd = new ServerData("not initialized", host, 50000);
         kvStore = new KVStore(
                 new KVStoreMetaData(Arrays.asList(sd))
         );
