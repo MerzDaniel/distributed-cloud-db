@@ -85,14 +85,20 @@ public class KVStoreMetaData {
     }
 
     /**
-     * Find the replica {@link server.KVServer}s for the given {@code hash}
+     * Find the replica {@link server.KVServer}s for the given {@code key} which are immediate KVServers in the hash ring with larger hash
      *
-     * @param hash hash
+     * @param key Key
      * @return {@link List<ServerData>} list of ServerData representing replica servers
      * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
      */
-    public List<ServerData> findReplicaKVServers(BigInteger hash) throws KVServerNotFoundException {
+    public List<ServerData> findReplicaKVServersOf(String key) throws KVServerNotFoundException {
         int noOfServers = kvServerList.size();
+        BigInteger hash = null;
+        try {
+            hash = HashUtil.getHash(key);
+        } catch (NoSuchAlgorithmException e) {
+            throw new KVServerNotFoundException();
+        }
 
         if (noOfServers == 0) throw new KVServerNotFoundException();
         if (noOfServers == 1) return new ArrayList<>();
@@ -102,10 +108,36 @@ public class KVStoreMetaData {
 
         for (int i = 0; i < kvServerList.size(); i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0){
-                return kvServerList.subList(i, (i + 3) % noOfServers);
+                return Arrays.asList(kvServerList.get(i), kvServerList.get((i + 1) % noOfServers));
             }
         }
         return kvServerList.subList(0, 2);
+    }
+
+    /**
+     * Find the replicated {@link server.KVServer}s by this server (previous two servers)
+     *
+     * @param serverData {@link ServerData}
+     * @return {@link List<ServerData>} list of ServerData representing replica servers
+     * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
+     */
+    public List<ServerData> findReplicatedKVServersBy(ServerData serverData) throws KVServerNotFoundException {
+
+        int noOfServers = kvServerList.size();
+
+        if (noOfServers == 0) throw new KVServerNotFoundException();
+        if (noOfServers == 1) return new ArrayList<>();
+        if (noOfServers == 2) return Arrays.asList(this.findPreviousKvServer(serverData));
+
+        sortKvServers();
+
+        for (int i = noOfServers - 1; i == 0; i--) {
+            if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0){
+                if (i == 0) return Arrays.asList(kvServerList.get(0), kvServerList.get(noOfServers - 1));
+                return kvServerList.subList(i - 1, i + 1);
+            }
+        }
+        return kvServerList.subList(noOfServers - 2, noOfServers);
     }
 
     /**
@@ -124,6 +156,25 @@ public class KVStoreMetaData {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0) return kvServerList.get(i);
         }
         return kvServerList.get(0);
+    }
+
+    /**
+     * Find the previous {@link server.KVServer} which has the hash smaller than given {@code hash}
+     *
+     * @param serverData {@link ServerData}
+     * @return {@link ServerData} found larger than {@code hash}
+     * @throws KVServerNotFoundException if the {@link ServerData} is not found
+     */
+    public ServerData findPreviousKvServer(ServerData serverData) throws KVServerNotFoundException {
+        int noOfServers = kvServerList.size();
+        if (noOfServers == 0 || noOfServers == 1) throw new KVServerNotFoundException();
+
+        sortKvServers();
+
+        for (int i = noOfServers - 1; i == 0; i--) {
+            if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0) return kvServerList.get(i);
+        }
+        return kvServerList.get(noOfServers - 1);
     }
 
     private int findKvServerIndex(String key) throws KVServerNotFoundException {
