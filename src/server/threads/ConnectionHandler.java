@@ -1,17 +1,13 @@
-package server;
+package server.threads;
 
-import lib.SocketUtil;
 import lib.message.*;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import server.handler.AdminMessageHandler;
-import server.handler.KvMessageHandler;
-import server.kv.DbError;
+import server.ServerState;
+import server.threads.handler.AdminMessageHandler;
+import server.threads.handler.KvMessageHandler;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 import static lib.SocketUtil.tryClose;

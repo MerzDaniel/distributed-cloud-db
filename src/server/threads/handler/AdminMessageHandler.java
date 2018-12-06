@@ -1,4 +1,4 @@
-package server.handler;
+package server.threads.handler;
 
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
@@ -67,6 +67,7 @@ public final class AdminMessageHandler {
             case MAKE_READONLY:
                 state.runningState = RunningState.READONLY;
                 return new KVAdminMessage(KVAdminMessage.StatusType.MAKE_SUCCESS);
+
         }
 
 
