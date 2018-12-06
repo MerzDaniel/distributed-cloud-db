@@ -4,6 +4,7 @@ import lib.Constants;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
+import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -74,6 +75,13 @@ public final class MessageMarshaller {
                     adminMessage.value
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.GOSSIP_STATUS
+                || adminMessage.status == KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS)
+            return String.join(Constants.RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.timedServerStates.marshall()
+            );
+
         return adminMessage.status.name();
     }
 
@@ -129,6 +137,11 @@ public final class MessageMarshaller {
             case DATA_MOVE:
                 return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
 
+            case GOSSIP_STATUS:
+            case GOSSIP_STATUS_SUCCESS:
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
+                return new KVAdminMessage(status, TimedRunningStateMap.unmarshall(secondPart));
+
             default:
                 return new KVAdminMessage(status);
         }
@@ -161,7 +174,7 @@ public final class MessageMarshaller {
         } else if (kvMessageComponents.length == 2) {
             key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
             value = null;
-        } else if (kvMessageComponents.length > 3){
+        } else if (kvMessageComponents.length > 3) {
             key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
             List<String> kvMsgCompList = Arrays.asList(kvMessageComponents);
             value = kvMsgCompList.subList(2, kvMsgCompList.size()).stream().collect(Collectors.joining(Constants.RECORD_SEPARATOR));
