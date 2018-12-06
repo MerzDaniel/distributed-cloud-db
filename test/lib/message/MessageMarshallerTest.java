@@ -5,10 +5,11 @@ import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.junit.Test;
 
+import static lib.Constants.ELEMENT_SEPARATOR;
+import static lib.Constants.RECORD_SEPARATOR;
+
 
 public class MessageMarshallerTest extends TestCase {
-    final String RECORD_SEPARATOR = "\u001E";
-    final static String ELEMENT_SEPARATOR = "\u001F";
 
     @Test
     public void testMarshall() throws MarshallingException {

@@ -1,5 +1,6 @@
 package lib.message;
 
+import lib.Constants;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 public final class MessageMarshaller {
 
     static Logger logger = LogManager.getLogger(MessageMarshaller.class);
-    private final static String RECORD_SEPARATOR = "\u001E";
 
     /**
      * Returns marshalled string representation of the {@code kvMessage}
@@ -28,9 +28,9 @@ public final class MessageMarshaller {
         if (message instanceof KVMessage) {
             KVMessage kvMessage = (KVMessage) message;
             return kvMessage.getStatus().name()
-                    + RECORD_SEPARATOR
+                    + Constants.RECORD_SEPARATOR
                     + (kvMessage.getKey() != null ? kvMessage.getKey() : "")
-                    + RECORD_SEPARATOR
+                    + Constants.RECORD_SEPARATOR
                     + (kvMessage.getValue() != null ? kvMessage.getValue() : "");
         }
         if (message instanceof KVAdminMessage) {
@@ -43,32 +43,32 @@ public final class MessageMarshaller {
 
     private static String marshallAdminMessage(KVAdminMessage adminMessage) {
         if (adminMessage.status == KVAdminMessage.StatusType.CONFIGURE)
-            return String.join(RECORD_SEPARATOR,
+            return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.meta.marshall(),
                     String.valueOf(adminMessage.currentServerIndex)
             );
 
         if (adminMessage.status == KVAdminMessage.StatusType.MOVE)
-            return String.join(RECORD_SEPARATOR,
+            return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.serverData.marshall()
             );
 
         if (adminMessage.status == KVAdminMessage.StatusType.MOVE_SOFT)
-            return String.join(RECORD_SEPARATOR,
+            return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.serverData.marshall()
             );
 
         if (adminMessage.status == KVAdminMessage.StatusType.STATUS_RESPONSE)
-            return String.join(RECORD_SEPARATOR,
+            return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.runningState.name()
             );
 
         if (adminMessage.status == KVAdminMessage.StatusType.DATA_MOVE)
-            return String.join(RECORD_SEPARATOR,
+            return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
                     adminMessage.key,
                     adminMessage.value
@@ -86,7 +86,7 @@ public final class MessageMarshaller {
      */
     public static IMessage unmarshall(String kvMessageString) throws MarshallingException {
         try {
-            String[] kvMessageComponents = kvMessageString.split(RECORD_SEPARATOR);
+            String[] kvMessageComponents = kvMessageString.split(Constants.RECORD_SEPARATOR);
             String key;
             String value;
 
@@ -109,21 +109,21 @@ public final class MessageMarshaller {
 
         switch (status) {
             case CONFIGURE:
-                secondPart = Arrays.stream(kvMessageComponents).limit(kvMessageComponents.length - 1).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                secondPart = Arrays.stream(kvMessageComponents).limit(kvMessageComponents.length - 1).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(
                         status, KVStoreMetaData.unmarshall(secondPart), Integer.valueOf(kvMessageComponents[kvMessageComponents.length - 1])
                 );
 
             case MOVE:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
             case MOVE_SOFT:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
             case STATUS_RESPONSE:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(RECORD_SEPARATOR));
+                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, RunningState.valueOf(secondPart));
 
             case DATA_MOVE:
@@ -164,7 +164,7 @@ public final class MessageMarshaller {
         } else if (kvMessageComponents.length > 3){
             key = !kvMessageComponents[1].equals("") ? kvMessageComponents[1] : null;
             List<String> kvMsgCompList = Arrays.asList(kvMessageComponents);
-            value = kvMsgCompList.subList(2, kvMsgCompList.size()).stream().collect(Collectors.joining(RECORD_SEPARATOR));
+            value = kvMsgCompList.subList(2, kvMsgCompList.size()).stream().collect(Collectors.joining(Constants.RECORD_SEPARATOR));
         } else {
             key = null;
             value = null;

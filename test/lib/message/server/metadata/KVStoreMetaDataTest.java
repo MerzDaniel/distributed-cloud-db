@@ -10,6 +10,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
+import static lib.Constants.ELEMENT_SEPARATOR;
+import static lib.Constants.RECORD_SEPARATOR;
+
 
 public class KVStoreMetaDataTest extends TestCase {
 
@@ -24,8 +27,6 @@ public class KVStoreMetaDataTest extends TestCase {
 
         String marshalledString = kvStoreMetaData.marshall();
 
-        final String RECORD_SEPARATOR = "\u001E";
-        final String ELEMENT_SEPARATOR = "\u001F";
         String expected = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0"
                 + RECORD_SEPARATOR
                 + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001"
@@ -40,8 +41,6 @@ public class KVStoreMetaDataTest extends TestCase {
 
     @Test
     public void testUnMarshallKVStoreMetaData() throws MarshallingException {
-        final String RECORD_SEPARATOR = "\u001E";
-        final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "45000" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
                 + RECORD_SEPARATOR
                 + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"
@@ -59,8 +58,6 @@ public class KVStoreMetaDataTest extends TestCase {
 
     @Test(expected = MarshallingException.class)
     public void testUnMarshallKVStoreMetaDataThrowsException() throws MarshallingException {
-        final String RECORD_SEPARATOR = "\u001E";
-        final String ELEMENT_SEPARATOR = "\u001F";
         String kvStoreMetaDataString = "server1" + ELEMENT_SEPARATOR + "127.0.0.1" + ELEMENT_SEPARATOR + "qwe12" + ELEMENT_SEPARATOR + "0" + ELEMENT_SEPARATOR + "10000"
                 + RECORD_SEPARATOR
                 + "server2" + ELEMENT_SEPARATOR + "127.0.0.2" + ELEMENT_SEPARATOR + "35000" + ELEMENT_SEPARATOR + "10001" + ELEMENT_SEPARATOR + "20000"

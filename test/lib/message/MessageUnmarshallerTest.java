@@ -6,9 +6,10 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
+import static lib.Constants.ELEMENT_SEPARATOR;
+import static lib.Constants.RECORD_SEPARATOR;
+
 public class MessageUnmarshallerTest extends TestCase {
-    final String RECORD_SEPARATOR = "\u001E";
-    final String ELEMENT_SEPARATOR = "\u001F";
 
     @Test
     public void testUnmarshall() throws MarshallingException {
