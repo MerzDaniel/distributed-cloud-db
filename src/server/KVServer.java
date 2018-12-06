@@ -94,11 +94,17 @@ public class KVServer implements Runnable {
         initDb();
 
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
-            Thread acceptThread = acceptConnections(s);
+
+            Thread acceptThread = new AcceptConnectionsThread(s, openConnections, state);
+            acceptThread.start();
+
+            // Server loop, wait for getting shutdown
             while(state.runningState != RunningState.SHUTTINGDOWN) {
                 Thread.sleep(500);
             }
+
             acceptThread.stop();
+
         } catch (IOException e) {
             logger.warn("IO error on creating Socket", e);
         } catch (InterruptedException e) {
@@ -113,12 +119,6 @@ public class KVServer implements Runnable {
                 logger.warn("Problem during shutting down db", e);
             }
         }
-    }
-
-    private Thread acceptConnections(ServerSocket s) {
-        Thread t = new AcceptConnectionsThread(s, openConnections, state);
-        t.start();
-        return t;
     }
 
     private void initDb() {
