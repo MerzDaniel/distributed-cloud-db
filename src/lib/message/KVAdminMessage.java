@@ -3,6 +3,7 @@ package lib.message;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
+import lib.server.TimedRunningStateMap;
 
 /**
  * This is the absruct structure for the messages between KVServer and ECS
@@ -17,9 +18,16 @@ public class KVAdminMessage implements IMessage {
     public String key;
     public String value;
 
+    public TimedRunningStateMap timedServerStates;
+
     public KVAdminMessage(StatusType status, RunningState rs) {
         this.status = status;
         runningState = rs;
+    }
+
+    public KVAdminMessage(StatusType status, TimedRunningStateMap timedRunningStateMap) {
+        this.status = status;
+        this.timedServerStates = timedRunningStateMap;
     }
 
     public enum StatusType {
@@ -56,6 +64,8 @@ public class KVAdminMessage implements IMessage {
         DELETE_REPLICATE,
         DELETE_REPLICATE_SUCCESS,
         DELETE_REPLICATE_ERROR,
+        GOSSIP_STATUS,
+        GOSSIP_STATUS_SUCCESS,
     }
 
     /**

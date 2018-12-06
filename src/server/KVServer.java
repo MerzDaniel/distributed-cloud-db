@@ -11,6 +11,8 @@ import server.kv.*;
 import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
+import server.threads.AcceptConnectionsThread;
+import server.threads.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -92,11 +94,17 @@ public class KVServer implements Runnable {
         initDb();
 
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
-            Thread acceptThread = acceptConnections(s);
+
+            Thread acceptThread = new AcceptConnectionsThread(s, openConnections, state);
+            acceptThread.start();
+
+            // Server loop, wait for getting shutdown
             while(state.runningState != RunningState.SHUTTINGDOWN) {
                 Thread.sleep(500);
             }
+
             acceptThread.stop();
+
         } catch (IOException e) {
             logger.warn("IO error on creating Socket", e);
         } catch (InterruptedException e) {
@@ -111,25 +119,6 @@ public class KVServer implements Runnable {
                 logger.warn("Problem during shutting down db", e);
             }
         }
-    }
-
-    private Thread acceptConnections(ServerSocket s) {
-        Thread t = new Thread(() -> {
-            while (state.runningState != RunningState.SHUTTINGDOWN) {
-                Socket clientSocket;
-                try {
-                    clientSocket = s.accept();
-                } catch (IOException e) {
-                    logger.info("error on client connection");
-                    continue;
-                }
-                logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
-                openConnections.add(clientSocket);
-                new Thread(new ConnectionHandler(clientSocket, state)).start();
-            }
-        });
-        t.start();
-        return t;
     }
 
     private void initDb() {
