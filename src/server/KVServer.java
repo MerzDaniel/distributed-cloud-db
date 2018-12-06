@@ -11,6 +11,7 @@ import server.kv.*;
 import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
+import server.threads.AcceptConnectionsThread;
 import server.threads.ConnectionHandler;
 
 import java.io.IOException;
@@ -115,20 +116,7 @@ public class KVServer implements Runnable {
     }
 
     private Thread acceptConnections(ServerSocket s) {
-        Thread t = new Thread(() -> {
-            while (state.runningState != RunningState.SHUTTINGDOWN) {
-                Socket clientSocket;
-                try {
-                    clientSocket = s.accept();
-                } catch (IOException e) {
-                    logger.info("error on client connection");
-                    continue;
-                }
-                logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
-                openConnections.add(clientSocket);
-                new Thread(new ConnectionHandler(clientSocket, state)).start();
-            }
-        });
+        Thread t = new AcceptConnectionsThread(s, openConnections, state);
         t.start();
         return t;
     }
