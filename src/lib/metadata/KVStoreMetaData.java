@@ -6,6 +6,7 @@ import lib.message.MarshallingException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,6 +81,30 @@ public class KVStoreMetaData {
      */
     public ServerData findKVServer(String key) throws KVServerNotFoundException {
         return kvServerList.get(findKvServerIndex(key));
+    }
+
+    /**
+     * Find the replica {@link server.KVServer}s for the given {@code hash}
+     *
+     * @param hash hash
+     * @return {@link List<ServerData>} list of ServerData representing replica servers
+     * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
+     */
+    public List<ServerData> getReplicaKVServers(BigInteger hash) throws KVServerNotFoundException {
+        int noOfServers = kvServerList.size();
+
+        if (noOfServers == 0) throw new KVServerNotFoundException();
+        if (noOfServers == 1) return new ArrayList<>();
+        if (noOfServers == 2) return Arrays.asList(this.findNextKvServer(hash));
+
+        sortKvServers();
+
+        for (int i = 0; i < kvServerList.size(); i++) {
+            if (kvServerList.get(i).getFromHash().compareTo(hash) > 0){
+                return kvServerList.subList(i, (i + 3) % noOfServers);
+            }
+        }
+        return kvServerList.subList(0, 2);
     }
 
     /**
