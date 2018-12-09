@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.kv.DbError;
+import server.threads.util.gossip.RunningStates;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -67,7 +68,9 @@ public final class AdminMessageHandler {
             case MAKE_READONLY:
                 state.runningState = RunningState.READONLY;
                 return new KVAdminMessage(KVAdminMessage.StatusType.MAKE_SUCCESS);
-
+            case GOSSIP_STATUS:
+                RunningStates.combineMapsInto(state.stateOfAllServers, message.timedServerStates, state.stateOfAllServers);
+                return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
         }
 
 
