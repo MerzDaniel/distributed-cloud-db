@@ -55,6 +55,12 @@ public class GossipStatusThread extends Thread {
                     return new TimedRunningStateMap();
                 }).reduce(new TimedRunningStateMap(), GossipStatusThread::combineMaps, GossipStatusThread::combineMaps );
 
+                for (String key : remoteServerStates.getKeys()) {
+                    if (remoteServerStates.get(key).accessTime < state.stateOfAllServers.get(key).accessTime) continue;
+
+                    state.stateOfAllServers.put(key, remoteServerStates.get(key));
+                }
+
             } catch (InterruptedException e) {}
         }
     }
