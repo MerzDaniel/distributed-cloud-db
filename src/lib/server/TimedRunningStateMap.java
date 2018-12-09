@@ -5,6 +5,7 @@ import lib.message.MarshallingException;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TimedRunningStateMap {
@@ -17,6 +18,8 @@ public class TimedRunningStateMap {
     public void put(String serverName, TimedRunningState state) {
         map.put(serverName, state);
     }
+    public Set<String> getKeys() { return map.keySet(); }
+    public boolean hasKey(String key) { return map.get(key) != null; }
 
     public String marshall() {
         return String.join(Constants.RECORD_SEPARATOR,
