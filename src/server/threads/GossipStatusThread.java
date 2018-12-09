@@ -10,6 +10,7 @@ import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
+import server.threads.util.gossip.RunningStates;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class GossipStatusThread extends Thread {
                         logger.warn("Problem while gossiping one of the servers", e);
                     }
                     return new TimedRunningStateMap();
-                }).reduce(new TimedRunningStateMap(), GossipStatusThread::combineMaps, GossipStatusThread::combineMaps );
+                }).reduce(new TimedRunningStateMap(), RunningStates::combineMaps, RunningStates::combineMaps );
 
                 for (String key : remoteServerStates.getKeys()) {
                     if (remoteServerStates.get(key).accessTime < state.stateOfAllServers.get(key).accessTime) continue;
@@ -63,25 +64,5 @@ public class GossipStatusThread extends Thread {
 
             } catch (InterruptedException e) {}
         }
-    }
-
-    static TimedRunningStateMap combineMaps(TimedRunningStateMap map0, TimedRunningStateMap map1) {
-        TimedRunningStateMap result = new TimedRunningStateMap();
-        List<String> checkedServers = new LinkedList<>();
-        for (String key: map0.getKeys()) {
-            checkedServers.add(key);
-            if (!map1.hasKey(key))
-                result.put(key, map0.get(key));
-            else if (map0.get(key).accessTime >= map1.get(key).accessTime)
-                result.put(key, map0.get(key));
-            else
-                result.put(key, map1.get(key));
-        }
-        for (String key: map1.getKeys()) {
-            if (checkedServers.contains(key)) continue;
-            result.put(key, map1.get(key));
-        }
-
-        return result;
     }
 }
