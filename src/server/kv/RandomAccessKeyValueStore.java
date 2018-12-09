@@ -40,11 +40,11 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
     @Override
     public void init(String dbName) throws IOException {
         try {
-            DB_FILE.getParentFile().mkdirs();
 
             DB_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_" + dbName).toUri());
-            DB_REPLICA_1_FILE= new File(Paths.get(DB_DIRECTORY.toString(), "db_replica_1_" + dbName).toUri());
+            DB_REPLICA_1_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_replica_1_" + dbName).toUri());
             DB_REPLICA_2_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "db_replica_2_" + dbName).toUri());
+            DB_FILE.getParentFile().mkdirs();
 
             INDEX_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_" + dbName).toUri());
             INDEX_REPLICA_1_FILE = new File(Paths.get(DB_DIRECTORY.toString(), "index_replica_1" + dbName).toUri());

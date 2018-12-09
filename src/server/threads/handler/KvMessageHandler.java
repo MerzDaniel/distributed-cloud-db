@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import server.ServerState;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static lib.message.MessageUtil.isValidKey;
 import static lib.message.MessageUtil.isValidValue;
@@ -26,7 +28,7 @@ public final class KvMessageHandler {
             return MessageFactory.creatServerStopped();
         }
 
-        if (!isResponsible(state, kvMessage.getKey())) {
+        if (!isResponsible(state, kvMessage.getKey(), kvMessage.getStatus())) {
             return MessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
         }
 
@@ -73,12 +75,35 @@ public final class KvMessageHandler {
         return true;
     }
 
-    private static boolean isResponsible(ServerState state, String key) {
+    private static boolean isResponsible(ServerState state, String key, KVMessage.StatusType status) {
+        switch (status) {
+            case GET:
+                return isResponsibleCoordinator(state, key) || isResponsibleReplica(state, key);
+            case PUT:
+                return isResponsibleCoordinator(state, key);
+            default:
+                return true;
+        }
+    }
+
+    private static boolean isResponsibleCoordinator(ServerState state, String key) {
         ServerData responsibleServer;
         try {
             responsibleServer = state.meta.findKVServer(key);
             return responsibleServer.getHost().equals(state.currentServerServerData.getHost()) &&
                     responsibleServer.getPort() == state.currentServerServerData.getPort();
+        } catch (KVServerNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static boolean isResponsibleReplica(ServerState state, String key) {
+        List<ServerData> replicaServers;
+        try {
+            replicaServers = state.meta.findReplicaKVServersOf(key);
+            Optional<ServerData> serverData = replicaServers.stream().filter(it -> it.getHost().equals(state.currentServerServerData.getHost()) &&
+                    it.getPort() == state.currentServerServerData.getPort()).findAny();
+            return serverData.isPresent();
         } catch (KVServerNotFoundException e) {
             return false;
         }
