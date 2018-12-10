@@ -22,5 +22,4 @@ public class ServerState {
         this.db = db;
         this.currentServerServerData = serverData;
     }
-
 }
