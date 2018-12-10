@@ -32,6 +32,7 @@ public class GossipStatusThread extends AbstractLoopingServerThread {
 
     @Override
     protected void loop() {
+        logger.debug("Gossip");
         Random random = new Random();
         List<ServerData> servers = new LinkedList<>();
         int i = 0, gossipServerCount;

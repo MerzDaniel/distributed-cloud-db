@@ -49,7 +49,7 @@ public class ConnectionHandler extends AbstractServerThread {
                 messaging.sendMessage(response);
             }
         } catch (Exception e) {
-            logger.warn("Error during communication with an open connection:" + e.getMessage(), e);
+            logger.debug("Error during communication with an open connection:" + e.getMessage(), e);
         } finally {
             tryClose(s);
         }

@@ -79,8 +79,8 @@ public class Messaging {
         while (con.isConnected()) {
             try {
                 String msg = con.readMessage();
+                logger.debug(String.format("Got a message: %s\n", msg));
                 if (msg.length() == 0) {
-                    logger.debug(String.format("Empty message"));
                     continue;
                 }
                 return MessageMarshaller.unmarshall(msg);
