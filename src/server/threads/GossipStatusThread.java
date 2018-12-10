@@ -4,6 +4,7 @@ import lib.message.IMessage;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.ServerData;
+import lib.server.RunningState;
 import lib.server.TimedRunningState;
 import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;
@@ -55,7 +56,11 @@ public class GossipStatusThread extends AbstractLoopingServerThread {
             } catch (Exception e) {
                 logger.warn("Problem while gossiping one of the servers", e);
             }
-            return new TimedRunningStateMap();
+
+            // create new DOWN entry for this server
+            TimedRunningStateMap timedRunningStateMap = new TimedRunningStateMap();
+            timedRunningStateMap.put(s.getName(), new TimedRunningState(RunningState.DOWN));
+            return timedRunningStateMap;
         }).reduce(new TimedRunningStateMap(), RunningStates::combineMaps, RunningStates::combineMaps);
 
         RunningStates.combineMapsInto(state.stateOfAllServers, remoteServerStates, state.stateOfAllServers);

@@ -11,4 +11,6 @@ public enum RunningState {
     RUNNING,
     /** Server is shutting down will not be reachable in a few seconds */
     SHUTTINGDOWN,
+    /** Could not be contacted therefor down */
+    DOWN,
 }
