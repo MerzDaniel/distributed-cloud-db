@@ -5,6 +5,7 @@ import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
+import lib.server.TimedRunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
@@ -76,9 +77,9 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.MAKE_SUCCESS);
             case GOSSIP_STATUS:
                 RunningStates.combineMapsInto(state.stateOfAllServers, message.timedServerStates, state.stateOfAllServers);
+                state.stateOfAllServers.put(state.currentServerServerData.getName(), new TimedRunningState(state.runningState));
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
         }
-
 
         throw new NotImplementedException();
     }

@@ -39,6 +39,9 @@ public final class CommandParser {
         else if (tokens[0].equals("status"))
             command = new ServerStatusCommand();
 
+        else if (tokens[0].equals("gstatus"))
+            command = new GossipServerStatusCommand();
+
         else if (tokens[0].equals("remove"))
             command = new RemoveNodeCommand();
 

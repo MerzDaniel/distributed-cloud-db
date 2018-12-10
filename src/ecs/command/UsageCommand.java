@@ -22,6 +22,7 @@ public class UsageCommand implements Command {
         System.out.println("                           : Add a new  KVServer");
         System.out.println("  remove                   : Remove a KVServer");
         System.out.println("  status                   : Check state of KVServers");
+        System.out.println("  gstatus                  : Check state of servers using gossip infrastructure (only one request)");
         System.out.println("  startup                  : Startup KVServer processes ( -> UNCONFIGURED state)");
         System.out.println("  configure                : Configure KVServers ( UNCONFIGURE -> IDLE )");
         System.out.println("  start                    : Start the KVServers ( IDLE -> RUNNING )");
