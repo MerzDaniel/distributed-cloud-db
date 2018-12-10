@@ -43,7 +43,7 @@ public class GossipServerStatusCommand implements Command {
                 String serverState;
                 if (timedRunningState == null) serverState = "UNKNOWN";
                 else serverState = String.format("%s (%s)", timedRunningState.runningState.name(), new Date(timedRunningState.accessTime).toString());
-                System.out.format("State of Server %s: %s\n", sd.getName(), serverState);
+                System.out.format("State of Server %s: %s\n", sd2.getName(), serverState);
             });
 
         } catch (IOException e) {

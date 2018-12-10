@@ -18,14 +18,15 @@ import java.util.Random;
 
 public class GossipStatusThread extends AbstractLoopingServerThread {
 
-    final static long GOSSIP_INTERVAL = 1000 * 30;
+    final static long GOSSIP_INTERVAL_MIN = 1000 * 15;
+    final static long GOSSIP_INTERVAL_MAX = 1000 * 60;
     final static int GOSSIP_NODE_COUNT = 3;
 
     Logger logger = LogManager.getLogger(GossipStatusThread.class);
     private ServerState state;
 
     public GossipStatusThread(ServerState state) {
-        super(GOSSIP_INTERVAL);
+        super(GOSSIP_INTERVAL_MIN, GOSSIP_INTERVAL_MAX);
 
         this.state = state;
     }
@@ -36,7 +37,7 @@ public class GossipStatusThread extends AbstractLoopingServerThread {
         Random random = new Random();
         List<ServerData> servers = new LinkedList<>();
         int i = 0, gossipServerCount;
-        while (i < (gossipServerCount = Math.min(GOSSIP_NODE_COUNT, state.meta.getKvServerList().size()))) {
+        while (i++ < (gossipServerCount = Math.min(GOSSIP_NODE_COUNT, state.meta.getKvServerList().size()))) {
             ServerData sd = state.meta.getKvServerList().get(random.nextInt(gossipServerCount));
             if (servers.contains(sd)) continue; // try another random server
             servers.add(sd);
