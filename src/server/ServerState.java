@@ -5,8 +5,10 @@ import lib.metadata.ServerData;
 import lib.server.RunningState;
 import lib.server.TimedRunningStateMap;
 import server.kv.KeyValueStore;
+import server.threads.AbstractServerThread;
 
-import java.util.Dictionary;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
@@ -14,6 +16,7 @@ public class ServerState {
     public ServerData currentServerServerData;
     public RunningState runningState = RunningState.UNCONFIGURED;
     public TimedRunningStateMap stateOfAllServers = new TimedRunningStateMap();
+    public List<AbstractServerThread> serverThreads = new LinkedList<>();
 
     public ServerState(KeyValueStore db, ServerData serverData) {
         this.db = db;

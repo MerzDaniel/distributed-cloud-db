@@ -1,7 +1,6 @@
 package server.threads;
 
 public abstract class AbstractLoopingServerThread extends AbstractServerThread {
-    private boolean shouldStop = false;
     private final long interval;
 
     public AbstractLoopingServerThread(long interval) {

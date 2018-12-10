@@ -15,7 +15,7 @@ import static lib.SocketUtil.tryClose;
 /**
  * This class handles a single client request in a separate thread
  */
-public class ConnectionHandler implements Runnable {
+public class ConnectionHandler extends AbstractServerThread {
     final Socket s;
     private ServerState state;
     final Logger logger = LogManager.getLogger(ConnectionHandler.class);
@@ -37,7 +37,7 @@ public class ConnectionHandler implements Runnable {
             messaging.sendMessage(MessageFactory.creatConnectionSuccessful());
 
             while (messaging.isConnected() &&
-                    state.runningState != RunningState.SHUTTINGDOWN) {
+                    !shouldStop) {
                 IMessage request = messaging.readMessage();
 
                 IMessage response;
@@ -53,6 +53,7 @@ public class ConnectionHandler implements Runnable {
         } finally {
             tryClose(s);
         }
+        state.serverThreads.remove(this);
     }
 }
 
