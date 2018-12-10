@@ -4,7 +4,6 @@ import lib.message.IMessage;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.ServerData;
-import lib.server.RunningState;
 import lib.server.TimedRunningState;
 import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;

@@ -9,6 +9,7 @@ public abstract class AbstractLoopingServerThread extends AbstractServerThread {
 
     @Override
     public void run() {
+        logger.info("Start server looping thread: " + this.getClass().getName());
         while(!shouldStop) {
             loop();
             try {

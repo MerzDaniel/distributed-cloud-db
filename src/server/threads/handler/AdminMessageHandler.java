@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.kv.DbError;
+import server.threads.GossipStatusThread;
 import server.threads.util.gossip.RunningStates;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -40,6 +41,11 @@ public final class AdminMessageHandler {
                     logger.error("error occurred during initializing the db");
                     throw new DbError(e);
                 }
+
+                GossipStatusThread gst = new GossipStatusThread(state);
+                gst.start();
+                state.serverThreads.add(gst);
+
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
             case START:
                 if (state.runningState == RunningState.UNCONFIGURED)
