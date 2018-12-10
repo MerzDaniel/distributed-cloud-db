@@ -12,7 +12,6 @@ import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
 import server.threads.AcceptConnectionsThread;
-import server.threads.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -91,7 +90,7 @@ public class KVServer implements Runnable {
     public void run() {
         logger.info("Start server on port " + serverData.getPort());
 
-        initDb();
+        setupCaching();
 
         try (ServerSocket s = new ServerSocket(serverData.getPort())) {
 
@@ -122,7 +121,7 @@ public class KVServer implements Runnable {
         }
     }
 
-    private void initDb() {
+    private void setupCaching() {
         switch (cacheType) {
             case FIFO:
                 logger.info("Setting up FIFO caching");
