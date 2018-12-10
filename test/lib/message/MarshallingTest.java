@@ -22,9 +22,24 @@ public class MarshallingTest {
         KVAdminMessage resultGossipStatusSuccess = (KVAdminMessage) MessageMarshaller.unmarshall(gossipStatusSuccess.marshall());
 
         assertEquals(KVAdminMessage.StatusType.GOSSIP_STATUS, resultGossipStatus.status);
+        assertEquals(timedRunningStateMap.getKeys().size(), resultGossipStatus.timedServerStates.getKeys().size());
         assertEquals(timedRunningStateMap.marshall(), resultGossipStatus.timedServerStates.marshall());
 
         assertEquals(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, resultGossipStatusSuccess.status);
+        assertEquals(timedRunningStateMap.getKeys().size(), resultGossipStatusSuccess.timedServerStates.getKeys().size());
         assertEquals(timedRunningStateMap.marshall(), resultGossipStatusSuccess.timedServerStates.marshall());
+    }
+    @Test
+    public void testGossipStatusWithEmptyMap() throws MarshallingException {
+
+        TimedRunningStateMap emptyMap = new TimedRunningStateMap();
+
+        KVAdminMessage gossipStatus = new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, emptyMap);
+
+        KVAdminMessage resultGossipStatus = (KVAdminMessage) MessageMarshaller.unmarshall(gossipStatus.marshall());
+
+        assertEquals(KVAdminMessage.StatusType.GOSSIP_STATUS, resultGossipStatus.status);
+        assertEquals(emptyMap.getKeys().size(), resultGossipStatus.timedServerStates.getKeys().size());
+        assertEquals(emptyMap.marshall(), resultGossipStatus.timedServerStates.marshall());
     }
 }

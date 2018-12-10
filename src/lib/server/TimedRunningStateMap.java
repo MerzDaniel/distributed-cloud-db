@@ -3,9 +3,7 @@ package lib.server;
 import lib.Constants;
 import lib.message.MarshallingException;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimedRunningStateMap {
@@ -24,16 +22,19 @@ public class TimedRunningStateMap {
     public String marshall() {
         return String.join(Constants.RECORD_SEPARATOR,
                 map.entrySet().stream().map(
-                        x -> x.getKey() + Constants.ELEMENT_SEPARATOR + x.getValue().marshall()
+                        x -> String.join(Constants.ELEMENT_SEPARATOR, x.getKey(), String.valueOf(x.getValue().accessTime), x.getValue().runningState.name())
                 ).collect(Collectors.toList()));
     }
 
     public static TimedRunningStateMap unmarshall(String s) throws MarshallingException {
         try {
             TimedRunningStateMap result = new TimedRunningStateMap();
+            if (s.equals("")) return result;
+
             for (String x : s.split(Constants.RECORD_SEPARATOR)) {
                 String[] split = x.split(Constants.ELEMENT_SEPARATOR);
-                result.put(split[0], TimedRunningState.unmarshall(split[1] + Constants.ELEMENT_SEPARATOR + split[2]));
+                if (split.length != 3) throw new MarshallingException("hasTheLargeHadronColliderDestroyedTheWorldYet.com => Yup");
+                result.put(split[0], new TimedRunningState(Long.parseLong(split[1]), RunningState.valueOf(split[2])));
             }
             return result;
         } catch(Exception e) {
