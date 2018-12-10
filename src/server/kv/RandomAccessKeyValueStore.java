@@ -243,6 +243,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
             byte[] emptyLine = new byte[indexEntry.length];
             Arrays.fill(emptyLine, (byte) 0);
             db.write(emptyLine);
+            index.remove(key);
             return true;
         }
     }

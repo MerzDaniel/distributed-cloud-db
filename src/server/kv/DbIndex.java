@@ -37,6 +37,10 @@ public class DbIndex {
         return new DbIndex((Dictionary<String, IndexEntry>) ois.readObject());
     }
 
+    public void remove(String key) {
+        index.remove(key);
+    }
+
     public static class IndexEntry implements Serializable {
         public int offset;
         public int length;
