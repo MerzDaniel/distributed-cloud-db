@@ -2,16 +2,12 @@ package server.threads.handler;
 
 import lib.message.KVMessage;
 import lib.message.MessageFactory;
-import lib.metadata.KVServerNotFoundException;
-import lib.metadata.ServerData;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static lib.message.MessageUtil.isValidKey;
 import static lib.message.MessageUtil.isValidValue;
