@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
@@ -71,8 +74,15 @@ public class KVStore implements KVCommInterface {
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException  {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
 
-        ServerData serverServerData = kvStoreMetaData.findKVServer(key);
-        boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
+        ServerData coordinator = kvStoreMetaData.findKVServer(key);
+        List<ServerData> replicas = kvStoreMetaData.findReplicaKVServers(key);
+
+        List<ServerData> candidateServers = new ArrayList<>();
+        candidateServers.add(coordinator);
+        candidateServers.addAll(replicas);
+
+        Collections.shuffle(candidateServers);
+        boolean connectSuccess = this.connect(candidateServers.get(0).getHost(), candidateServers.get(0).getPort());
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
 
