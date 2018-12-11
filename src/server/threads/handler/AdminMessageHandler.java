@@ -79,6 +79,9 @@ public final class AdminMessageHandler {
                 RunningStates.combineMapsInto(state.stateOfAllServers, message.timedServerStates, state.stateOfAllServers);
                 state.stateOfAllServers.put(state.currentServerServerData.getName(), new TimedRunningState(state.runningState));
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
+            case PUT_REPLICATE:
+                state.db.put(message.key, message.value);
+                return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
         }
 
         throw new NotImplementedException();
