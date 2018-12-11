@@ -82,6 +82,13 @@ public final class MessageMarshaller {
                     adminMessage.timedServerStates.marshall()
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.PUT_REPLICATE)
+            return String.join(Constants.RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.key,
+                    adminMessage.value
+            );
+
         return adminMessage.status.name();
     }
 
@@ -141,7 +148,8 @@ public final class MessageMarshaller {
             case GOSSIP_STATUS_SUCCESS:
                 secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, TimedRunningStateMap.unmarshall(secondPart));
-
+            case PUT_REPLICATE:
+                return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
             default:
                 return new KVAdminMessage(status);
         }
