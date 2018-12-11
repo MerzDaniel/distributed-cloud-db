@@ -100,7 +100,7 @@ public final class KvMessageHandler {
     private static boolean isResponsibleReplica(ServerState state, String key) {
         List<ServerData> replicaServers;
         try {
-            replicaServers = state.meta.findReplicaKVServersOf(key);
+            replicaServers = state.meta.findReplicaKVServers(key);
             Optional<ServerData> serverData = replicaServers.stream().filter(it -> it.getHost().equals(state.currentServerServerData.getHost()) &&
                     it.getPort() == state.currentServerServerData.getPort()).findAny();
             return serverData.isPresent();

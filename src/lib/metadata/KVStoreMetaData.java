@@ -91,7 +91,7 @@ public class KVStoreMetaData {
      * @return {@link List<ServerData>} list of ServerData representing replica servers
      * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
      */
-    public List<ServerData> findReplicaKVServersOf(String key) throws KVServerNotFoundException {
+    public List<ServerData> findReplicaKVServers(String key) throws KVServerNotFoundException {
         int noOfServers = kvServerList.size();
         BigInteger hash = null;
         try {
