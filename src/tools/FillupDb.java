@@ -20,19 +20,21 @@ public class FillupDb {
         int DATASET_COUNT = Integer.parseInt(args[1]);
 
         ServerData sd = new ServerData("not initialized", "localhost", 50000);
-        KVStore kvStore = new KVStore(
-                new KVStoreMetaData(Arrays.asList(sd))
-        );
         Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
                 EnroneBenchmarkDataLoader.loadData(TEST_DATA_DIRECTORY, false);
         dataStream.limit(DATASET_COUNT)
+                .parallel()
                 .forEach(data -> {
-            String key = data.getKey(), value = data.getValue().Load();
-            try {
-                kvStore.put(key, value);
-            } catch (Exception e) {
-                System.out.println("ERROR");
-            }
-        });
+                    KVStore kvStore = new KVStore(
+                            new KVStoreMetaData(Arrays.asList(sd))
+                    );
+                    String key = data.getKey(), value = data.getValue().Load();
+                    try {
+                        kvStore.put(key, value);
+                    } catch (Exception e) {
+                        System.out.println("ERROR");
+                        e.printStackTrace();
+                    }
+                });
     }
 }
