@@ -16,6 +16,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.IntSummaryStatistics;
+import java.util.stream.Collectors;
 
 public final class AdminMessageHandler {
     static Logger logger = LogManager.getLogger(AdminMessageHandler.class);
@@ -82,9 +85,41 @@ public final class AdminMessageHandler {
             case PUT_REPLICATE:
                 state.db.put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
+            case FULL_REPLICATE:
+                return doFullReplication(message, state);
         }
 
         throw new NotImplementedException();
+    }
+
+    private static KVAdminMessage doFullReplication(KVAdminMessage message, ServerState state) {
+        HashMap<Long, Messaging> messagingHashMap = new HashMap<>();
+        IntSummaryStatistics errorCount = state.db.retrieveAllData().parallel().map((d) -> {
+            Long currentThreadId = Thread.currentThread().getId();
+            try {
+                if (messagingHashMap.get(currentThreadId) == null) {
+                    messagingHashMap.put(currentThreadId, new Messaging());
+                    messagingHashMap.get(currentThreadId).connect(message.serverData);
+                }
+                messagingHashMap.get(currentThreadId).sendMessage(
+                        new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE, d.getKey(), d.getValue())
+                );
+                KVAdminMessage response = (KVAdminMessage) messagingHashMap.get(currentThreadId).readMessage();
+                if (response.status != KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS)
+                    throw new Exception("Problem during replicate");
+
+            } catch (Exception e) {
+                messagingHashMap.remove(currentThreadId);
+                logger.warn("Problem during replication", e);
+                return 1;
+            }
+            return 0;
+        }).collect(Collectors.summarizingInt(x -> (int) x));
+
+        if (errorCount.getSum() > 0)
+            return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
+
+        return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS);
     }
 
     private static KVAdminMessage moveData(ServerState state, ServerData serverData, boolean softMove) {
