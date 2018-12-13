@@ -89,6 +89,13 @@ public final class MessageMarshaller {
                     adminMessage.value
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.FULL_REPLICATE)
+            return String.join(Constants.RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.serverData.marshall()
+            );
+
+
         return adminMessage.status.name();
     }
 
@@ -120,7 +127,7 @@ public final class MessageMarshaller {
     private static IMessage unmarshallKvAdminMessage(String[] kvMessageComponents) throws MarshallingException {
         KVAdminMessage.StatusType status = KVAdminMessage.StatusType.valueOf(kvMessageComponents[0]);
 
-        String secondPart;
+        String secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
 
         switch (status) {
             case CONFIGURE:
@@ -130,15 +137,12 @@ public final class MessageMarshaller {
                 );
 
             case MOVE:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
             case MOVE_SOFT:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
 
             case STATUS_RESPONSE:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, RunningState.valueOf(secondPart));
 
             case DATA_MOVE:
@@ -146,10 +150,11 @@ public final class MessageMarshaller {
 
             case GOSSIP_STATUS:
             case GOSSIP_STATUS_SUCCESS:
-                secondPart = Arrays.stream(kvMessageComponents).skip(1).collect(Collectors.joining(Constants.RECORD_SEPARATOR));
                 return new KVAdminMessage(status, TimedRunningStateMap.unmarshall(secondPart));
             case PUT_REPLICATE:
                 return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
+            case FULL_REPLICATE:
+                return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
             default:
                 return new KVAdminMessage(status);
         }

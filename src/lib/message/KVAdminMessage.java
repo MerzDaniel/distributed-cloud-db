@@ -61,11 +61,15 @@ public class KVAdminMessage implements IMessage {
         PUT_REPLICATE,
         PUT_REPLICATE_SUCCESS,
         PUT_REPLICATE_ERROR,
+        FULL_REPLICATE,
+        FULL_REPLICATE_SUCCESS,
+        FULL_REPLICATE_ERROR,
         DELETE_REPLICATE,
         DELETE_REPLICATE_SUCCESS,
         DELETE_REPLICATE_ERROR,
         GOSSIP_STATUS,
         GOSSIP_STATUS_SUCCESS,
+
     }
 
     /**

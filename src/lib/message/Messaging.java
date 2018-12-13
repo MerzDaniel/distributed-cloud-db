@@ -18,18 +18,18 @@ public class Messaging {
     public Messaging() {
     }
 
-    public boolean connect(ServerData sd) throws IOException {
+    public synchronized boolean connect(ServerData sd) throws IOException {
         return connect(sd.getHost(), sd.getPort());
     }
 
-    public boolean connect(String host, int port) throws IOException {
+    public synchronized boolean connect(String host, int port) throws IOException {
         Connection c = new Connection();
         c.connect(host, port);
         connect(c);
         return ((KVMessage)readMessage()).getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
-    public boolean connect(Socket s) throws IOException {
+    public synchronized boolean connect(Socket s) throws IOException {
         Connection c = new Connection();
         c.use(s);
         connect(c);
@@ -57,13 +57,13 @@ public class Messaging {
         };
     }
 
-    public IMessage readMessage() throws IOException {
+    public synchronized IMessage readMessage() throws IOException {
         if (!con.isConnected() || !messageIterator.hasNext()) throw new IOException();
 
         return messageIterator.next();
     }
 
-    public void sendMessage(IMessage msg) throws MarshallingException, IOException {
+    public synchronized void sendMessage(IMessage msg) throws MarshallingException, IOException {
         con.sendMessage(msg.marshall());
     }
 
