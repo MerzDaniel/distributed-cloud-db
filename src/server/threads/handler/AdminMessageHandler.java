@@ -41,6 +41,8 @@ public final class AdminMessageHandler {
 
                 try {
                     state.db.init(state.currentServerServerData.getName());
+                    state.db_replica_1.init("_replica_1_" + state.currentServerServerData.getName());
+                    state.db_replica_2.init("_replica_2_" + state.currentServerServerData.getName());
                 } catch (IOException e) {
                     logger.error("error occurred during initializing the db");
                     throw new DbError(e);
