@@ -20,8 +20,10 @@ public class ServerState {
     public TimedRunningStateMap stateOfAllServers = new TimedRunningStateMap();
     public List<AbstractServerThread> serverThreads = new LinkedList<>();
 
-    public ServerState(KeyValueStore db, ServerData serverData) {
+    public ServerState(KeyValueStore db, KeyValueStore dbReplica1, KeyValueStore dbReplica2, ServerData serverData) {
         this.db = db;
+        this.dbReplica1 = dbReplica1;
+        this.dbReplica2 = dbReplica2;
         this.currentServerServerData = serverData;
     }
 }
