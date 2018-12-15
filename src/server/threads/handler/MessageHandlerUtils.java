@@ -66,7 +66,7 @@ public class MessageHandlerUtils {
         List<Integer> replicaIndices;
         try {
             replicaServers = state.meta.findReplicaKVServers(key);
-            replicaIndices = IntStream.range(0, replicaServers.size() - 1)
+            replicaIndices = IntStream.range(0, replicaServers.size())
                     .filter(index -> replicaServers.get(index).getHost().equals(state.currentServerServerData.getHost()) &&
                             replicaServers.get(index).getPort() == state.currentServerServerData.getPort())
                     .mapToObj(i -> i)
