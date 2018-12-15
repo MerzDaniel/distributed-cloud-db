@@ -13,6 +13,8 @@ import java.util.List;
 public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
     public KeyValueStore db;
+    public KeyValueStore db_replica_1;
+    public KeyValueStore db_replica_2;
     public ServerData currentServerServerData;
     public RunningState runningState = RunningState.UNCONFIGURED;
     public TimedRunningStateMap stateOfAllServers = new TimedRunningStateMap();
