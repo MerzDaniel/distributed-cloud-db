@@ -4,9 +4,12 @@ import lib.message.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import server.ServerState;
+import server.kv.KeyValueStore;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MessageHandlerUtils {
 
@@ -21,6 +24,13 @@ public class MessageHandlerUtils {
         }
     }
 
+    /**
+     * Check the this server is the coordinator server for the provided {@code key}
+     *
+     * @param state {@link ServerState}
+     * @param key String key
+     * @return true if this server is the coordinator server, otherwise false
+     */
     public static boolean isResponsibleCoordinator(ServerState state, String key) {
         ServerData responsibleServer;
         try {
@@ -32,6 +42,13 @@ public class MessageHandlerUtils {
         }
     }
 
+    /**
+     * Check the this server is a responsible replica server for the provided {@code key}
+     *
+     * @param state {@link ServerState}
+     * @param key String key
+     * @return true if this server is a responsible replica server, otherwise false
+     */
     public static boolean isResponsibleReplica(ServerState state, String key) {
         List<ServerData> replicaServers;
         try {
@@ -42,5 +59,45 @@ public class MessageHandlerUtils {
         } catch (KVServerNotFoundException e) {
             return false;
         }
+    }
+
+    private static int getReplicaIndex(ServerState state, String key) {
+        List<ServerData> replicaServers;
+        List<Integer> replicaIndices;
+        try {
+            replicaServers = state.meta.findReplicaKVServers(key);
+            replicaIndices = IntStream.range(0, replicaServers.size() - 1)
+                    .filter(index -> replicaServers.get(index).getHost().equals(state.currentServerServerData.getHost()) &&
+                            replicaServers.get(index).getPort() == state.currentServerServerData.getPort())
+                    .mapToObj(i -> i)
+                    .collect(Collectors.toList());
+        } catch (KVServerNotFoundException e) {
+            return 0;
+        }
+
+        if (replicaIndices == null || replicaIndices.size() == 0)
+            return 0;
+
+        return replicaIndices.get(0) + 1;
+    }
+
+    public static KeyValueStore getDatabase(ServerState state, String key) {
+        if (isResponsibleCoordinator(state, key))
+            return state.db;
+
+        if (isResponsibleReplica(state, key)) {
+            int index = getReplicaIndex(state, key);
+
+            switch (index) {
+                case 1:
+                    return state.db_replica_1;
+                case 2:
+                    return state.db_replica_2;
+                default:
+                    return null;
+
+            }
+        }
+        return null;
     }
 }
