@@ -16,8 +16,9 @@ public class GetHandler implements IMessageHandler {
     @Override
     public KVMessage handleRequest(KVMessage kvMessage, ServerState state) {
         KVMessage response;
-        KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.getKey());
+
         try {
+            KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.getKey());
             String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {
@@ -25,6 +26,9 @@ public class GetHandler implements IMessageHandler {
             response = MessageFactory.createGetNotFoundMessage();
         } catch (DbError e) {
             logger.warn("Some error occured at database level", e);
+            response = MessageFactory.createGetErrorMessage();
+        } catch (NoKeyValueStoreException e) {
+            logger.warn(String.format("Couldn't find the responsible database for key '%s'", kvMessage.getKey()));
             response = MessageFactory.createGetErrorMessage();
         }
         return response;
