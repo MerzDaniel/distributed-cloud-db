@@ -89,6 +89,13 @@ public final class MessageMarshaller {
                     adminMessage.value
             );
 
+        if (adminMessage.status == KVAdminMessage.StatusType.DELETE_REPLICATE)
+            return String.join(Constants.RECORD_SEPARATOR,
+                    adminMessage.status.name(),
+                    adminMessage.key,
+                    adminMessage.value
+            );
+
         if (adminMessage.status == KVAdminMessage.StatusType.FULL_REPLICATE)
             return String.join(Constants.RECORD_SEPARATOR,
                     adminMessage.status.name(),
@@ -152,6 +159,8 @@ public final class MessageMarshaller {
             case GOSSIP_STATUS_SUCCESS:
                 return new KVAdminMessage(status, TimedRunningStateMap.unmarshall(secondPart));
             case PUT_REPLICATE:
+                return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
+            case DELETE_REPLICATE:
                 return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
             case FULL_REPLICATE:
                 return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
