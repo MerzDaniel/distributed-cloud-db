@@ -16,7 +16,7 @@ public class GetHandler implements IMessageHandler {
     @Override
     public KVMessage handleRequest(KVMessage kvMessage, ServerState state) {
         KVMessage response;
-        KeyValueStore db = state.db;
+        KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.getKey());
         try {
             String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
