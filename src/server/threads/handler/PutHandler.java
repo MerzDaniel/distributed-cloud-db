@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import server.IMessageHandler;
 import server.ServerState;
 import server.kv.DbError;
+import server.kv.KeyValueStore;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,9 +20,10 @@ public class PutHandler implements IMessageHandler {
     @Override
     public KVMessage handleRequest(KVMessage request, ServerState state) {
         KVMessage response;
+        KeyValueStore db = state.db;
         if (shouldDelete(request.getValue())) {
             try {
-                state.db.deleteKey(request.getKey());
+                db.deleteKey(request.getKey());
                 response = MessageFactory.createDeleteSuccessMessage();
             } catch (DbError dbError) {
                 logger.warn("PUT: Databaseerror while deleting a value", dbError);
@@ -29,7 +31,7 @@ public class PutHandler implements IMessageHandler {
             }
         } else {
             try {
-                boolean updated = state.db.put(request.getKey(), request.getValue());
+                boolean updated = db.put(request.getKey(), request.getValue());
                 if (updated) response = MessageFactory.createPutUpdateMessage();
                 else response = MessageFactory.createPutSuccessMessage();
             } catch (DbError dbError) {

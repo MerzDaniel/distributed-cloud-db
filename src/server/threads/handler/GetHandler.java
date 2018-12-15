@@ -8,6 +8,7 @@ import server.IMessageHandler;
 import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
+import server.kv.KeyValueStore;
 
 public class GetHandler implements IMessageHandler {
     Logger logger = LogManager.getLogger(GetHandler.class);
@@ -15,9 +16,9 @@ public class GetHandler implements IMessageHandler {
     @Override
     public KVMessage handleRequest(KVMessage kvMessage, ServerState state) {
         KVMessage response;
-
+        KeyValueStore db = state.db;
         try {
-            String value = state.db.get(kvMessage.getKey());
+            String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {
             logger.info(String.format("Key '%s' not found", kvMessage.getKey()));
