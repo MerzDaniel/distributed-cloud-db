@@ -75,7 +75,7 @@ public class MessageHandlerUtils {
             return 0;
         }
 
-        if (replicaIndices == null || replicaIndices.size() == 0)
+        if (replicaIndices.size() == 0)
             return 0;
 
         return replicaIndices.get(0) + 1;
