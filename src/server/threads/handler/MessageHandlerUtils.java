@@ -81,7 +81,14 @@ public class MessageHandlerUtils {
         return replicaIndices.get(0) + 1;
     }
 
-    public static KeyValueStore getDatabase(ServerState state, String key) {
+    /**
+     * Get the correct database for the {@code key}
+     * @param state {@Link ServerState}
+     * @param key String key
+     * @return the {@link KeyValueStore}
+     * @throws NoKeyValueStoreException if the {@link KeyValueStore} cannot be found
+     */
+    public static KeyValueStore getDatabase(ServerState state, String key) throws NoKeyValueStoreException{
         if (isResponsibleCoordinator(state, key))
             return state.db;
 
@@ -94,10 +101,10 @@ public class MessageHandlerUtils {
                 case 2:
                     return state.db_replica_2;
                 default:
-                    return null;
+                    throw new NoKeyValueStoreException();
 
             }
         }
-        return null;
+        throw new NoKeyValueStoreException();
     }
 }
