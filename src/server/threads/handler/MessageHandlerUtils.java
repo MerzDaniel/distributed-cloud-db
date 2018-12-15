@@ -97,9 +97,9 @@ public class MessageHandlerUtils {
 
             switch (index) {
                 case 1:
-                    return state.db_replica_1;
+                    return state.dbReplica1;
                 case 2:
-                    return state.db_replica_2;
+                    return state.dbReplica2;
                 default:
                     throw new NoKeyValueStoreException();
 

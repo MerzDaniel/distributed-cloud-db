@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.kv.DbError;
+import server.kv.KeyValueStore;
 import server.threads.GossipStatusThread;
 import server.threads.util.gossip.RunningStates;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -41,8 +42,8 @@ public final class AdminMessageHandler {
 
                 try {
                     state.db.init(state.currentServerServerData.getName());
-                    state.db_replica_1.init("_replica_1_" + state.currentServerServerData.getName());
-                    state.db_replica_2.init("_replica_2_" + state.currentServerServerData.getName());
+                    state.dbReplica1.init("_replica_1_" + state.currentServerServerData.getName());
+                    state.dbReplica2.init("_replica_2_" + state.currentServerServerData.getName());
                 } catch (IOException e) {
                     logger.error("error occurred during initializing the db");
                     throw new DbError(e);
@@ -85,7 +86,12 @@ public final class AdminMessageHandler {
                 state.stateOfAllServers.put(state.currentServerServerData.getName(), new TimedRunningState(state.runningState));
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
             case PUT_REPLICATE:
-                state.db.put(message.key, message.value);
+                try {
+                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message.key);
+                    db.put(message.key, message.value);
+                } catch (NoKeyValueStoreException e) {
+                    return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
+                }
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case FULL_REPLICATE:
                 return doFullReplication(message, state);
