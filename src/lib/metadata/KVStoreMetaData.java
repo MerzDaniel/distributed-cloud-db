@@ -175,6 +175,10 @@ public class KVStoreMetaData {
         }
         return kvServerList.get(noOfServers - 1);
     }
+    public ServerData findNextKvServer(ServerData serverData) throws KVServerNotFoundException {
+        int index = kvServerList.indexOf(serverData);
+        return kvServerList.get((index + 1) % kvServerList.size());
+    }
 
     private int findKvServerIndex(String key) throws KVServerNotFoundException {
         BigInteger hash;

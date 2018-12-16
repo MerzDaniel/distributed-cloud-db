@@ -84,7 +84,8 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
             case PUT_REPLICATE:
                 try {
-                    KeyValueStore db = state.dbProvider.getDb(state.meta.findKVServerForKey(message.key));
+                    ServerData kvServerForKey = state.meta.findKVServerForKey(message.key);
+                    KeyValueStore db = state.dbProvider.getDb(kvServerForKey);
                     db.put(message.key, message.value);
                 } catch (KVServerNotFoundException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);

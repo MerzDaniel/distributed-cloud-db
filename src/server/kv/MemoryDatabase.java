@@ -2,9 +2,7 @@ package server.kv;
 
 import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.stream.Stream;
 
 public class MemoryDatabase implements KeyValueStore {
@@ -42,6 +40,8 @@ public class MemoryDatabase implements KeyValueStore {
 
     @Override
     public Stream<AbstractMap.SimpleEntry<String, String>> retrieveAllData() {
-        return db.entrySet().stream().map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()));
+        return db.entrySet().stream().map(e ->
+                new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue())
+        );
     }
 }
