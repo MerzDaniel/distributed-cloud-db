@@ -92,6 +92,12 @@ public class KVAdminMessage implements IMessage {
         this.value = value;
     }
 
+    public KVAdminMessage(StatusType status, String key, String value, ServerData serverData) {
+        this.status = status;
+        this.key = key;
+        this.value = value;
+    }
+
     public KVAdminMessage(StatusType status, KVStoreMetaData meta, int currentServerIndex) {
         this.status = status;
         this.meta = meta;

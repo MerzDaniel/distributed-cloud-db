@@ -1,5 +1,6 @@
 package lib.message;
 
+import lib.message.AdminMessages.FullReplicationMsg;
 import lib.server.RunningState;
 import lib.server.TimedRunningState;
 import lib.server.TimedRunningStateMap;
@@ -41,5 +42,15 @@ public class MarshallingTest {
         assertEquals(KVAdminMessage.StatusType.GOSSIP_STATUS, resultGossipStatus.status);
         assertEquals(emptyMap.getKeys().size(), resultGossipStatus.timedServerStates.getKeys().size());
         assertEquals(emptyMap.marshall(), resultGossipStatus.timedServerStates.marshall());
+    }
+
+    @Test
+    public void testFullReplication() throws MarshallingException {
+        FullReplicationMsg fullReplicationMsg = new FullReplicationMsg("srcDataServer", "targetServerName");
+        FullReplicationMsg resultMsg = (FullReplicationMsg) MessageMarshaller.unmarshall(fullReplicationMsg.marshall());
+
+        assertEquals(KVAdminMessage.StatusType.FULL_REPLICATE, resultMsg.status);
+        assertEquals("srcDataServer", resultMsg.srcDataServerName);
+        assertEquals("targetServerName", resultMsg.targetServerName);
     }
 }
