@@ -109,7 +109,7 @@ public class KVStoreMetaData {
 
         if (noOfServers == 0) throw new KVServerNotFoundException();
         if (noOfServers == 1) return new ArrayList<>();
-        if (noOfServers == 2) return Arrays.asList(this.findNextKvServer(hash));
+        if (noOfServers == 2) return Arrays.asList(this.findNextKvServerByHash(hash));
 
         for (int i = 0; i < kvServerList.size(); i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0){
@@ -150,7 +150,7 @@ public class KVStoreMetaData {
      * @return {@link server.KVServer} found larger than {@code hash}
      * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
      */
-    public ServerData findNextKvServer(BigInteger hash) throws KVServerNotFoundException {
+    public ServerData findNextKvServerByHash(BigInteger hash) throws KVServerNotFoundException {
         if (kvServerList.size() == 0) throw new KVServerNotFoundException();
 
         for (int i = 0; i < kvServerList.size(); i++) {

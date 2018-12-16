@@ -45,7 +45,7 @@ public class RemoveNodeCommand implements Command {
 
         ServerData to = null;
         try {
-            to = state.storeMeta.findNextKvServer(from.getFromHash());
+            to = state.storeMeta.findNextKvServerByHash(from.getFromHash());
         } catch (KVServerNotFoundException e) {
             logger.error("Error.", e);
             System.out.println("Error while removing the server.");

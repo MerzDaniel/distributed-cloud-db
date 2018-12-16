@@ -78,7 +78,7 @@ public class AddServerCommand implements Command {
         ServerData influencedServer = null;
         RunningState influencedStatus;
         try {
-            influencedServer = state.storeMeta.findNextKvServer(newServer.getFromHash());
+            influencedServer = state.storeMeta.findNextKvServerByHash(newServer.getFromHash());
         } catch (KVServerNotFoundException e) {}
         try {
             influencedStatus = KvService.getStatus(influencedServer);
