@@ -1,18 +1,30 @@
 package server.kv;
 
-import client.store.KVStore;
 import lib.metadata.ServerData;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 
 public class DbProvider {
-//    HashMap<String, KeyValueStore> dbMap;
+    HashMap<String, KeyValueStore> dbMap = new HashMap<>();
 
-    public KeyValueStore getDb(String dbName, ServerData coordinator) {
+
+    public DbProvider(ServerData coordinator) {
+
+    }
+
+    /**
+     * Get database which handles a specific dataKey
+     */
+    public KeyValueStore getDb(String dataKey) {
         throw new NotImplementedException();
-        // does not exist
-//        new DB().init()
+    }
+
+    /**
+     * Get database for a specific ServerData
+     */
+    public KeyValueStore getDb(ServerData server) {
+        throw new NotImplementedException();
     }
 
     public void shutdown() {
