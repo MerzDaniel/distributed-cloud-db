@@ -27,6 +27,25 @@ public class ServerData {
      * @param host host address of the server
      * @param port port of the server
      * @param fromHash starting hash from which the server stores keys
+     * @param  cacheType CacheType
+     * @param cacheSize cache size
+     */
+    public ServerData(String name, String host, int port, BigInteger fromHash, CacheType cacheType, int cacheSize) {
+        this.name = name;
+        this.host = host;
+        this.port = port;
+        this.fromHash = fromHash;
+        this.cacheType = cacheType;
+        this.cacheSize = cacheSize;
+    }
+
+    /**
+     * Create a {@Link ServerData} instance
+     *
+     * @param name name of the server
+     * @param host host address of the server
+     * @param port port of the server
+     * @param fromHash starting hash from which the server stores keys
      */
     public ServerData(String name, String host, int port, BigInteger fromHash) {
         this.name = name;
@@ -93,7 +112,7 @@ public class ServerData {
      * @return marshalled string
      */
     public String marshall() {
-        return name + Constants.ELEMENT_SEPARATOR + host + Constants.ELEMENT_SEPARATOR + port + Constants.ELEMENT_SEPARATOR + fromHash;
+        return name + Constants.ELEMENT_SEPARATOR + host + Constants.ELEMENT_SEPARATOR + port + Constants.ELEMENT_SEPARATOR + fromHash + Constants.ELEMENT_SEPARATOR + cacheType.name() + Constants.ELEMENT_SEPARATOR + cacheSize;
     }
 
     @Override
@@ -114,7 +133,10 @@ public class ServerData {
             String[] split = kvServerMetaData.split(Constants.ELEMENT_SEPARATOR);
             int port = Integer.parseInt(split[2]);
             BigInteger hash = new BigInteger(split[3]);
-            return new ServerData(split[0], split[1], port, hash);
+            CacheType cacheType = CacheType.valueOf(split[4]);
+            int cacheSize = Integer.parseInt(split[5]);
+
+            return new ServerData(split[0], split[1], port, hash, cacheType, cacheSize);
         } catch (Exception ex) {
             throw new MarshallingException(ex);
         }

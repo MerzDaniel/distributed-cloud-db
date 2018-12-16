@@ -1,6 +1,7 @@
 package server.kv;
 
 import lib.metadata.ServerData;
+import lib.server.CacheType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.kv.cache.FifoCachedKeyValueStore;
@@ -58,7 +59,9 @@ public class DbProvider {
             logger.warn("Could not create database");
             return null;
         }
-        switch (coordinator.getCacheType()) {
+
+        CacheType cacheType = coordinator.getCacheType();
+        switch (cacheType) {
             case FIFO:
                 logger.info("Setting up FIFO caching");
                 db = new FifoCachedKeyValueStore(coordinator.getCacheSize(), db);
