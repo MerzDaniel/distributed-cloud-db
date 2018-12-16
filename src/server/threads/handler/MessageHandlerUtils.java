@@ -1,17 +1,12 @@
 package server.threads.handler;
 
-import lib.message.KVAdminMessage;
 import lib.message.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import server.ServerState;
-import server.kv.KeyValueStore;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class MessageHandlerUtils {
 
@@ -63,45 +58,15 @@ public class MessageHandlerUtils {
         }
     }
 
-//    private static int getReplica(ServerState state, String key) {
-//        List<ServerData> replicaServers;
-//        List<Integer> replicaIndices;
-//        try {
-//            replicaServers = state.meta.findReplicaKVServers(key);
-//            replicaIndices = IntStream.range(0, replicaServers.size())
-//                    .filter(index -> replicaServers.get(index).getHost().equals(state.currentServerServerData.getHost()) &&
-//                            replicaServers.get(index).getPort() == state.currentServerServerData.getPort())
-//                    .mapToObj(i -> i)
-//                    .collect(Collectors.toList());
-//        } catch (KVServerNotFoundException e) {
-//            return 0;
-//        }
-//
-//        if (replicaIndices.size() == 0)
-//            return 0;
-//
-//        return replicaIndices.get(0) + 1;
-//    }
-
     /**
-     * Get the correct database for the {@code key}
-     * @param state {@Link ServerState}
-     * @param message {@link KVAdminMessage}
-     * @return the {@link KeyValueStore}
-     * @throws NoKeyValueStoreException if the {@link KeyValueStore} cannot be found
+     * Get the responsible {@link ServerData} for the {@code key}
+     *
+     * @param state {@link ServerState}
+     * @param key String key
+     * @return ServerData which is responsible for the
      */
-    public static KeyValueStore getDatabase(ServerState state, KVAdminMessage message) throws NoKeyValueStoreException{
-        if (isResponsibleCoordinator(state, message.key))
-            return state.db;
-
-        if (isResponsibleReplica(state, message.key)) {
-            try {
-                return state.getReplica(message.serverData.getName());
-            } catch (IOException e) {
-                throw new NoKeyValueStoreException();
-            }
-        }
-
-        throw new NoKeyValueStoreException();
+    public static ServerData getResponsibleServer(ServerState state, String key) throws KVServerNotFoundException {
+        return state.meta.findKVServerForKey(key);
     }
 }
+

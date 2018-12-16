@@ -85,17 +85,17 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
             case PUT_REPLICATE:
                 try {
-                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message);
+                    KeyValueStore db = state.dbProvider.getDb(state.meta.findKVServerForKey(message.key));
                     db.put(message.key, message.value);
-                } catch (NoKeyValueStoreException e) {
+                } catch (KVServerNotFoundException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
                 }
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case DELETE_REPLICATE:
                 try {
-                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message);
+                    KeyValueStore db = state.dbProvider.getDb(state.meta.findKVServerForKey(message.key));
                     db.deleteKey(message.key);
-                } catch (NoKeyValueStoreException e) {
+                } catch (KVServerNotFoundException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_ERROR);
                 }
                 return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_SUCCESS);
