@@ -38,7 +38,13 @@ public class DbProvider {
     }
 
     public void shutdown() {
-
+        dbMap.values().forEach(d -> {
+            try {
+                d.shutdown();
+            } catch (IOException e) {
+                logger.error("Problem while shutting down the database");
+            }
+        });
     }
 
     private KeyValueStore createNewDb(ServerData server) {
