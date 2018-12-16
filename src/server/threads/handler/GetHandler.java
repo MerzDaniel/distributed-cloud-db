@@ -18,7 +18,9 @@ public class GetHandler implements IMessageHandler {
         KVMessage response;
 
         try {
-            KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.getKey());
+            //todo
+//            KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.);
+            KeyValueStore db = state.db;
             String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {
@@ -27,10 +29,11 @@ public class GetHandler implements IMessageHandler {
         } catch (DbError e) {
             logger.warn("Some error occured at database level", e);
             response = MessageFactory.createGetErrorMessage();
-        } catch (NoKeyValueStoreException e) {
-            logger.warn(String.format("Couldn't find the responsible database for key '%s'", kvMessage.getKey()));
-            response = MessageFactory.createGetErrorMessage();
         }
+//        } catch (NoKeyValueStoreException e) {
+//            logger.warn(String.format("Couldn't find the responsible database for key '%s'", kvMessage.getKey()));
+//            response = MessageFactory.createGetErrorMessage();
+//        }
         return response;
     }
 }

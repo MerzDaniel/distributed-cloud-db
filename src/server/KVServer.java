@@ -37,10 +37,8 @@ public class KVServer implements Runnable {
      */
     public KVServer(String name, String host, int port) {
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        RandomAccessKeyValueStore dbReplica1 = new RandomAccessKeyValueStore();
-        RandomAccessKeyValueStore dbReplica2 = new RandomAccessKeyValueStore();
         serverData = new ServerData(name, host, port);
-        state = new ServerState(db, dbReplica1, dbReplica2, serverData);
+        state = new ServerState(db, serverData);
     }
 
     /**
@@ -60,9 +58,7 @@ public class KVServer implements Runnable {
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
         RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        RandomAccessKeyValueStore dbReplica1 = new RandomAccessKeyValueStore();
-        RandomAccessKeyValueStore dbReplica2 = new RandomAccessKeyValueStore();
-        state = new ServerState(db, dbReplica1, dbReplica2, serverData);
+        state = new ServerState(db, serverData);
     }
 
     /**
@@ -82,9 +78,7 @@ public class KVServer implements Runnable {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
         serverData = new ServerData(name, host, port);
-        RandomAccessKeyValueStore dbReplica1 = new RandomAccessKeyValueStore();
-        RandomAccessKeyValueStore dbReplica2 = new RandomAccessKeyValueStore();
-        state = new ServerState(db, dbReplica1, dbReplica2, serverData);
+        state = new ServerState(db, serverData);
         state.runningState = runningState;
         state.meta = new KVStoreMetaData();
         state.meta.getKvServerList().add(serverData);
