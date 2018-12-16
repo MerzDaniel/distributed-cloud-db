@@ -25,9 +25,20 @@ public class ServerState {
     public TimedRunningStateMap stateOfAllServers = new TimedRunningStateMap();
     public List<AbstractServerThread> serverThreads = new LinkedList<>();
 
+    /**
+     * Only for testing purposes
+     */
     public ServerState(KeyValueStore db, ServerData serverData) {
         this.db = db;
+        this.dbProvider = new DbProvider(serverData);
         this.replicaMap = new HashMap<>();
+        this.currentServerServerData = serverData;
+    }
+
+    /**
+     * Should be called for normal startup
+     */
+    public ServerState(ServerData serverData) {
         this.currentServerServerData = serverData;
     }
 
@@ -39,5 +50,9 @@ public class ServerState {
         }
 
         return replicaMap.get(serverName);
+    }
+
+    public void init(ServerData serverData) {
+        dbProvider = new DbProvider(serverData);
     }
 }

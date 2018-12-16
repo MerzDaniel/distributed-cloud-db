@@ -28,18 +28,7 @@ public class KVServer implements Runnable {
     private int cacheSize = 10;
     private CacheType cacheType = CacheType.NONE;
     private final ServerState state;
-    private final ServerData serverData;
-
-    /**
-     * Start KV Server at given port
-     *
-     * @param port given port for storage server to operate
-     */
-    public KVServer(String name, String host, int port) {
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        serverData = new ServerData(name, host, port);
-        state = new ServerState(db, serverData);
-    }
+    private final ServerData intermediateServerData;
 
     /**
      * Start KV Server at given port
@@ -56,13 +45,13 @@ public class KVServer implements Runnable {
     public KVServer(String name, String host, int port, int cacheSize, CacheType cacheType) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        serverData = new ServerData(name, host, port);
-        RandomAccessKeyValueStore db = new RandomAccessKeyValueStore();
-        state = new ServerState(db, serverData);
+        // create intermediate serverData till this server gets configured
+        intermediateServerData = new ServerData(name, host, port);
+        state = new ServerState(intermediateServerData);
     }
 
     /**
-     * Start KV Server at given port
+     * Startup the server for TESTING
      *
      * @param port      given port for storage server to operate
      * @param cacheSize specifies how many key-value pairs the server is allowed
@@ -77,22 +66,22 @@ public class KVServer implements Runnable {
                     RunningState runningState) {
         this.cacheSize = cacheSize;
         this.cacheType = cacheType;
-        serverData = new ServerData(name, host, port);
-        state = new ServerState(db, serverData);
+        intermediateServerData = new ServerData(name, host, port);
+        state = new ServerState(db, intermediateServerData);
         state.runningState = runningState;
         state.meta = new KVStoreMetaData();
-        state.meta.getKvServerList().add(serverData);
+        state.meta.getKvServerList().add(intermediateServerData);
     }
 
     List<Socket> openConnections = new LinkedList<>();
 
     @Override
     public void run() {
-        logger.info("Start server on port " + serverData.getPort());
+        logger.info("Start server on port " + intermediateServerData.getPort());
 
         setupCaching();
 
-        try (ServerSocket s = new ServerSocket(serverData.getPort())) {
+        try (ServerSocket s = new ServerSocket(intermediateServerData.getPort())) {
 
             AcceptConnectionsThread acceptThread = new AcceptConnectionsThread(s, openConnections, state);
             state.serverThreads.add(acceptThread);

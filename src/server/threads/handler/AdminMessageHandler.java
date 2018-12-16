@@ -1,5 +1,6 @@
 package server.threads.handler;
 
+import lib.message.AdminMessages.FullReplicationMsg;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
@@ -42,6 +43,8 @@ public final class AdminMessageHandler {
 
                 try {
                     state.db.init(state.currentServerServerData.getName());
+
+                    state.init(state.currentServerServerData);
                 } catch (IOException e) {
                     logger.error("error occurred during initializing the db");
                     throw new DbError(e);
@@ -100,20 +103,28 @@ public final class AdminMessageHandler {
                 }
                 return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_SUCCESS);
             case FULL_REPLICATE:
-                return doFullReplication(message, state);
+                return doFullReplication((FullReplicationMsg) message, state);
         }
 
         throw new NotImplementedException();
     }
 
-    private static KVAdminMessage doFullReplication(KVAdminMessage message, ServerState state) {
+    private static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
         HashMap<Long, Messaging> messagingHashMap = new HashMap<>();
+        ServerData targetServer;
+        try {
+            targetServer = state.meta.findKvServerByName(message.targetServerName);
+        } catch (KVServerNotFoundException e) {
+            logger.warn("Tried to replicate to non existing server");
+            return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
+        }
+
         IntSummaryStatistics errorCount = state.db.retrieveAllData().parallel().map((d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
                     messagingHashMap.put(currentThreadId, new Messaging());
-                    messagingHashMap.get(currentThreadId).connect(message.serverData);
+                    messagingHashMap.get(currentThreadId).connect(targetServer);
                 }
 
                 KVAdminMessage replicateMsg = new KVAdminMessage(
