@@ -84,6 +84,14 @@ public class KVStoreMetaData {
         return kvServerList.get(findKvServerIndex(key));
     }
 
+    public ServerData findKvServerByName(String serverName) throws KVServerNotFoundException {
+        for (ServerData sd : kvServerList) {
+            if (sd.getName().equals(serverName))
+                return sd;
+        }
+        throw new KVServerNotFoundException();
+    }
+
     /**
      * Find the replica {@link server.KVServer}s for the given {@code key} which are immediate KVServers in the hash ring with larger hash
      *
