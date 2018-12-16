@@ -117,9 +117,13 @@ public final class AdminMessageHandler {
                     messagingHashMap.put(currentThreadId, new Messaging());
                     messagingHashMap.get(currentThreadId).connect(message.serverData);
                 }
-                messagingHashMap.get(currentThreadId).sendMessage(
-                        new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE, d.getKey(), d.getValue())
+
+                KVAdminMessage replicateMsg = new KVAdminMessage(
+                        KVAdminMessage.StatusType.PUT_REPLICATE,
+                        d.getKey(),
+                        d.getValue()
                 );
+                messagingHashMap.get(currentThreadId).sendMessage(replicateMsg);
                 KVAdminMessage response = (KVAdminMessage) messagingHashMap.get(currentThreadId).readMessage();
                 if (response.status != KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS)
                     throw new Exception("Problem during replicate");
