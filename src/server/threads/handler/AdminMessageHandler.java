@@ -37,12 +37,12 @@ public final class AdminMessageHandler {
         switch (message.status) {
             case CONFIGURE:
                 state.meta = message.meta;
-                state.meta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
                 state.currentServerServerData = message.meta.getKvServerList().get(message.currentServerIndex);
 
                 if (state.runningState == RunningState.UNCONFIGURED)
                     state.runningState = RunningState.IDLE;
 
+                state.meta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
                 state.init(state.currentServerServerData);
 
                 GossipStatusThread gst = new GossipStatusThread(state);
