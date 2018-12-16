@@ -72,9 +72,14 @@ public class KVServer implements Runnable {
         state.meta = new KVStoreMetaData();
         state.meta.getKvServerList().add(intermediateServerData);
     }
-    public KVServer(ServerData serverData) {
+
+    /**
+     * For tests
+     * @param serverData
+     */
+    public KVServer(ServerData serverData, KeyValueStore db) {
         intermediateServerData = serverData;
-        state = new ServerState(intermediateServerData);
+        state = new ServerState(db, intermediateServerData);
     }
 
     List<Socket> openConnections = new LinkedList<>();
@@ -118,6 +123,11 @@ public class KVServer implements Runnable {
         state.serverThreads.forEach(st -> st.stop());
         state.runningState = RunningState.SHUTTINGDOWN;
         state.dbProvider.shutdown();
+    }
+
+    /** Only use in Tests! */
+    public ServerState getState() {
+        return state;
     }
 
     private void tryStopThread(Thread t) {

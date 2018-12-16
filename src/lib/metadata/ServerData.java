@@ -15,8 +15,8 @@ public class ServerData {
     String host;
     int port;
 
-    CacheType cacheType;
-    int cacheSize;
+    CacheType cacheType = CacheType.NONE;
+    int cacheSize = 10;
 
     BigInteger fromHash = BigInteger.ZERO;
 

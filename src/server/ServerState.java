@@ -23,7 +23,7 @@ public class ServerState {
      * Only for testing purposes
      */
     public ServerState(KeyValueStore db, ServerData serverData) {
-        this.dbProvider = new DbProvider(serverData, db);
+        this.dbProvider = new DbProvider(serverData, db, true);
         this.currentServerServerData = serverData;
     }
 

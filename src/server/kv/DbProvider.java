@@ -14,9 +14,12 @@ import java.util.HashMap;
 public class DbProvider {
     HashMap<String, KeyValueStore> dbMap = new HashMap<>();
     private ServerData coordinator;
+    /** If set to true dbs will be inMemory */
+    private final boolean inMemory;
     private Logger logger = LogManager.getLogger(DbProvider.class);
 
     public DbProvider(ServerData coordinator) {
+        inMemory = false;
         this.coordinator = coordinator;
         // initialize db of coordinator
         getDb(coordinator);
@@ -25,8 +28,9 @@ public class DbProvider {
     /**
      * Only for TESTINg
      */
-    public DbProvider(ServerData coordinator, KeyValueStore db) {
+    public DbProvider(ServerData coordinator, KeyValueStore db, boolean inMemory) {
         this.coordinator = coordinator;
+        this.inMemory = inMemory;
         dbMap.put(coordinator.getName(), db);
     }
 
@@ -51,7 +55,7 @@ public class DbProvider {
     }
 
     private KeyValueStore createNewDb(ServerData server) {
-        KeyValueStore db = new RandomAccessKeyValueStore();
+        KeyValueStore db = inMemory ? new MemoryDatabase() : new RandomAccessKeyValueStore();
         String dbName = getDbName(server);
         try {
             db.init(dbName);

@@ -26,7 +26,8 @@ public class Messaging {
         Connection c = new Connection();
         c.connect(host, port);
         connect(c);
-        return ((KVMessage)readMessage()).getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+        KVMessage kvMessage = (KVMessage) readMessage();
+        return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
@@ -58,7 +59,12 @@ public class Messaging {
     }
 
     public synchronized IMessage readMessage() throws IOException {
-        if (!con.isConnected() || !messageIterator.hasNext()) throw new IOException();
+        boolean isConnected = con.isConnected();
+        boolean hasNext = messageIterator.hasNext();
+        if (!isConnected || !hasNext) {
+
+            throw new IOException();
+        }
 
         return messageIterator.next();
     }
