@@ -7,7 +7,6 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,8 +111,6 @@ public class KVStoreMetaData {
         if (noOfServers == 1) return new ArrayList<>();
         if (noOfServers == 2) return Arrays.asList(this.findNextKvServer(hash));
 
-        sortKvServers();
-
         for (int i = 0; i < kvServerList.size(); i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0){
                 return Arrays.asList(kvServerList.get(i), kvServerList.get((i + 1) % noOfServers));
@@ -137,8 +134,6 @@ public class KVStoreMetaData {
         if (noOfServers == 1) return new ArrayList<>();
         if (noOfServers == 2) return Arrays.asList(this.findPreviousKvServer(serverData));
 
-        sortKvServers();
-
         for (int i = noOfServers - 1; i == 0; i--) {
             if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0){
                 if (i == 0) return Arrays.asList(kvServerList.get(0), kvServerList.get(noOfServers - 1));
@@ -158,8 +153,6 @@ public class KVStoreMetaData {
     public ServerData findNextKvServer(BigInteger hash) throws KVServerNotFoundException {
         if (kvServerList.size() == 0) throw new KVServerNotFoundException();
 
-        sortKvServers();
-
         for (int i = 0; i < kvServerList.size(); i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) > 0) return kvServerList.get(i);
         }
@@ -176,8 +169,6 @@ public class KVStoreMetaData {
     public ServerData findPreviousKvServer(ServerData serverData) throws KVServerNotFoundException {
         int noOfServers = kvServerList.size();
         if (noOfServers == 0 || noOfServers == 1) throw new KVServerNotFoundException();
-
-        sortKvServers();
 
         for (int i = noOfServers - 1; i == 0; i--) {
             if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0) return kvServerList.get(i);
@@ -199,7 +190,6 @@ public class KVStoreMetaData {
 
         if (kvServerList.size() == 1) return 0;
 
-        sortKvServers();
         for (int i = 0; i < kvServerList.size() - 1; i++) {
             if (kvServerList.get(i).getFromHash().compareTo(hash) <= 0
                     && hash.compareTo(kvServerList.get(i + 1).getFromHash()) < 0)
@@ -208,9 +198,4 @@ public class KVStoreMetaData {
         //for the scenario where the hash value of key is larger than the last kvServer(ServerData)
         return kvServerList.size() - 1;
     }
-
-    private void sortKvServers() {
-        kvServerList.sort(Comparator.comparing(ServerData::getFromHash));
-    }
-
 }

@@ -18,6 +18,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public final class AdminMessageHandler {
         switch (message.status) {
             case CONFIGURE:
                 state.meta = message.meta;
+                state.meta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
                 state.currentServerServerData = message.meta.getKvServerList().get(message.currentServerIndex);
 
                 if (state.runningState == RunningState.UNCONFIGURED)
