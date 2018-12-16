@@ -34,7 +34,7 @@ public class MessageHandlerUtils {
     public static boolean isResponsibleCoordinator(ServerState state, String key) {
         ServerData responsibleServer;
         try {
-            responsibleServer = state.meta.findKVServer(key);
+            responsibleServer = state.meta.findKVServerForKey(key);
             return responsibleServer.getHost().equals(state.currentServerServerData.getHost()) &&
                     responsibleServer.getPort() == state.currentServerServerData.getPort();
         } catch (KVServerNotFoundException e) {

@@ -154,7 +154,7 @@ public final class AdminMessageHandler {
         long errors = state.db.retrieveAllData().parallel().map(
                 d -> {
                     try {
-                        if (softMove && state.meta.findKVServer(d.getKey()) == state.currentServerServerData) {
+                        if (softMove && state.meta.findKVServerForKey(d.getKey()) == state.currentServerServerData) {
                             // for soft move only move data that this server is not responsible for
                             return true;
                         }

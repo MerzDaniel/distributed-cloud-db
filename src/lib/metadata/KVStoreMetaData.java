@@ -80,7 +80,7 @@ public class KVStoreMetaData {
      * @return {@Link ServerData}
      * @throws KVServerNotFoundException if the {@link server.KVServer} is not found
      */
-    public ServerData findKVServer(String key) throws KVServerNotFoundException {
+    public ServerData findKVServerForKey(String key) throws KVServerNotFoundException {
         return kvServerList.get(findKvServerIndex(key));
     }
 

@@ -74,7 +74,7 @@ public class KVStore implements KVCommInterface {
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException  {
         KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
 
-        ServerData coordinator = kvStoreMetaData.findKVServer(key);
+        ServerData coordinator = kvStoreMetaData.findKVServerForKey(key);
         List<ServerData> replicas = kvStoreMetaData.findReplicaKVServers(key);
 
         List<ServerData> candidateServers = new ArrayList<>();
@@ -109,7 +109,7 @@ public class KVStore implements KVCommInterface {
     public KVMessage put(String key, String value) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
         KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
 
-        ServerData serverServerData = kvStoreMetaData.findKVServer(key);
+        ServerData serverServerData = kvStoreMetaData.findKVServerForKey(key);
         boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
         if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
