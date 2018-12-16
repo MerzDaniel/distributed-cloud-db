@@ -2,6 +2,8 @@ package server.threads.handler;
 
 import lib.message.KVMessage;
 import lib.message.MessageFactory;
+import lib.metadata.KVServerNotFoundException;
+import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.IMessageHandler;
@@ -18,9 +20,8 @@ public class GetHandler implements IMessageHandler {
         KVMessage response;
 
         try {
-            //todo
-//            KeyValueStore db = MessageHandlerUtils.getDatabase(state, kvMessage.);
-            KeyValueStore db = state.db;
+            ServerData responsible = state.meta.findKVServerForKey(kvMessage.getKey());
+            KeyValueStore db = state.dbProvider.getDb(responsible);
             String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {
@@ -29,11 +30,11 @@ public class GetHandler implements IMessageHandler {
         } catch (DbError e) {
             logger.warn("Some error occured at database level", e);
             response = MessageFactory.createGetErrorMessage();
+        } catch (KVServerNotFoundException e) {
+            logger.warn("KvServer not found? should not happen");
+            response = MessageFactory.createGetErrorMessage();
         }
-//        } catch (NoKeyValueStoreException e) {
-//            logger.warn(String.format("Couldn't find the responsible database for key '%s'", kvMessage.getKey()));
-//            response = MessageFactory.createGetErrorMessage();
-//        }
+
         return response;
     }
 }

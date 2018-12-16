@@ -18,7 +18,6 @@ import java.util.Map;
 public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
     public DbProvider dbProvider;
-    public KeyValueStore db;
     private Map<String, KeyValueStore> replicaMap;
     public ServerData currentServerServerData;
     public RunningState runningState = RunningState.UNCONFIGURED;
@@ -29,8 +28,7 @@ public class ServerState {
      * Only for testing purposes
      */
     public ServerState(KeyValueStore db, ServerData serverData) {
-        this.db = db;
-        this.dbProvider = new DbProvider(serverData);
+        this.dbProvider = new DbProvider(serverData, db);
         this.replicaMap = new HashMap<>();
         this.currentServerServerData = serverData;
     }

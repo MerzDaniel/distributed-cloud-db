@@ -79,8 +79,6 @@ public class KVServer implements Runnable {
     public void run() {
         logger.info("Start server on port " + intermediateServerData.getPort());
 
-        setupCaching();
-
         try (ServerSocket s = new ServerSocket(intermediateServerData.getPort())) {
 
             AcceptConnectionsThread acceptThread = new AcceptConnectionsThread(s, openConnections, state);
@@ -88,7 +86,7 @@ public class KVServer implements Runnable {
             acceptThread.start();
 
             // Server loop, wait for getting shutdown
-            while(state.runningState != RunningState.SHUTTINGDOWN) {
+            while (state.runningState != RunningState.SHUTTINGDOWN) {
                 Thread.sleep(500);
             }
 
@@ -102,35 +100,14 @@ public class KVServer implements Runnable {
             for (Socket s : openConnections) {
                 SocketUtil.tryClose(s);
             }
-            try {
-                state.db.shutdown();
-            } catch (IOException e) {
-                logger.warn("Problem during shutting down db", e);
-            }
-        }
-    }
-
-    private void setupCaching() {
-        switch (cacheType) {
-            case FIFO:
-                logger.info("Setting up FIFO caching");
-                state.db = new FifoCachedKeyValueStore(cacheSize, state.db);
-                break;
-            case LRU:
-                logger.info("Setting up LRU caching");
-                state.db = new LRUCachedKeyValueStore(cacheSize, state.db);
-                break;
-            case LFU:
-                logger.info("Setting up LFU caching");
-                state.db = new LFUCachedKeyValueStore(cacheSize, state.db);
-                break;
+            state.dbProvider.shutdown();
         }
     }
 
     public void stop() throws IOException {
         state.serverThreads.forEach(st -> st.stopServerThread());
         state.runningState = RunningState.SHUTTINGDOWN;
-        state.db.shutdown();
+        state.dbProvider.shutdown();
     }
 
     private void tryStopThread(Thread t) {

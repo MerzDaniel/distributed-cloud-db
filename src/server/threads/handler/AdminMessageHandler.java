@@ -41,14 +41,7 @@ public final class AdminMessageHandler {
                 if (state.runningState == RunningState.UNCONFIGURED)
                     state.runningState = RunningState.IDLE;
 
-                try {
-                    state.db.init(state.currentServerServerData.getName());
-
-                    state.init(state.currentServerServerData);
-                } catch (IOException e) {
-                    logger.error("error occurred during initializing the db");
-                    throw new DbError(e);
-                }
+                state.init(state.currentServerServerData);
 
                 GossipStatusThread gst = new GossipStatusThread(state);
                 gst.start();
@@ -77,7 +70,8 @@ public final class AdminMessageHandler {
                 state.runningState = RunningState.READONLY;
                 return moveData(state, message.serverData, true);
             case DATA_MOVE:
-                state.db.put(message.key, message.value);
+                state.dbProvider.getDb(state.currentServerServerData).
+                        put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
             case MAKE_READONLY:
                 state.runningState = RunningState.READONLY;
@@ -119,7 +113,8 @@ public final class AdminMessageHandler {
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
-        IntSummaryStatistics errorCount = state.db.retrieveAllData().parallel().map((d) -> {
+        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData);
+        IntSummaryStatistics errorCount = db.retrieveAllData().parallel().map((d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
@@ -160,7 +155,8 @@ public final class AdminMessageHandler {
             return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         }
 
-        long errors = state.db.retrieveAllData().parallel().map(
+        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData);
+        long errors = db.retrieveAllData().parallel().map(
                 d -> {
                     try {
                         if (softMove && state.meta.findKVServerForKey(d.getKey()) == state.currentServerServerData) {
