@@ -4,6 +4,7 @@ import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
 import lib.server.TimedRunningStateMap;
+import server.kv.DbProvider;
 import server.kv.KeyValueStore;
 import server.kv.RandomAccessKeyValueStore;
 import server.threads.AbstractServerThread;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class ServerState {
     public KVStoreMetaData meta = new KVStoreMetaData();
+    public DbProvider dbProvider;
     public KeyValueStore db;
     private Map<String, KeyValueStore> replicaMap;
     public ServerData currentServerServerData;
