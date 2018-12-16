@@ -42,8 +42,6 @@ public final class AdminMessageHandler {
 
                 try {
                     state.db.init(state.currentServerServerData.getName());
-                    state.dbReplica1.init("_replica_1_" + state.currentServerServerData.getName());
-                    state.dbReplica2.init("_replica_2_" + state.currentServerServerData.getName());
                 } catch (IOException e) {
                     logger.error("error occurred during initializing the db");
                     throw new DbError(e);
@@ -87,7 +85,7 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
             case PUT_REPLICATE:
                 try {
-                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message.key);
+                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message);
                     db.put(message.key, message.value);
                 } catch (NoKeyValueStoreException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
@@ -95,7 +93,7 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case DELETE_REPLICATE:
                 try {
-                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message.key);
+                    KeyValueStore db = MessageHandlerUtils.getDatabase(state, message);
                     db.deleteKey(message.key);
                 } catch (NoKeyValueStoreException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_ERROR);

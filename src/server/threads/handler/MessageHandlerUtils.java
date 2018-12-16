@@ -1,11 +1,13 @@
 package server.threads.handler;
 
+import lib.message.KVAdminMessage;
 import lib.message.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import server.ServerState;
 import server.kv.KeyValueStore;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,50 +63,45 @@ public class MessageHandlerUtils {
         }
     }
 
-    private static int getReplicaIndex(ServerState state, String key) {
-        List<ServerData> replicaServers;
-        List<Integer> replicaIndices;
-        try {
-            replicaServers = state.meta.findReplicaKVServers(key);
-            replicaIndices = IntStream.range(0, replicaServers.size())
-                    .filter(index -> replicaServers.get(index).getHost().equals(state.currentServerServerData.getHost()) &&
-                            replicaServers.get(index).getPort() == state.currentServerServerData.getPort())
-                    .mapToObj(i -> i)
-                    .collect(Collectors.toList());
-        } catch (KVServerNotFoundException e) {
-            return 0;
-        }
-
-        if (replicaIndices.size() == 0)
-            return 0;
-
-        return replicaIndices.get(0) + 1;
-    }
+//    private static int getReplica(ServerState state, String key) {
+//        List<ServerData> replicaServers;
+//        List<Integer> replicaIndices;
+//        try {
+//            replicaServers = state.meta.findReplicaKVServers(key);
+//            replicaIndices = IntStream.range(0, replicaServers.size())
+//                    .filter(index -> replicaServers.get(index).getHost().equals(state.currentServerServerData.getHost()) &&
+//                            replicaServers.get(index).getPort() == state.currentServerServerData.getPort())
+//                    .mapToObj(i -> i)
+//                    .collect(Collectors.toList());
+//        } catch (KVServerNotFoundException e) {
+//            return 0;
+//        }
+//
+//        if (replicaIndices.size() == 0)
+//            return 0;
+//
+//        return replicaIndices.get(0) + 1;
+//    }
 
     /**
      * Get the correct database for the {@code key}
      * @param state {@Link ServerState}
-     * @param key String key
+     * @param message {@link KVAdminMessage}
      * @return the {@link KeyValueStore}
      * @throws NoKeyValueStoreException if the {@link KeyValueStore} cannot be found
      */
-    public static KeyValueStore getDatabase(ServerState state, String key) throws NoKeyValueStoreException{
-        if (isResponsibleCoordinator(state, key))
+    public static KeyValueStore getDatabase(ServerState state, KVAdminMessage message) throws NoKeyValueStoreException{
+        if (isResponsibleCoordinator(state, message.key))
             return state.db;
 
-        if (isResponsibleReplica(state, key)) {
-            int index = getReplicaIndex(state, key);
-
-            switch (index) {
-                case 1:
-                    return state.dbReplica1;
-                case 2:
-                    return state.dbReplica2;
-                default:
-                    throw new NoKeyValueStoreException();
-
+        if (isResponsibleReplica(state, message.key)) {
+            try {
+                return state.getReplica(message.serverData.getName());
+            } catch (IOException e) {
+                throw new NoKeyValueStoreException();
             }
         }
+
         throw new NoKeyValueStoreException();
     }
 }
