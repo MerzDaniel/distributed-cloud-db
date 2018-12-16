@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import server.kv.cache.FifoCachedKeyValueStore;
 import server.kv.cache.LFUCachedKeyValueStore;
 import server.kv.cache.LRUCachedKeyValueStore;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,6 +20,14 @@ public class DbProvider {
     }
 
     /**
+     * Only for TESTINg
+     */
+    public DbProvider(ServerData coordinator, KeyValueStore db) {
+        this.coordinator = coordinator;
+        dbMap.put(coordinator.getName(), db);
+    }
+
+    /**
      * Get database for a specific ServerData
      */
     public KeyValueStore getDb(ServerData server) {
@@ -29,7 +36,6 @@ public class DbProvider {
 
         return createNewDb(server);
     }
-
 
     public void shutdown() {
 

@@ -1,9 +1,7 @@
 package ecs.service;
 
-import lib.SocketUtil;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
-import lib.message.MessageMarshaller;
 import lib.message.Messaging;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
@@ -34,6 +32,10 @@ public final class KvService {
         messaging.sendMessage(msg);
         return (KVAdminMessage) messaging.readMessage();
     }
+
+//    public static KVAdminMessage fullReplicateData(ServerData sourceServer, ServerData dataSrc, ServerData targetServer) {
+//
+//    }
 
     public static boolean makeReadonly(ServerData sd, Messaging messaging) throws MarshallingException, IOException {
         KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MAKE_READONLY);
