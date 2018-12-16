@@ -33,7 +33,7 @@ public class DbProvider {
      * Get database for a specific ServerData
      */
     public KeyValueStore getDb(ServerData server) {
-        String serverName = server.getName();
+        String serverName = getDbName(server);
         if (dbMap.get(serverName) != null) return dbMap.get(serverName);
 
         return createNewDb(server);
@@ -52,7 +52,7 @@ public class DbProvider {
     private KeyValueStore createNewDb(ServerData server) {
         KeyValueStore db = new RandomAccessKeyValueStore();
         try {
-            String dbName = this.isCoordiantor(server) ? server.getName() : "replica<" + server.getName() + ">_" + coordinator.getName();
+            String dbName = getDbName(server);
             db.init(dbName);
         } catch (IOException e) {
             logger.warn("Could not create database");
@@ -75,6 +75,12 @@ public class DbProvider {
 
         dbMap.put(server.getName(), db);
         return db;
+    }
+
+    private String getDbName(ServerData sd) {
+        return this.isCoordiantor(sd) ?
+                sd.getName() :
+                "replica<" + sd.getName() + ">_" + coordinator.getName();
     }
 
     private boolean isCoordiantor(ServerData serverData) {
