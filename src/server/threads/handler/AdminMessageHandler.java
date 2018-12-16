@@ -106,14 +106,16 @@ public final class AdminMessageHandler {
     private static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
         HashMap<Long, Messaging> messagingHashMap = new HashMap<>();
         ServerData targetServer;
+        ServerData srcData;
         try {
             targetServer = state.meta.findKvServerByName(message.targetServerName);
+            srcData = state.meta.findKvServerByName(message.srcDataServerName);
         } catch (KVServerNotFoundException e) {
             logger.warn("Tried to replicate to non existing server");
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
-        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData);
+        KeyValueStore db = state.dbProvider.getDb(srcData);
         IntSummaryStatistics errorCount = db.retrieveAllData().parallel().map((d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
@@ -134,14 +136,21 @@ public final class AdminMessageHandler {
 
             } catch (Exception e) {
                 messagingHashMap.remove(currentThreadId);
-                logger.warn("Problem during replication", e);
+                logger.debug("Problem during replication", e);
                 return 1;
             }
             return 0;
         }).collect(Collectors.summarizingInt(x -> (int) x));
 
-        if (errorCount.getSum() > 0)
+        if (errorCount.getSum() > 0) {
+            logger.warn(String.format(
+                    "Errors during replication from %s (data: %s) to %s",
+                    state.currentServerServerData.getName(),
+                    srcData.getName(),
+                    targetServer.getName())
+            );
             return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
+        }
 
         return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS);
     }
