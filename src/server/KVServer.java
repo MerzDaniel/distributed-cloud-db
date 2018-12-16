@@ -72,6 +72,10 @@ public class KVServer implements Runnable {
         state.meta = new KVStoreMetaData();
         state.meta.getKvServerList().add(intermediateServerData);
     }
+    public KVServer(ServerData serverData) {
+        intermediateServerData = serverData;
+        state = new ServerState(intermediateServerData);
+    }
 
     List<Socket> openConnections = new LinkedList<>();
 
