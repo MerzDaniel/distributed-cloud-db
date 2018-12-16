@@ -1,6 +1,7 @@
 package lib.message;
 
 import lib.Constants;
+import lib.message.AdminMessages.FullReplicationMsg;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -96,12 +97,15 @@ public final class MessageMarshaller {
                     adminMessage.value
             );
 
-        if (adminMessage.status == KVAdminMessage.StatusType.FULL_REPLICATE)
-            return String.join(Constants.RECORD_SEPARATOR,
-                    adminMessage.status.name(),
-                    adminMessage.serverData.marshall()
-            );
+        if (adminMessage.status == KVAdminMessage.StatusType.FULL_REPLICATE) {
+            FullReplicationMsg msg = (FullReplicationMsg) adminMessage;
 
+            return String.join(Constants.RECORD_SEPARATOR,
+                    msg.status.name(),
+                    msg.srcDataServerName,
+                    msg.targetServerName
+            );
+        }
 
         return adminMessage.status.name();
     }
@@ -163,7 +167,7 @@ public final class MessageMarshaller {
             case DELETE_REPLICATE:
                 return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
             case FULL_REPLICATE:
-                return new KVAdminMessage(status, ServerData.unmarshall(secondPart));
+                return new FullReplicationMsg(kvMessageComponents[1], kvMessageComponents[2]);
             default:
                 return new KVAdminMessage(status);
         }
