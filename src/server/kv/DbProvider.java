@@ -52,8 +52,8 @@ public class DbProvider {
 
     private KeyValueStore createNewDb(ServerData server) {
         KeyValueStore db = new RandomAccessKeyValueStore();
+        String dbName = getDbName(server);
         try {
-            String dbName = getDbName(server);
             db.init(dbName);
         } catch (IOException e) {
             logger.warn("Could not create database");
@@ -76,7 +76,7 @@ public class DbProvider {
                 break;
         }
 
-        dbMap.put(server.getName(), db);
+        dbMap.put(dbName, db);
         return db;
     }
 
