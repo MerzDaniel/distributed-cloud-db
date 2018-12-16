@@ -17,6 +17,8 @@ public class DbProvider {
 
     public DbProvider(ServerData coordinator) {
         this.coordinator = coordinator;
+        // initialize db of coordinator
+        getDb(coordinator);
     }
 
     /**
