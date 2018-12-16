@@ -107,12 +107,7 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         boolean deleted = false;
 
         if (hasKey(key)) {
-            try {
-                deleted = ioDelete(key);
-            } catch (IOException e) {
-                logger.error(String.format("An error occurred trying delete any existing keys", e.getLocalizedMessage()));
-                throw new DbError(e);
-            }
+            deleted = deleteKey(key);
         }
 
         try {
@@ -159,13 +154,9 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
      */
     @Override
     public synchronized boolean deleteKey(String key) throws DbError {
-        try {
-            ioDelete(key);
-            return true;
-        } catch (IOException e) {
-            logger.error("IO Exception during DELETE", e);
-            throw new DbError(e);
-        }
+        if (!index.hasKey(key)) return false;
+        index.remove(key);
+        return true;
     }
 
     @Override
@@ -216,20 +207,6 @@ public class RandomAccessKeyValueStore implements KeyValueStore {
         };
 
         return StreamUtils.asStream(iterator, false);
-    }
-
-    private boolean ioDelete(String key) throws IOException {
-        if (!index.hasKey(key)) return false;
-
-        try (RandomAccessFile db = new RandomAccessFile(DB_FILE, "rw")) {
-            DbIndex.IndexEntry indexEntry = index.getEntry(key);
-            db.seek(indexEntry.offset);
-            byte[] emptyLine = new byte[indexEntry.length];
-            Arrays.fill(emptyLine, (byte) 0);
-            db.write(emptyLine);
-            index.remove(key);
-            return true;
-        }
     }
 
     private AbstractMap.SimpleEntry<String, String> parseLine(String line) {
