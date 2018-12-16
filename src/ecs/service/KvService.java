@@ -1,5 +1,6 @@
 package ecs.service;
 
+import lib.message.AdminMessages.FullReplicationMsg;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
 import lib.message.Messaging;
@@ -33,9 +34,13 @@ public final class KvService {
         return (KVAdminMessage) messaging.readMessage();
     }
 
-//    public static KVAdminMessage fullReplicateData(ServerData sourceServer, ServerData dataSrc, ServerData targetServer) {
-//
-//    }
+    public static KVAdminMessage fullReplicateData(ServerData sourceServer, ServerData dataSrc, ServerData targetServer) throws IOException, MarshallingException {
+        Messaging messaging = new Messaging();
+        messaging.connect(sourceServer);
+        FullReplicationMsg fullReplicationMsg = new FullReplicationMsg(dataSrc.getName(), targetServer.getName());
+        messaging.sendMessage(fullReplicationMsg);
+        return (KVAdminMessage) messaging.readMessage();
+    }
 
     public static boolean makeReadonly(ServerData sd, Messaging messaging) throws MarshallingException, IOException {
         KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.MAKE_READONLY);
