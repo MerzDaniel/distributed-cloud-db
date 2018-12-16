@@ -21,13 +21,6 @@ public class DbProvider {
     }
 
     /**
-     * Get database which handles a specific dataKey
-     */
-    public KeyValueStore getDb(String dataKey) {
-        throw new NotImplementedException();
-    }
-
-    /**
      * Get database for a specific ServerData
      */
     public KeyValueStore getDb(ServerData server) {
