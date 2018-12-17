@@ -56,6 +56,14 @@ public final class KvService {
         return ((KVAdminMessage) messaging.readMessage()).status == KVAdminMessage.StatusType.MAKE_SUCCESS;
     }
 
+    public static boolean makeRunning(ServerData sd) throws MarshallingException, IOException {
+        KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.START);
+        Messaging messaging = new Messaging();
+        messaging.connect(sd.getHost(), sd.getPort());
+        messaging.sendMessage(msg);
+        return ((KVAdminMessage) messaging.readMessage()).status == KVAdminMessage.StatusType.START_SUCCESS;
+    }
+
     public static KVAdminMessage configure(ServerData sd, KVStoreMetaData meta, int index) throws IOException, MarshallingException {
         Messaging messaging = new Messaging();
         messaging.connect(sd.getHost(), sd.getPort());
