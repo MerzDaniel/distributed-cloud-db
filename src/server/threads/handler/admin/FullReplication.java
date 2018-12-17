@@ -68,7 +68,7 @@ public final class FullReplication {
                 errors.add(dbError);
             }
             return errors;
-        }, null);
+        }, (l0, l1) -> {LinkedList<Exception> l = new LinkedList(l0); l.addAll(l1); return l;});
     }
 
     private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb, String srcDbName) {
