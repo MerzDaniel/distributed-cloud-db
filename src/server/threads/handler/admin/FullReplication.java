@@ -11,16 +11,16 @@ import server.ServerState;
 import server.kv.KeyValueStore;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class FullReplication {
     static Logger logger = LogManager.getLogger(FullReplication.class);
 
     public static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
-        HashMap<Long, Messaging> messagingHashMap = new HashMap<>();
+        ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
         ServerData targetServer;
         ServerData srcData;
         try {
@@ -32,7 +32,7 @@ public final class FullReplication {
         }
 
         KeyValueStore db = state.dbProvider.getDb(srcData);
-        List<Exception> combinedErrors = db.retrieveAllData().parallel().reduce(new LinkedList<Exception>(), (errors, d) -> {
+        List<Exception> combinedErrors = db.retrieveAllData().parallel().reduce(new LinkedList<>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
