@@ -5,8 +5,10 @@ import com.jcraft.jsch.SftpException;
 import ecs.Command;
 import ecs.State;
 
+import ecs.service.KvService;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
+import lib.message.Messaging;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.CacheType;
@@ -79,13 +81,16 @@ public class InitCommand implements Command {
                 continue;
             }
 
-            try {
-                startKvServer(sd);
-            } catch (JSchException | IOException | SftpException e) {
-                universeIsOk = false;
-                logger.warn("Error", e);
-                System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
-                continue;
+            boolean serverCanBeReached = KvService.serverCanBeReached(sd);
+            if (!serverCanBeReached) {
+                try {
+                    startKvServer(sd);
+                } catch (JSchException | IOException | SftpException e) {
+                    universeIsOk = false;
+                    logger.warn("Error", e);
+                    System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
+                    continue;
+                }
             }
 
             KVAdminMessage response = null;

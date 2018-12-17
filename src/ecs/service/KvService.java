@@ -190,4 +190,13 @@ public final class KvService {
             return timedRunningStateMap;
         }
     }
+
+    public static boolean serverCanBeReached(ServerData sd) {
+        Messaging messaging = new Messaging();
+        try {
+            return messaging.connect(sd);
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }
