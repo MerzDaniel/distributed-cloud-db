@@ -32,7 +32,9 @@ public final class FullReplication {
         }
 
         KeyValueStore db = state.dbProvider.getDb(srcData);
-        List<Exception> combinedErrors = db.retrieveAllData().parallel().reduce(new LinkedList<>(), (errors, d) -> {
+        List<Exception> combinedErrors = db.retrieveAllData()
+//                .parallel()
+                .reduce(new LinkedList<>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
