@@ -16,9 +16,9 @@ public class FailOverCommand implements Command {
     public void execute(State state) {
         List<ServerData> failedServers = new LinkedList<>();
         try {
-            KvService.gossipServers(state.poolMeta.getKvServerList(), state.timedRunningStateMap);
+            KvService.gossipServers(state.storeMeta.getKvServerList(), state.timedRunningStateMap);
             failedServers = new LinkedList<>();
-            for (ServerData sd : state.poolMeta.getKvServerList()) {
+            for (ServerData sd : state.storeMeta.getKvServerList()) {
                 TimedRunningState timedRunningState = state.timedRunningStateMap.get(sd.getName());
                 if (timedRunningState.runningState == RunningState.DOWN)
                     failedServers.add(sd);
@@ -40,7 +40,7 @@ public class FailOverCommand implements Command {
 
         System.out.println("Oh no, one server failed! Will try to recover the data and ensure full replication!");
         try {
-            KvService.removeNode(failedServers.get(0),state.poolMeta);
+            KvService.removeNode(failedServers.get(0),state.storeMeta);
         } catch (Exception e) {
             System.out.println("Some error occured while recovering stuff.... ");
             System.out.println(e.getMessage());

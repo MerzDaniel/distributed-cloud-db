@@ -16,7 +16,7 @@ public class FillupDbCommand implements Command {
 
     @Override
     public void execute(State state) {
-        KVStore store = new KVStore(state.poolMeta);
+        KVStore store = new KVStore(state.storeMeta);
         Random r = new Random();
         Exception ex = null;
         for (int i = 0; i < amount; i++) {
