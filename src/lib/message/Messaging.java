@@ -16,6 +16,8 @@ public class Messaging {
     private Connection con;
 
     Iterator<IMessage> messageIterator;
+    private String host;
+    private int port;
 
     public Messaging() {
     }
@@ -25,12 +27,14 @@ public class Messaging {
     }
 
     public synchronized boolean connect(String host, int port) throws IOException {
+        this.host = host;
+        this.port = port;
         int retryCounter = 0;
         while (retryCounter++ < CONNECT_RETRIES) {
             try {
                 Connection c = new Connection();
                 c.connect(host, port);
-                connect(c);
+                createMessageIterator(c);
                 KVMessage kvMessage = (KVMessage) readMessage();
                 return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
             } catch (IOException e) {}
@@ -39,13 +43,15 @@ public class Messaging {
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
+        host = s.getInetAddress().getHostAddress(); port = s.getPort();
+
         Connection c = new Connection();
         c.use(s);
-        connect(c);
+        createMessageIterator(c);
         return true;
     }
 
-    private void connect(Connection con) {
+    private void createMessageIterator(Connection con) {
         this.con = con;
         messageIterator = new Iterator<IMessage>() {
             IMessage nextMsg;
