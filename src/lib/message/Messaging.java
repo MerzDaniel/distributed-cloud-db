@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.Iterator;
 
 public class Messaging {
+    public static final int CONNECT_RETRIES = 10;
+
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
 
@@ -23,11 +25,17 @@ public class Messaging {
     }
 
     public synchronized boolean connect(String host, int port) throws IOException {
-        Connection c = new Connection();
-        c.connect(host, port);
-        connect(c);
-        KVMessage kvMessage = (KVMessage) readMessage();
-        return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+        int retryCounter = 0;
+        while (retryCounter++ < CONNECT_RETRIES) {
+            try {
+                Connection c = new Connection();
+                c.connect(host, port);
+                connect(c);
+                KVMessage kvMessage = (KVMessage) readMessage();
+                return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+            } catch (IOException e) {}
+        }
+        throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries");
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
