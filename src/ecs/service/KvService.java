@@ -79,24 +79,24 @@ public final class KvService {
         return response;
     }
 
-    public static boolean removeNode(ServerData removedNode, State state) throws KVServerNotFoundException, IOException, MarshallingException {
-        state.storeMeta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
+    public static boolean removeNode(ServerData removedNode, KVStoreMetaData meta) throws KVServerNotFoundException, IOException, MarshallingException {
+        meta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
         //get two servers before removed node
-        ServerData firstBefore = state.storeMeta.findPreviousKvServer(removedNode);
-        ServerData secondBefore = state.storeMeta.findPreviousKvServer(firstBefore);
+        ServerData firstBefore = meta.findPreviousKvServer(removedNode);
+        ServerData secondBefore = meta.findPreviousKvServer(firstBefore);
 
         //get two servers after the removed node
-        ServerData firstAfter = state.storeMeta.findNextKvServer(removedNode);
-        ServerData secondAfter = state.storeMeta.findNextKvServer(firstAfter);
-        ServerData thirdAfter = state.storeMeta.findNextKvServer(secondAfter);
+        ServerData firstAfter = meta.findNextKvServer(removedNode);
+        ServerData secondAfter = meta.findNextKvServer(firstAfter);
+        ServerData thirdAfter = meta.findNextKvServer(secondAfter);
 
         //make servers readonly
         KvService.makeReadonly(firstAfter);
 
         //remove node from metadata
-        state.storeMeta.getKvServerList().remove(removedNode);
+        meta.getKvServerList().remove(removedNode);
         //configure all data
-        new ConfigureAllCommand().execute(state);
+        configureAll(meta);
 
         //logics with firstNodeAfter
         KvService.fullReplicateData(firstAfter, removedNode, firstAfter);
