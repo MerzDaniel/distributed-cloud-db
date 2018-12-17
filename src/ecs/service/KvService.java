@@ -58,4 +58,17 @@ public final class KvService {
         KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
         return response;
     }
+
+    public static KVAdminMessage configureAll(KVStoreMetaData storeMetaData) throws IOException, MarshallingException {
+        for (int index = 0; index < storeMetaData.getKvServerList().size(); index++) {
+            ServerData sd = storeMetaData.getKvServerList().get(index);
+            KVAdminMessage response = configure(sd, storeMetaData, index);
+
+            if (response.status.equals(KVAdminMessage.StatusType.CONFIGURE_ERROR)) {
+                return response;
+            }
+        }
+
+        return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
+    }
 }
