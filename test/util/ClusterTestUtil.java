@@ -50,9 +50,10 @@ public final class ClusterTestUtil {
         servers = new LinkedList<>();
         serverDatas = new LinkedList<>();
         stores = new LinkedList<>();
+        int basePort = (int) (10000 + (50000 + Math.random()));
         for (int i = 0; i < numberOfServers; i++) {
             String serverName = "server" + i;
-            ServerData sd = new ServerData(serverName, "localhost", 50000 + i, HashUtil.getHash(serverName));
+            ServerData sd = new ServerData(serverName, "localhost", basePort + i, HashUtil.getHash(serverName));
 
             KeyValueStore db = new MemoryDatabase();
             KVServer srv = new KVServer(sd, db);
