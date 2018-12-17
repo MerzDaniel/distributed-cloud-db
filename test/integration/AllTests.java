@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 public class AllTests {
 
     static {
+        System.setProperty("log4j.configurationFile", "log4j2-test.properties.xml");
         try {
             KeyValueStore db = new RandomAccessKeyValueStore();
             db.init("dbname");
