@@ -1,5 +1,6 @@
 package integration;
 
+import ecs.service.KvService;
 import junit.framework.Assert;
 import lib.message.AdminMessages.FullReplicationMsg;
 import lib.message.KVAdminMessage;
@@ -10,6 +11,7 @@ import lib.metadata.ServerData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import server.KVServer;
 import server.kv.DbProvider;
 import server.kv.KeyValueStore;
 import util.ClusterTestUtil;
@@ -39,30 +41,24 @@ public class ServerReplicationTest {
     public void testFullReplicate() throws KVServerNotFoundException, NoSuchAlgorithmException, MarshallingException, IOException, InterruptedException {
         ClusterTestUtil.fillUpDb(cluster, 200);
 
-        ServerData sdSource = cluster.serverDatas.get(0);
-        ServerData sdTarget = cluster.metaData.findNextKvServer(cluster.metaData.findNextKvServer(cluster.metaData.findNextKvServer(sdSource)));
-        DbProvider providerSource = cluster.servers.stream()
-                .filter(s -> s.getState().currentServerServerData == sdSource)
-                .findAny().get()
-                .getState().dbProvider;
-        DbProvider providerTarget = cluster.servers.stream()
-                .filter(s -> s.getState().currentServerServerData == sdTarget)
-                .findAny().get()
-                .getState().dbProvider;
-        KeyValueStore dbSource_1 = providerSource.getDb(sdSource.getName());
-        KeyValueStore dbTarget_1 = providerTarget.getDb(sdSource.getName());
+        KVServer serverSource = cluster.servers.get(0);
+        KVServer serverTarget = cluster.getNextServer(cluster.getNextServer(cluster.getNextServer(serverSource)));
+        KeyValueStore dbSource = cluster.getDb(serverSource);
+        KeyValueStore replicaTarget = cluster.getReplica(serverTarget, serverSource);
 
         // data should not be replicated to this server => replicated data of server0 should be zero
-        assertEquals(0, dbTarget_1.retrieveAllData().count());
+        assertEquals(0, replicaTarget.retrieveAllData().count());
 
-        Messaging messaging = new Messaging();
-        messaging.connect(sdSource);
-        messaging.sendMessage(new FullReplicationMsg(sdSource.getName(), sdTarget.getName()));
-        assertEquals(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS, ((KVAdminMessage)messaging.readMessage()).status);
+        KVAdminMessage replicateResponse= KvService.fullReplicateData(
+                cluster.getServerData(serverSource),
+                cluster.getServerData(serverSource),
+                cluster.getServerData(serverTarget)
+        );
+        assertEquals(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS, (replicateResponse).status);
 
         // now the data should be replicated to this server
-        long replicatedDataCount = dbTarget_1.retrieveAllData().count();
-        long expectedDataSize = dbSource_1.retrieveAllData().count();
+        long replicatedDataCount = replicaTarget.retrieveAllData().count();
+        long expectedDataSize = dbSource.retrieveAllData().count();
         Assert.assertEquals(expectedDataSize, replicatedDataCount);
     }
 

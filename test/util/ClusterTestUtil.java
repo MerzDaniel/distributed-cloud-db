@@ -66,6 +66,10 @@ public final class ClusterTestUtil {
         public KeyValueStore getReplica(KVServer server, KVServer replicatedServer) {
             return server.getState().dbProvider.getDb(replicatedServer.getState().currentServerServerData.getName());
         }
+
+        public ServerData getServerData(KVServer serverSource) {
+            return serverSource.getState().currentServerServerData;
+        }
     }
 
     public static Cluster setupCluster(int numberOfServers) throws NoSuchAlgorithmException {
