@@ -27,6 +27,7 @@ public class UsageCommand implements Command {
         System.out.println("  configure                : Configure KVServers ( UNCONFIGURE -> IDLE )");
         System.out.println("  start                    : Start the KVServers ( IDLE -> RUNNING )");
         System.out.println("  stop                     : Stop all KVServers ( RUNNING -> IDLE )");
+        System.out.println("  failover                 : if one node failed, it will remove the node and data will be replicated to other servers");
         System.out.println("  shutdown                 : Shutdown all KVServer processes");
         System.out.println("  help                     : Show this help");
     }
