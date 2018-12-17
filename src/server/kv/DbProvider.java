@@ -31,14 +31,15 @@ public class DbProvider {
     public DbProvider(ServerData coordinator, KeyValueStore db, boolean inMemory) {
         this.coordinator = coordinator;
         this.inMemory = inMemory;
-        dbMap.put(coordinator.getName(), db);
+        dbMap.put(getDbName(coordinator.getName()), db);
     }
 
     /**
      * Get database for a specific ServerData
      */
     public KeyValueStore getDb(String serverName) {
-        if (dbMap.get(serverName) != null) return dbMap.get(serverName);
+        String dbName = getDbName(serverName);
+        if (dbMap.get(dbName) != null) return dbMap.get(dbName);
 
         return createNewDb(serverName);
     }
