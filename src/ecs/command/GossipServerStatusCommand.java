@@ -28,10 +28,10 @@ public class GossipServerStatusCommand implements Command {
     @Override
     public void execute(State state) {
         Random random = new Random();
-        List<ServerData> kvServerList = state.poolMeta.getKvServerList();
+        List<ServerData> kvServerList = state.storeMeta.getKvServerList();
 
         try {
-            state.timedRunningStateMap = KvService.gossipServers(state.poolMeta.getKvServerList(), state.timedRunningStateMap);
+            state.timedRunningStateMap = KvService.gossipServers(state.storeMeta.getKvServerList(), state.timedRunningStateMap);
             kvServerList.forEach(sd2 -> {
                 TimedRunningState timedRunningState = state.timedRunningStateMap.get(sd2.getName());
                 String serverState;
