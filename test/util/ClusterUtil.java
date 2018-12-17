@@ -29,7 +29,7 @@ public final class ClusterUtil {
         public KVStoreMetaData metaData;
 
         public void shutdown() {
-            servers.stream().parallel().forEach(s -> {
+            servers.stream().forEach(s -> {
                 try {
                     s.stop();
                 } catch (IOException e) {
