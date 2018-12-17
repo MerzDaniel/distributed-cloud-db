@@ -1,6 +1,9 @@
 package util;
 
+import client.store.KVStore;
 import lib.hash.HashUtil;
+import lib.message.MarshallingException;
+import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -14,7 +17,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class ClusterUtil {
+public final class ClusterTestUtil {
     public static class Cluster {
         public Cluster(List<KVServer> servers, List<ServerData> serverDatas, List<KeyValueStore> stores, KVStoreMetaData metaData) {
             this.servers = servers;
@@ -69,5 +72,12 @@ public final class ClusterUtil {
         });
 
         return new Cluster(servers, serverDatas, stores, metaData);
+    }
+
+    public static void fillUpDb(Cluster cluster, int amountOfData) throws KVServerNotFoundException, NoSuchAlgorithmException, MarshallingException, IOException {
+        KVStore kvStore = new KVStore(cluster.metaData);
+        for (int i = 0; i < amountOfData; i++) {
+            kvStore.put("Key-" + String.valueOf(i), "Value-" + String.valueOf(i));
+        }
     }
 }

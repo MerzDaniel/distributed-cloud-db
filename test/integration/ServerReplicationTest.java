@@ -1,6 +1,5 @@
 package integration;
 
-import client.store.KVStore;
 import junit.framework.Assert;
 import lib.message.AdminMessages.FullReplicationMsg;
 import lib.message.KVAdminMessage;
@@ -13,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import server.kv.DbProvider;
 import server.kv.KeyValueStore;
-import util.ClusterUtil;
+import util.ClusterTestUtil;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -22,25 +21,24 @@ import static junit.framework.Assert.assertEquals;
 
 public class ServerReplicationTest {
 
-    ClusterUtil.Cluster cluster = null;
+    ClusterTestUtil.Cluster cluster = null;
 
     @Before
     public void setup() throws NoSuchAlgorithmException {
-        cluster = ClusterUtil.setupCluster(5);
+        cluster = ClusterTestUtil.setupCluster(5);
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
         cluster.shutdown();
         cluster = null;
+        Thread.sleep(500);
     }
 
     @Test
     public void testFullReplicate() throws KVServerNotFoundException, NoSuchAlgorithmException, MarshallingException, IOException, InterruptedException {
-        KVStore kvStore = new KVStore(cluster.metaData);
-        for (int i = 0; i < 100; i++) {
-            kvStore.put(String.valueOf(i), String.valueOf(i));
-        }
+        ClusterTestUtil.fillUpDb(cluster, 200);
+
         ServerData sdSource = cluster.serverDatas.get(0);
         ServerData sdTarget = cluster.metaData.findNextKvServer(cluster.metaData.findNextKvServer(cluster.metaData.findNextKvServer(sdSource)));
         DbProvider providerSource = cluster.servers.stream()
