@@ -86,7 +86,8 @@ public class Messaging {
         } catch (ExecutionException e) {
             if (!(e.getCause() instanceof IOException)) throw new IOException(e.getCause());
 
-            if (!isConnected()) {
+            boolean isConnected = isConnected();
+            if (!isConnected) {
                 // reconnect and try reading again
                 connect(host, port);
             }
@@ -95,7 +96,7 @@ public class Messaging {
             try {
                 return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (ExecutionException executionException) {
-                throw new IOException(executionException.getCause());
+                throw new IOException("Exception after second try. Before Messaging was connected: "+ isConnected, executionException.getCause());
             } catch (Exception e1) {
                 throw new IOException(e1);
             }
@@ -114,13 +115,6 @@ public class Messaging {
                         continue;
                     }
                     return MessageMarshaller.unmarshall(msg);
-                } catch (IOException e) {
-                    if (con.isConnected()) throw e; // some other problem occurred
-
-                    logger.debug("Connection seems to be closed", e);
-                    // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
-                    disconnect();
-                    break;
                 } catch (MarshallingException e) {
                     logger.warn("Marshalling exception!", e);
                     continue;
