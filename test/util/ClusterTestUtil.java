@@ -50,7 +50,7 @@ public final class ClusterTestUtil {
         servers = new LinkedList<>();
         serverDatas = new LinkedList<>();
         stores = new LinkedList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < numberOfServers; i++) {
             String serverName = "server" + i;
             ServerData sd = new ServerData(serverName, "localhost", 50000 + i, HashUtil.getHash(serverName));
 
