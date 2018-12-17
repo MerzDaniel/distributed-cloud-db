@@ -57,7 +57,11 @@ public final class CommandParser {
                 command = new AddServerCommand(Integer.parseInt(tokens[1]), CacheType.valueOf(tokens[2]));
             } catch (Exception e) {
             }
-        } else if (tokens[0].equals("init") && tokens.length == 4)
+
+        } else if (tokens[0].equals("failover"))
+            command = new FailOverCommand();
+
+        else if (tokens[0].equals("init") && tokens.length == 4)
             try {
                 command = new InitCommand(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), CacheType.valueOf(tokens[3]));
             } catch (Exception e) {

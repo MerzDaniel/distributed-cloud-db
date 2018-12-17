@@ -2,9 +2,8 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import lib.message.KVAdminMessage;
+import ecs.service.KvService;
 import lib.message.MarshallingException;
-import lib.message.Messaging;
 import lib.metadata.ServerData;
 import lib.server.TimedRunningState;
 import org.apache.log4j.LogManager;
@@ -30,14 +29,9 @@ public class GossipServerStatusCommand implements Command {
     public void execute(State state) {
         Random random = new Random();
         List<ServerData> kvServerList = state.poolMeta.getKvServerList();
-        ServerData sd = kvServerList.get(random.nextInt(kvServerList.size()));
 
-        Messaging messaging = new Messaging();
         try {
-            messaging.connect(sd);
-            messaging.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, state.timedRunningStateMap));
-            KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
-            state.timedRunningStateMap = response.timedServerStates;
+            state.timedRunningStateMap = KvService.gossipServers(state.poolMeta.getKvServerList(), state.timedRunningStateMap);
             kvServerList.forEach(sd2 -> {
                 TimedRunningState timedRunningState = state.timedRunningStateMap.get(sd2.getName());
                 String serverState;
@@ -46,11 +40,8 @@ public class GossipServerStatusCommand implements Command {
                 System.out.format("State of Server %s: %s\n", sd2.getName(), serverState);
             });
 
-        } catch (IOException e) {
-            System.out.format("Tried to reach Server %s for gossip status info at %s:%d but it could not be reached\n", sd.getName(), sd.getHost(), sd.getPort());
-            return;
         } catch (MarshallingException e) {
-            System.out.format("Invalid formatted msg from %s\n", sd.getName());
+            System.out.format("Invalid formatted msg. Please try again.");
             return;
         }
     }
