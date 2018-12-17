@@ -8,6 +8,7 @@ import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
+import server.kv.DbError;
 import server.kv.KeyValueStore;
 
 import java.util.Arrays;
@@ -32,7 +33,14 @@ public final class FullReplication {
 
         KeyValueStore sourceDb = state.dbProvider.getDb(srcData);
 
-        List<Exception> combinedErrors = moveDataToExternalServer(targetServer, sourceDb);
+        List<Exception> combinedErrors;
+        if (message.targetServerName.equals(state.currentServerServerData.getName())) {
+            // data should be moved internally
+            KeyValueStore targetDb = state.dbProvider.getDb(targetServer);
+            combinedErrors = moveDataToInternalDb(sourceDb, targetDb);
+        } else {
+            combinedErrors = moveDataToExternalServer(targetServer, sourceDb);
+        }
 
         if (combinedErrors.size() > 0) {
             logger.warn(String.format(
@@ -51,6 +59,17 @@ public final class FullReplication {
         }
 
         return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS);
+    }
+
+    private static List<Exception> moveDataToInternalDb(KeyValueStore sourceDb, KeyValueStore targetDb) {
+        return sourceDb.retrieveAllData().reduce(new LinkedList<>(),(errors, data) -> {
+            try {
+                targetDb.put(data.getKey(), data.getValue());
+            } catch (DbError dbError) {
+                errors.add(dbError);
+            }
+            return errors;
+        }, null);
     }
 
     private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb) {
