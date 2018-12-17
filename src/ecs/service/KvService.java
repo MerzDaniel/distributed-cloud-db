@@ -10,11 +10,14 @@ import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
+import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 
 public final class KvService {
     private static Logger l = LogManager.getLogger(KvService.class);
@@ -167,5 +170,16 @@ public final class KvService {
             }
         }
         return universeIsOk;
+    }
+
+    public static TimedRunningStateMap gossipServers(List<ServerData> servers, TimedRunningStateMap timedRunningStateMap) throws IOException, MarshallingException {
+        Random random = new Random();
+        ServerData sd = servers.get(random.nextInt(servers.size()));
+
+        Messaging messaging = new Messaging();
+        messaging.connect(sd);
+        messaging.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, timedRunningStateMap));
+        KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
+        return response.timedServerStates;
     }
 }
