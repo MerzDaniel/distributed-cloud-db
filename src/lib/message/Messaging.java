@@ -10,10 +10,14 @@ import java.net.Socket;
 import java.util.Iterator;
 
 public class Messaging {
+    public static final int CONNECT_RETRIES = 10;
+
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
 
     Iterator<IMessage> messageIterator;
+    private String host;
+    private int port;
 
     public Messaging() {
     }
@@ -23,39 +27,28 @@ public class Messaging {
     }
 
     public synchronized boolean connect(String host, int port) throws IOException {
-        Connection c = new Connection();
-        c.connect(host, port);
-        connect(c);
-        KVMessage kvMessage = (KVMessage) readMessage();
-        return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+        this.host = host;
+        this.port = port;
+        int retryCounter = 0;
+        while (retryCounter++ < CONNECT_RETRIES) {
+            try {
+                Connection c = new Connection();
+                c.connect(host, port);
+                createMessageIterator(c);
+                KVMessage kvMessage = (KVMessage) readMessage();
+                return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
+            } catch (IOException e) {}
+        }
+        throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries");
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
+        host = s.getInetAddress().getHostAddress(); port = s.getPort();
+
         Connection c = new Connection();
         c.use(s);
-        connect(c);
+        createMessageIterator(c);
         return true;
-    }
-
-    private void connect(Connection con) {
-        this.con = con;
-        messageIterator = new Iterator<IMessage>() {
-            IMessage nextMsg;
-
-            @Override
-            public boolean hasNext() {
-                if (nextMsg != null) return true;
-                nextMsg = readNextMessage(con);
-                return nextMsg != null;
-            }
-
-            @Override
-            public IMessage next() {
-                IMessage result = nextMsg;
-                nextMsg = null;
-                return result;
-            }
-        };
     }
 
     public synchronized IMessage readMessage() throws IOException {
@@ -79,6 +72,27 @@ public class Messaging {
 
     public void disconnect() {
         con.disconnect();
+    }
+
+    private void createMessageIterator(Connection con) {
+        this.con = con;
+        messageIterator = new Iterator<IMessage>() {
+            IMessage nextMsg;
+
+            @Override
+            public boolean hasNext() {
+                if (nextMsg != null) return true;
+                nextMsg = readNextMessage(con);
+                return nextMsg != null;
+            }
+
+            @Override
+            public IMessage next() {
+                IMessage result = nextMsg;
+                nextMsg = null;
+                return result;
+            }
+        };
     }
 
     private IMessage readNextMessage(Connection con) {

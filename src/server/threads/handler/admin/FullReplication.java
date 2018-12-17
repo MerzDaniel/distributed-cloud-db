@@ -11,8 +11,7 @@ import server.ServerState;
 import server.kv.KeyValueStore;
 import server.threads.handler.AdminMessageHandler;
 
-import java.util.HashMap;
-import java.util.IntSummaryStatistics;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class FullReplication {
@@ -31,7 +30,7 @@ public final class FullReplication {
         }
 
         KeyValueStore db = state.dbProvider.getDb(srcData);
-        IntSummaryStatistics errorCount = db.retrieveAllData().parallel().map((d) -> {
+        List<Exception> combinedErrors = db.retrieveAllData().parallel().reduce(new LinkedList<Exception>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
@@ -51,19 +50,20 @@ public final class FullReplication {
 
             } catch (Exception e) {
                 messagingHashMap.remove(currentThreadId);
-                logger.debug("Problem during replication", e);
-                return 1;
+                errors.add(e);
+                return errors;
             }
-            return 0;
-        }).collect(Collectors.summarizingInt(x -> (int) x));
+            return errors;
+        }, (l0, l1) -> {LinkedList<Exception> l = new LinkedList(l0); l.addAll(l1); return l;});
 
-        if (errorCount.getSum() > 0) {
+        if (combinedErrors.size() > 0) {
             logger.warn(String.format(
                     "Errors during replication from %s (data: %s) to %s",
                     state.currentServerServerData.getName(),
                     srcData.getName(),
-                    targetServer.getName())
-            );
+                    targetServer.getName()));
+            combinedErrors.forEach(e -> logger.warn(e.getMessage()));
+
             return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
         }
 
