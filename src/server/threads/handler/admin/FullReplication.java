@@ -22,21 +22,19 @@ public final class FullReplication {
 
     public static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
         ServerData targetServer;
-        ServerData srcData;
         try {
             targetServer = state.meta.findKvServerByName(message.targetServerName);
-            srcData = state.meta.findKvServerByName(message.srcDataServerName);
         } catch (KVServerNotFoundException e) {
             logger.warn("Tried to replicate to non existing server");
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
-        KeyValueStore sourceDb = state.dbProvider.getDb(srcData.getName());
+        KeyValueStore sourceDb = state.dbProvider.getDb(message.srcDataServerName);
 
         List<Exception> combinedErrors;
         if (message.targetServerName.equals(state.currentServerServerData.getName())) {
             // data should be moved internally
-            KeyValueStore targetDb = state.dbProvider.getDb(targetServer.getName());
+            KeyValueStore targetDb = state.dbProvider.getDb(message.targetServerName);
             combinedErrors = moveDataToInternalDb(sourceDb, targetDb);
         } else {
             combinedErrors = moveDataToExternalServer(targetServer, sourceDb);
@@ -46,7 +44,7 @@ public final class FullReplication {
             logger.warn(String.format(
                     "Errors during replication from %s (data: %s) to %s",
                     state.currentServerServerData.getName(),
-                    srcData.getName(),
+                    message.srcDataServerName,
                     targetServer.getName()));
             combinedErrors.forEach(e -> {
                 logger.warn(e.getMessage());
