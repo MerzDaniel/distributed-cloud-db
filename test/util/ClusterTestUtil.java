@@ -39,6 +39,33 @@ public final class ClusterTestUtil {
                 }
             });
         }
+
+        public void fillUpDb(int amountOfData) throws MarshallingException, NoSuchAlgorithmException, KVServerNotFoundException, IOException {
+            ClusterTestUtil.fillUpDb(this, amountOfData);
+        }
+
+        public KVServer getServer(ServerData sd) {
+            for (KVServer s : servers)
+                if (s.getState().currentServerServerData.getName().equals(sd.getName()))
+                    return s;
+            return null;
+        }
+
+        public KVServer getNextServer(KVServer server) {
+            try {
+                return getServer(metaData.findNextKvServer(server.getState().currentServerServerData));
+            } catch (KVServerNotFoundException e) {
+                return null;
+            }
+        }
+
+        public KeyValueStore getDb(KVServer server) {
+            return server.getState().dbProvider.getDb(server.getState().currentServerServerData);
+        }
+
+        public KeyValueStore getReplica(KVServer server, KVServer replicatedServer) {
+            return server.getState().dbProvider.getDb(replicatedServer.getState().currentServerServerData);
+        }
     }
 
     public static Cluster setupCluster(int numberOfServers) throws NoSuchAlgorithmException {
