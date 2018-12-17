@@ -7,16 +7,17 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
+import java.util.concurrent.*;
 
 public class Messaging {
     public static final int CONNECT_RETRIES = 10;
+    public static long READ_MESSAGE_TIMEOUT = 15000;
 
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
-
     private String host;
     private int port;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public Messaging() {
     }
@@ -52,14 +53,23 @@ public class Messaging {
     }
 
     public synchronized IMessage readMessage() throws IOException {
+        Future<IMessage> messageFuture;
         try {
-            return readNextMessage();
-        } catch (IOException e) {
-            if (isConnected()) throw e;
+            messageFuture = readNextMessage();
+            return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            if (isConnected()) throw new IOException(e);
 
             // reconnect and try reading again
             connect(host, port);
-            return readNextMessage();
+            messageFuture = readNextMessage();
+            try {
+                return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (Exception e1) {
+                throw new IOException(e1);
+            }
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 
@@ -76,27 +86,29 @@ public class Messaging {
         con.disconnect();
     }
 
-    private IMessage readNextMessage() throws IOException {
-        while (con.isConnected()) {
-            try {
-                String msg = con.readMessage();
-                logger.debug(String.format("Got a message: %s\n", msg));
-                if (msg.length() == 0) {
+    private Future<IMessage> readNextMessage() {
+        return executorService.submit(() -> {
+            while (con.isConnected()) {
+                try {
+                    String msg = con.readMessage();
+                    logger.debug(String.format("Got a message: %s\n", msg));
+                    if (msg.length() == 0) {
+                        continue;
+                    }
+                    return MessageMarshaller.unmarshall(msg);
+                } catch (IOException e) {
+                    if (con.isConnected()) throw e; // some other problem occurred
+
+                    logger.debug("Connection seems to be closed", e);
+                    // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
+                    disconnect();
+                    break;
+                } catch (MarshallingException e) {
+                    logger.warn("Marshalling exception!", e);
                     continue;
                 }
-                return MessageMarshaller.unmarshall(msg);
-            } catch (IOException e) {
-                if (con.isConnected()) throw e; // some other problem occurred
-
-                logger.debug("Connection seems to be closed", e);
-                // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
-                disconnect();
-                break;
-            } catch (MarshallingException e) {
-                logger.warn("Marshalling exception!", e);
-                continue;
             }
-        }
-        throw new IOException("Not connected");
+            throw new IOException("Not connected");
+        });
     }
 }
