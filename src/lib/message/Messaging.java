@@ -15,7 +15,6 @@ public class Messaging {
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
 
-    Iterator<IMessage> messageIterator;
     private String host;
     private int port;
 
@@ -32,34 +31,36 @@ public class Messaging {
         int retryCounter = 0;
         while (retryCounter++ < CONNECT_RETRIES) {
             try {
-                Connection c = new Connection();
-                c.connect(host, port);
-                createMessageIterator(c);
+                this.con = new Connection();
+                this.con.connect(host, port);
                 KVMessage kvMessage = (KVMessage) readMessage();
                 return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
         throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries");
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
-        host = s.getInetAddress().getHostAddress(); port = s.getPort();
+        disconnect();
+        host = s.getInetAddress().getHostAddress();
+        port = s.getPort();
 
-        Connection c = new Connection();
-        c.use(s);
-        createMessageIterator(c);
+        con = new Connection();
+        con.use(s);
         return true;
     }
 
     public synchronized IMessage readMessage() throws IOException {
-        boolean isConnected = con.isConnected();
-        boolean hasNext = messageIterator.hasNext();
-        if (!isConnected || !hasNext) {
+        try {
+            return readNextMessage();
+        } catch (IOException e) {
+            if (isConnected()) throw e;
 
-            throw new IOException();
+            // reconnect and try reading again
+            connect(host, port);
+            return readNextMessage();
         }
-
-        return messageIterator.next();
     }
 
     public synchronized void sendMessage(IMessage msg) throws MarshallingException, IOException {
@@ -71,31 +72,11 @@ public class Messaging {
     }
 
     public void disconnect() {
+        if (con == null) return;
         con.disconnect();
     }
 
-    private void createMessageIterator(Connection con) {
-        this.con = con;
-        messageIterator = new Iterator<IMessage>() {
-            IMessage nextMsg;
-
-            @Override
-            public boolean hasNext() {
-                if (nextMsg != null) return true;
-                nextMsg = readNextMessage(con);
-                return nextMsg != null;
-            }
-
-            @Override
-            public IMessage next() {
-                IMessage result = nextMsg;
-                nextMsg = null;
-                return result;
-            }
-        };
-    }
-
-    private IMessage readNextMessage(Connection con) {
+    private IMessage readNextMessage() throws IOException {
         while (con.isConnected()) {
             try {
                 String msg = con.readMessage();
@@ -105,14 +86,17 @@ public class Messaging {
                 }
                 return MessageMarshaller.unmarshall(msg);
             } catch (IOException e) {
+                if (con.isConnected()) throw e; // some other problem occurred
+
                 logger.debug("Connection seems to be closed", e);
+                // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
                 disconnect();
                 break;
             } catch (MarshallingException e) {
-                logger.warn("Marsharhalling exception!", e);
+                logger.warn("Marshalling exception!", e);
                 continue;
             }
         }
-        return null;
+        throw new IOException("Not connected");
     }
 }
