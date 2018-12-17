@@ -141,36 +141,5 @@ public class MessageUnmarshallerTest extends TestCase {
         assertEquals("SampleKey", kvMessage.getKey());
         assertEquals(kvStoreMetaDataString, kvMessage.getValue());
     }
-
-    @Test
-    public void testUnmarshallConfigureMessage() throws MarshallingException {
-        String s = "CONFIGURE" + RECORD_SEPARATOR +
-                "server" + ELEMENT_SEPARATOR +
-                "127.0.0.1" + ELEMENT_SEPARATOR +
-                "50001" + ELEMENT_SEPARATOR +
-                "000000" + RECORD_SEPARATOR +
-                "0";
-        KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
-        assertEquals(KVAdminMessage.StatusType.CONFIGURE, message.status);
-        ServerData c = message.meta.getKvServerList().get(0);
-        assertEquals("127.0.0.1", c.getHost());
-        assertEquals(50001, c.getPort());
-        assertEquals(BigInteger.ZERO, c.getFromHash());
-    }
-
-    @Test
-    public void testUnmarshallMoveMessage() throws MarshallingException {
-        String s = "MOVE" + RECORD_SEPARATOR +
-                "server" + ELEMENT_SEPARATOR +
-                "127.0.0.1" + ELEMENT_SEPARATOR +
-                "50001" + ELEMENT_SEPARATOR+
-                "000000";
-        KVAdminMessage message = (KVAdminMessage) MessageMarshaller.unmarshall(s);
-        assertEquals(KVAdminMessage.StatusType.MOVE, message.status);
-        ServerData c = message.serverData;
-        assertEquals("127.0.0.1", c.getHost());
-        assertEquals(50001, c.getPort());
-        assertEquals(BigInteger.ZERO, c.getFromHash());
-    }
 }
 

@@ -52,19 +52,9 @@ public class MessageMarshallerTest extends TestCase {
         KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE);
         m.meta = new KVStoreMetaData();
         m.meta.getKvServerList().add(new ServerData("server", "localhost", 50000));
+        KVAdminMessage result = (KVAdminMessage) MessageMarshaller.unmarshall(m.marshall());
 
-        String expected = String.format("CONFIGURE%1$sserver%2$slocalhost%2$s50000%2$s0%1$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
-        String result = MessageMarshaller.marshall(m);
-        assertEquals(expected , result);
-    }
-    @Test
-    public void testMarshallAdminMoveMessage() throws MarshallingException {
-        KVAdminMessage m = new KVAdminMessage(KVAdminMessage.StatusType.MOVE);
-        m.meta = new KVStoreMetaData();
-        m.serverData = new ServerData("server", "localhost", 50000);
-
-        String expected = String.format("MOVE%1$sserver%2$slocalhost%2$s50000%2$s0", RECORD_SEPARATOR, ELEMENT_SEPARATOR);
-        String result = MessageMarshaller.marshall(m);
-        assertEquals(expected , result);
+        assertEquals(m.status, result.status);
+        assertEquals(m.meta.getKvServerList().size(), result.meta.getKvServerList().size());
     }
 }

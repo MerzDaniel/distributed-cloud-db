@@ -38,9 +38,8 @@ public class Connections extends TestCase {
             ex = e;
         }
 
-        assertTrue(ex instanceof UnknownHostException);
+        assertTrue(ex.getCause() instanceof UnknownHostException);
     }
-
 
     public void testIllegalPort() {
         Exception ex = null;
