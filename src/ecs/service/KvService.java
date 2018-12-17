@@ -108,6 +108,10 @@ public final class KvService {
         }
 
         KvService.makeRunning(firstAfter);
+
+        if (meta.getKvServerList().size() == 1){
+            return true;
+        }
         //update replica servers of the firstAfter node (it's coordinator database has been updated)
 
         if (!firstAfter.equals(removedNode) && !secondAfter.equals(removedNode) && !secondAfter.equals(firstAfter)){
