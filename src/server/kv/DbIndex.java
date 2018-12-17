@@ -3,14 +3,15 @@ package server.kv;
 import java.io.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DbIndex {
 
-    private DbIndex(Dictionary<String, IndexEntry> index) {
+    private DbIndex(ConcurrentHashMap<String, IndexEntry> index) {
         this.index = index;
     }
 
-    private Dictionary<String, IndexEntry> index;
+    private ConcurrentHashMap<String, IndexEntry> index;
 
     public IndexEntry getEntry(String key) {
         return index.get(key);
@@ -31,10 +32,10 @@ public class DbIndex {
 
     public static DbIndex LoadFromFile(File indexFile) throws IOException, ClassNotFoundException {
         if (!indexFile.exists()) {
-            return new DbIndex(new Hashtable<>());
+            return new DbIndex(new ConcurrentHashMap<>());
         }
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(indexFile));
-        return new DbIndex((Dictionary<String, IndexEntry>) ois.readObject());
+        return new DbIndex((ConcurrentHashMap<String, IndexEntry>) ois.readObject());
     }
 
     public void remove(String key) {
