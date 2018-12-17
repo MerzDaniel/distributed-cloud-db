@@ -195,10 +195,21 @@ public final class KvService {
             messaging.connect(sd);
             messaging.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, timedRunningStateMap));
             KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
+            if (response.timedServerStates.get(sd.getName()) == null)
+                response.timedServerStates.put(sd.getName(), new TimedRunningState(RunningState.UNCONFIGURED));
             return response.timedServerStates;
         } catch (IOException e) {
             timedRunningStateMap.put(sd.getName(), new TimedRunningState(RunningState.DOWN));
             return timedRunningStateMap;
+        }
+    }
+
+    public static boolean serverCanBeReached(ServerData sd) {
+        Messaging messaging = new Messaging();
+        try {
+            return messaging.connect(sd);
+        } catch (IOException e) {
+            return false;
         }
     }
 }

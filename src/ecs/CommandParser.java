@@ -66,6 +66,10 @@ public final class CommandParser {
                 command = new InitCommand(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), CacheType.valueOf(tokens[3]));
             } catch (Exception e) {
             }
+
+        else if (tokens[0].equals("fillupdb") && tokens.length == 2)
+            command = new FillupDbCommand(Integer.parseInt(tokens[1]));
+
         if (command == null) {
             System.out.println("Unknown Command.");
             new UsageCommand().execute(state);
