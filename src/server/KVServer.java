@@ -122,7 +122,9 @@ public class KVServer implements Runnable {
         } catch (InterruptedException e) {
             logger.warn("interrupted");
         }
-        state.serverThreads.forEach(st -> st.stop());
+        state.serverThreads.forEach(st -> {
+            if(st!=null) st.stop();
+        });
         state.runningState = RunningState.SHUTTINGDOWN;
         state.dbProvider.shutdown();
     }
