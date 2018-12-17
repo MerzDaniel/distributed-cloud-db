@@ -36,7 +36,7 @@ public class ServerReplicationTest {
     }
 
     @Test
-    public void testFullReplicate() throws KVServerNotFoundException, NoSuchAlgorithmException, MarshallingException, IOException {
+    public void testFullReplicate() throws KVServerNotFoundException, NoSuchAlgorithmException, MarshallingException, IOException, InterruptedException {
         KVStore kvStore = new KVStore(cluster.metaData);
         for (int i = 0; i < 100; i++) {
             kvStore.put(String.valueOf(i), String.valueOf(i));
@@ -63,7 +63,9 @@ public class ServerReplicationTest {
         assertEquals(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS, ((KVAdminMessage)messaging.readMessage()).status);
 
         // now the data should be replicated to this server
-        Assert.assertTrue(dbTarget_1.retrieveAllData().count() == dbSource_1.retrieveAllData().count());
+        long replicatedDataCount = dbTarget_1.retrieveAllData().count();
+        long expectedDataSize = dbSource_1.retrieveAllData().count();
+        Assert.assertEquals(expectedDataSize, replicatedDataCount);
     }
 
     static {

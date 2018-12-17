@@ -7,17 +7,17 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
+import java.util.concurrent.*;
 
 public class Messaging {
     public static final int CONNECT_RETRIES = 10;
+    public static long READ_MESSAGE_TIMEOUT = 15000;
 
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
-
-    Iterator<IMessage> messageIterator;
     private String host;
     private int port;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public Messaging() {
     }
@@ -32,34 +32,48 @@ public class Messaging {
         int retryCounter = 0;
         while (retryCounter++ < CONNECT_RETRIES) {
             try {
-                Connection c = new Connection();
-                c.connect(host, port);
-                createMessageIterator(c);
+                this.con = new Connection();
+                this.con.connect(host, port);
                 KVMessage kvMessage = (KVMessage) readMessage();
                 return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
         throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries");
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
-        host = s.getInetAddress().getHostAddress(); port = s.getPort();
+        disconnect();
+        host = s.getInetAddress().getHostAddress();
+        port = s.getPort();
 
-        Connection c = new Connection();
-        c.use(s);
-        createMessageIterator(c);
+        con = new Connection();
+        con.use(s);
         return true;
     }
 
     public synchronized IMessage readMessage() throws IOException {
-        boolean isConnected = con.isConnected();
-        boolean hasNext = messageIterator.hasNext();
-        if (!isConnected || !hasNext) {
+        Future<IMessage> messageFuture;
+        try {
+            messageFuture = readNextMessage();
+            return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            if (!(e.getCause() instanceof IOException)) throw new IOException(e.getCause());
+            if (isConnected()) throw (IOException) e.getCause();
 
-            throw new IOException();
+            // reconnect and try reading again
+            connect(host, port);
+            messageFuture = readNextMessage();
+            try {
+                return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (ExecutionException executionException) {
+                throw new IOException(executionException.getCause());
+            } catch (Exception e1) {
+                throw new IOException(e1);
+            }
+        } catch (Exception e) {
+            throw new IOException(e);
         }
-
-        return messageIterator.next();
     }
 
     public synchronized void sendMessage(IMessage msg) throws MarshallingException, IOException {
@@ -71,48 +85,33 @@ public class Messaging {
     }
 
     public void disconnect() {
+        if (con == null) return;
         con.disconnect();
     }
 
-    private void createMessageIterator(Connection con) {
-        this.con = con;
-        messageIterator = new Iterator<IMessage>() {
-            IMessage nextMsg;
+    private Future<IMessage> readNextMessage() {
+        return executorService.submit(() -> {
+            while (con.isConnected()) {
+                try {
+                    String msg = con.readMessage();
+                    logger.debug(String.format("Got a message: %s\n", msg));
+                    if (msg.length() == 0) {
+                        continue;
+                    }
+                    return MessageMarshaller.unmarshall(msg);
+                } catch (IOException e) {
+                    if (con.isConnected()) throw e; // some other problem occurred
 
-            @Override
-            public boolean hasNext() {
-                if (nextMsg != null) return true;
-                nextMsg = readNextMessage(con);
-                return nextMsg != null;
-            }
-
-            @Override
-            public IMessage next() {
-                IMessage result = nextMsg;
-                nextMsg = null;
-                return result;
-            }
-        };
-    }
-
-    private IMessage readNextMessage(Connection con) {
-        while (con.isConnected()) {
-            try {
-                String msg = con.readMessage();
-                logger.debug(String.format("Got a message: %s\n", msg));
-                if (msg.length() == 0) {
+                    logger.debug("Connection seems to be closed", e);
+                    // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
+                    disconnect();
+                    break;
+                } catch (MarshallingException e) {
+                    logger.warn("Marshalling exception!", e);
                     continue;
                 }
-                return MessageMarshaller.unmarshall(msg);
-            } catch (IOException e) {
-                logger.debug("Connection seems to be closed", e);
-                disconnect();
-                break;
-            } catch (MarshallingException e) {
-                logger.warn("Marsharhalling exception!", e);
-                continue;
             }
-        }
-        return null;
+            throw new IOException("Not connected");
+        });
     }
 }

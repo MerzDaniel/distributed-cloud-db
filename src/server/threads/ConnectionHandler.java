@@ -53,7 +53,6 @@ public class ConnectionHandler extends AbstractServerThread {
         } finally {
             tryClose(s);
         }
-        state.serverThreads.remove(this);
     }
 }
 

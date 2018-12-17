@@ -1,6 +1,5 @@
 package lib.communication;
 
-import lib.SocketUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -99,8 +98,6 @@ public class Connection {
                 if (c == GROUP_SEPARATOR) break;
                 buffer.append(c);
             } catch (IOException e) {
-                logger.warn("Exception occured while reading message: " + e.getMessage());
-                logger.warn(e.getStackTrace());
                 throw e;
             }
         }
@@ -120,8 +117,6 @@ public class Connection {
             }
             out.write(GROUP_SEPARATOR);
         } catch (IOException e) {
-            logger.warn("Error in sendMessage(): " + e.getMessage());
-            logger.warn(e.getStackTrace());
             throw e;
         }
     }

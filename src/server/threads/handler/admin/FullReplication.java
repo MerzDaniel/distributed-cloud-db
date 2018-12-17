@@ -9,16 +9,18 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.kv.KeyValueStore;
-import server.threads.handler.AdminMessageHandler;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class FullReplication {
     static Logger logger = LogManager.getLogger(FullReplication.class);
 
     public static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
-        HashMap<Long, Messaging> messagingHashMap = new HashMap<>();
+        ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
         ServerData targetServer;
         ServerData srcData;
         try {
@@ -30,7 +32,9 @@ public final class FullReplication {
         }
 
         KeyValueStore db = state.dbProvider.getDb(srcData);
-        List<Exception> combinedErrors = db.retrieveAllData().parallel().reduce(new LinkedList<Exception>(), (errors, d) -> {
+        List<Exception> combinedErrors = db.retrieveAllData()
+//                .parallel()
+                .reduce(new LinkedList<>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
                 if (messagingHashMap.get(currentThreadId) == null) {
@@ -62,7 +66,12 @@ public final class FullReplication {
                     state.currentServerServerData.getName(),
                     srcData.getName(),
                     targetServer.getName()));
-            combinedErrors.forEach(e -> logger.warn(e.getMessage()));
+            combinedErrors.forEach(e -> {
+                logger.warn(e.getMessage());
+                logger.warn(Arrays.stream(e.getStackTrace())
+                        .map(s->"        "+s.toString())
+                        .collect(Collectors.joining("\n")));
+            });
 
             return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
         }
