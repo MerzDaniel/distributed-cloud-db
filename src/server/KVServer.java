@@ -114,7 +114,9 @@ public class KVServer implements Runnable {
     }
 
     public void stop() throws IOException {
-        state.serverThreads.forEach(st -> st.stopServerThread());
+        state.serverThreads.forEach(st -> {
+            if(st!=null) st.stopServerThread();
+        });
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
