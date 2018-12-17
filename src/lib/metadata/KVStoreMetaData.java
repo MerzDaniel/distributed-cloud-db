@@ -134,7 +134,7 @@ public class KVStoreMetaData {
         if (noOfServers == 1) return new ArrayList<>();
         if (noOfServers == 2) return Arrays.asList(this.findPreviousKvServer(serverData));
 
-        for (int i = noOfServers - 1; i == 0; i--) {
+        for (int i = noOfServers - 1; i >= 0; i--) {
             if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0){
                 if (i == 0) return Arrays.asList(kvServerList.get(0), kvServerList.get(noOfServers - 1));
                 return kvServerList.subList(i - 1, i + 1);
@@ -170,7 +170,7 @@ public class KVStoreMetaData {
         int noOfServers = kvServerList.size();
         if (noOfServers == 0 || noOfServers == 1) throw new KVServerNotFoundException();
 
-        for (int i = noOfServers - 1; i == 0; i--) {
+        for (int i = noOfServers - 1; i >= 0; i--) {
             if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0) return kvServerList.get(i);
         }
         return kvServerList.get(noOfServers - 1);
