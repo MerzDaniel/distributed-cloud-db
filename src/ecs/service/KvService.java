@@ -114,13 +114,50 @@ public final class KvService {
         //logics with firstNodeAfter
         KvService.fullReplicateData(firstAfter, removedNode, firstAfter);
         KvService.makeRunning(firstAfter);
-        //update replica servers of first server with new values from removed node
+        //update replica servers of the firstAfter node (it's coordinator database has been updated)
         KvService.fullReplicateData(firstAfter, firstAfter, secondAfter);
         KvService.fullReplicateData(firstAfter, firstAfter, thirdAfter);
 
-        //modify replica servers of nodes after removed node
+        //modify replica servers for servers lie before removedNode ( rmeovedNode is no longer there. So they both have a new replica server)
         KvService.fullReplicateData(firstBefore, firstBefore, secondAfter);
         KvService.fullReplicateData(secondBefore, secondBefore, firstAfter);
+
+        return true;
+
+    }
+
+    public static boolean addNode(ServerData addedNode, State state) throws KVServerNotFoundException, IOException, MarshallingException {
+        state.storeMeta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
+        //get two servers before added  node
+        ServerData firstBefore = state.storeMeta.findPreviousKvServer(addedNode);
+        ServerData secondBefore = state.storeMeta.findPreviousKvServer(firstBefore);
+
+        //get two servers after the added node
+        ServerData firstAfter = state.storeMeta.findNextKvServer(addedNode);
+        ServerData secondAfter = state.storeMeta.findNextKvServer(firstAfter);
+
+        //make servers readonly
+        KvService.makeReadonly(addedNode);
+        KvService.makeReadonly(firstAfter);
+
+        //remove node from metadata
+        state.storeMeta.getKvServerList().add(addedNode);
+        //configure all data
+        new ConfigureAllCommand().execute(state);
+
+        //logics with firstNodeAfter
+        Messaging influencedServerCon = new Messaging();
+        influencedServerCon.connect(firstAfter.getHost(), firstAfter.getPort());
+        KvService.moveData(addedNode, influencedServerCon, false);
+        KvService.fullReplicateData(firstAfter, addedNode, firstAfter);
+        KvService.makeRunning(addedNode);
+        //update replica servers of newly added server
+        KvService.fullReplicateData(addedNode, addedNode, firstAfter);
+        KvService.fullReplicateData(addedNode, addedNode, secondAfter);
+
+        //update replica servers of nodes before newly added node
+        KvService.fullReplicateData(firstBefore, firstBefore, addedNode);
+        KvService.fullReplicateData(secondBefore, secondBefore, addedNode);
 
         return true;
 
