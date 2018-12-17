@@ -1,6 +1,7 @@
 package server.threads.handler.admin;
 
 import lib.message.AdminMessages.FullReplicationMsg;
+import lib.message.AdminMessages.ReplicateMsg;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
@@ -37,7 +38,7 @@ public final class FullReplication {
             KeyValueStore targetDb = state.dbProvider.getDb(message.targetServerName);
             combinedErrors = moveDataToInternalDb(sourceDb, targetDb);
         } else {
-            combinedErrors = moveDataToExternalServer(targetServer, sourceDb);
+            combinedErrors = moveDataToExternalServer(targetServer, sourceDb, message.srcDataServerName);
         }
 
         if (combinedErrors.size() > 0) {
@@ -70,7 +71,7 @@ public final class FullReplication {
         }, null);
     }
 
-    private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb) {
+    private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb, String srcDbName) {
         ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
         return sourceDb.retrieveAllData()
 //                .parallel()
@@ -82,10 +83,10 @@ public final class FullReplication {
                     messagingHashMap.get(currentThreadId).connect(targetServer);
                 }
 
-                KVAdminMessage replicateMsg = new KVAdminMessage(
-                        KVAdminMessage.StatusType.PUT_REPLICATE,
+                ReplicateMsg replicateMsg = new ReplicateMsg(
                         d.getKey(),
-                        d.getValue()
+                        d.getValue(),
+                        srcDbName
                 );
                 messagingHashMap.get(currentThreadId).sendMessage(replicateMsg);
                 KVAdminMessage response = (KVAdminMessage) messagingHashMap.get(currentThreadId).readMessage();

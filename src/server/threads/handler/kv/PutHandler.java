@@ -1,6 +1,7 @@
 package server.threads.handler.kv;
 
 import lib.message.*;
+import lib.message.AdminMessages.ReplicateMsg;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
@@ -50,14 +51,14 @@ public class PutHandler implements IMessageHandler {
         return value == null || value.equals("") || value.equals("null");
     }
 
-    private KVAdminMessage putToReplica(KVMessage request, ServerData serverData) {
+    private KVAdminMessage putToReplica(KVMessage request, ServerData serverData, String thisServerName) {
         Messaging con;
         KVAdminMessage response;
 
         con = new Messaging();
         try {
             con.connect(serverData.getHost(), serverData.getPort());
-            KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE, request.getKey(), request.getValue());
+            KVAdminMessage msg = new ReplicateMsg(request.getKey(), request.getValue(), thisServerName);
             con.sendMessage(msg);
             response = (KVAdminMessage) con.readMessage();
         } catch (IOException | MarshallingException e) {
@@ -79,7 +80,7 @@ public class PutHandler implements IMessageHandler {
 
         for (ServerData serverData : replicaServers) {
             CompletableFuture.runAsync(() -> {
-                this.putToReplica(request, serverData);
+                this.putToReplica(request, serverData, state.currentServerServerData.getName());
             });
         }
         return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
