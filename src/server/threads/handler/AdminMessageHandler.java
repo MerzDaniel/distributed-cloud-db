@@ -104,6 +104,7 @@ public final class AdminMessageHandler {
         throw new NotImplementedException();
     }
 
+    @Deprecated
     private static KVAdminMessage moveData(ServerState state, ServerData serverData, boolean softMove) {
         Messaging con;
         try {
