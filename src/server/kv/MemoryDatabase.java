@@ -3,10 +3,11 @@ package server.kv;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class MemoryDatabase implements KeyValueStore {
-    HashMap<String, String> db = new HashMap<>();
+    ConcurrentHashMap<String, String> db = new ConcurrentHashMap<>();
 
     @Override
     public void init(String dbName) throws IOException {
