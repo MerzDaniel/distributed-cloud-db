@@ -103,15 +103,28 @@ public final class KvService {
         configureAll(meta);
 
         //logics with firstNodeAfter
-        KvService.fullReplicateData(firstAfter, removedNode, firstAfter);
+        if (!firstAfter.equals(removedNode)){
+            KvService.fullReplicateData(firstAfter, removedNode, firstAfter);
+        }
+
         KvService.makeRunning(firstAfter);
         //update replica servers of the firstAfter node (it's coordinator database has been updated)
-        KvService.fullReplicateData(firstAfter, firstAfter, secondAfter);
-        KvService.fullReplicateData(firstAfter, firstAfter, thirdAfter);
+
+        if (!firstAfter.equals(removedNode) && !secondAfter.equals(removedNode) && !secondAfter.equals(firstAfter)){
+            KvService.fullReplicateData(firstAfter, firstAfter, secondAfter);
+        }
+        if (!firstAfter.equals(removedNode) && !thirdAfter.equals(removedNode) && !secondAfter.equals(thirdAfter)){
+            KvService.fullReplicateData(firstAfter, firstAfter, thirdAfter);
+        }
+
 
         //modify replica servers for servers lie before removedNode ( rmeovedNode is no longer there. So they both have a new replica server)
-        KvService.fullReplicateData(firstBefore, firstBefore, secondAfter);
-        KvService.fullReplicateData(secondBefore, secondBefore, firstAfter);
+        if (!firstBefore.equals(removedNode) && !secondAfter.equals(removedNode) && !secondAfter.equals(firstBefore)){
+            KvService.fullReplicateData(firstBefore, firstBefore, secondAfter);
+        }
+        if (!secondBefore.equals(removedNode) && !firstAfter.equals(removedNode) && !firstAfter.equals(secondBefore)){
+            KvService.fullReplicateData(secondBefore, secondBefore, firstAfter);
+        }
 
         return true;
 
