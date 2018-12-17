@@ -90,19 +90,23 @@ public class Connection {
                 int val = in.read();
                 if (val == -1) {
                     // end of stream
-                    break;
+                    throw new IOException("Stream is closed");
                 }
                 char c = (char) val;
                 if (c == '\n') continue;
                 if (c == '\r') continue;
-                if (c == GROUP_SEPARATOR) break;
+                if (c == GROUP_SEPARATOR) {
+                    if (buffer.length() > 0)
+                        break;
+                    else
+                        continue;
+                }
                 buffer.append(c);
             } catch (IOException e) {
                 throw e;
             }
         }
         String msg = buffer.toString();
-        if (msg.length() == 0) throw new IOException("Stream is closed");
 
         return msg;
     }
