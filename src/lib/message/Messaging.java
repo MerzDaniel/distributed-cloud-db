@@ -59,10 +59,12 @@ public class Messaging {
             return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
             if (!(e.getCause() instanceof IOException)) throw new IOException(e.getCause());
-            if (isConnected()) throw (IOException) e.getCause();
 
-            // reconnect and try reading again
-            connect(host, port);
+            if (!isConnected()) {
+                // reconnect and try reading again
+                connect(host, port);
+            }
+
             messageFuture = readNextMessage();
             try {
                 return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
