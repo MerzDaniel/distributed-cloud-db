@@ -9,9 +9,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.kv.KeyValueStore;
-import server.threads.handler.AdminMessageHandler;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class FullReplication {
@@ -62,7 +64,12 @@ public final class FullReplication {
                     state.currentServerServerData.getName(),
                     srcData.getName(),
                     targetServer.getName()));
-            combinedErrors.forEach(e -> logger.warn(e.getMessage()));
+            combinedErrors.forEach(e -> {
+                logger.warn(e.getMessage());
+                logger.warn(Arrays.stream(e.getStackTrace())
+                        .map(s->"        "+s.toString())
+                        .collect(Collectors.joining("\n")));
+            });
 
             return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
         }
