@@ -84,7 +84,7 @@ public final class AdminMessageHandler {
             case PUT_REPLICATE:
                 ReplicateMsg replicateMsg = (ReplicateMsg) message;
                 KeyValueStore replicateDb = state.dbProvider.getDb(replicateMsg.srcServerName);
-                replicateDb.put(message.key, message.value);
+                replicateDb.put(replicateMsg.replicateKey, replicateMsg.replicateValue);
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case DELETE_REPLICATE:
                 try {
