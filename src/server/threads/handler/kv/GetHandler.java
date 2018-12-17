@@ -1,4 +1,4 @@
-package server.threads.handler;
+package server.threads.handler.kv;
 
 import lib.message.KVMessage;
 import lib.message.MessageFactory;

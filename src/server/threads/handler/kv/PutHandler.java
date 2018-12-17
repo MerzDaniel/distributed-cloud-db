@@ -1,4 +1,4 @@
-package server.threads.handler;
+package server.threads.handler.kv;
 
 import lib.message.*;
 import lib.metadata.KVServerNotFoundException;
