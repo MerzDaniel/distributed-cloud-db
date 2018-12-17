@@ -31,12 +31,12 @@ public final class FullReplication {
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
-        KeyValueStore sourceDb = state.dbProvider.getDb(srcData);
+        KeyValueStore sourceDb = state.dbProvider.getDb(srcData.getName());
 
         List<Exception> combinedErrors;
         if (message.targetServerName.equals(state.currentServerServerData.getName())) {
             // data should be moved internally
-            KeyValueStore targetDb = state.dbProvider.getDb(targetServer);
+            KeyValueStore targetDb = state.dbProvider.getDb(targetServer.getName());
             combinedErrors = moveDataToInternalDb(sourceDb, targetDb);
         } else {
             combinedErrors = moveDataToExternalServer(targetServer, sourceDb);

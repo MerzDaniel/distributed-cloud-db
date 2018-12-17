@@ -21,7 +21,7 @@ public class GetHandler implements IMessageHandler {
 
         try {
             ServerData responsible = state.meta.findKVServerForKey(kvMessage.getKey());
-            KeyValueStore db = state.dbProvider.getDb(responsible);
+            KeyValueStore db = state.dbProvider.getDb(responsible.getName());
             String value = db.get(kvMessage.getKey());
             response = MessageFactory.createGetSuccessMessage(kvMessage.getKey(), value);
         } catch (KeyNotFoundException e) {

@@ -22,7 +22,7 @@ public class DbProvider {
         inMemory = false;
         this.coordinator = coordinator;
         // initialize db of coordinator
-        getDb(coordinator);
+        getDb(coordinator.getName());
     }
 
     /**
@@ -37,11 +37,10 @@ public class DbProvider {
     /**
      * Get database for a specific ServerData
      */
-    public KeyValueStore getDb(ServerData server) {
-        String serverName = getDbName(server);
+    public KeyValueStore getDb(String serverName) {
         if (dbMap.get(serverName) != null) return dbMap.get(serverName);
 
-        return createNewDb(server);
+        return createNewDb(serverName);
     }
 
     public void shutdown() {
@@ -54,9 +53,9 @@ public class DbProvider {
         });
     }
 
-    private KeyValueStore createNewDb(ServerData server) {
+    private KeyValueStore createNewDb(String serverName) {
         KeyValueStore db = inMemory ? new MemoryDatabase() : new RandomAccessKeyValueStore();
-        String dbName = getDbName(server);
+        String dbName = getDbName(serverName);
         try {
             db.init(dbName);
         } catch (IOException e) {
@@ -84,14 +83,14 @@ public class DbProvider {
         return db;
     }
 
-    private String getDbName(ServerData sd) {
-        return this.isCoordiantor(sd) ?
-                sd.getName() :
-                "replica<" + sd.getName() + ">_" + coordinator.getName();
+    private String getDbName(String serverName) {
+        return this.isCoordiantor(serverName) ?
+                serverName :
+                "replica<" + serverName + ">_" + coordinator.getName();
     }
 
-    private boolean isCoordiantor(ServerData serverData) {
-        return serverData.equals(this.coordinator) ? true : false;
+    private boolean isCoordiantor(String serverName) {
+        return serverName.equals(this.coordinator.getName()) ? true : false;
 
     }
 }

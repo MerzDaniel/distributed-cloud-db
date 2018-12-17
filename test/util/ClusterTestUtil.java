@@ -60,11 +60,11 @@ public final class ClusterTestUtil {
         }
 
         public KeyValueStore getDb(KVServer server) {
-            return server.getState().dbProvider.getDb(server.getState().currentServerServerData);
+            return server.getState().dbProvider.getDb(server.getState().currentServerServerData.getName());
         }
 
         public KeyValueStore getReplica(KVServer server, KVServer replicatedServer) {
-            return server.getState().dbProvider.getDb(replicatedServer.getState().currentServerServerData);
+            return server.getState().dbProvider.getDb(replicatedServer.getState().currentServerServerData.getName());
         }
     }
 

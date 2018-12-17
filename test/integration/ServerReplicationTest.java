@@ -49,8 +49,8 @@ public class ServerReplicationTest {
                 .filter(s -> s.getState().currentServerServerData == sdTarget)
                 .findAny().get()
                 .getState().dbProvider;
-        KeyValueStore dbSource_1 = providerSource.getDb(sdSource);
-        KeyValueStore dbTarget_1 = providerTarget.getDb(sdSource);
+        KeyValueStore dbSource_1 = providerSource.getDb(sdSource.getName());
+        KeyValueStore dbTarget_1 = providerTarget.getDb(sdSource.getName());
 
         // data should not be replicated to this server => replicated data of server0 should be zero
         assertEquals(0, dbTarget_1.retrieveAllData().count());

@@ -21,7 +21,7 @@ public class PutHandler implements IMessageHandler {
     public KVMessage handleRequest(KVMessage request, ServerState state) {
         KVMessage response;
 
-        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData);
+        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData.getName());
         if (shouldDelete(request.getValue())) {
             try {
                 db.deleteKey(request.getKey());

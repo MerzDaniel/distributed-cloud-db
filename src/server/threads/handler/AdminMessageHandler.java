@@ -70,7 +70,7 @@ public final class AdminMessageHandler {
                 state.runningState = RunningState.READONLY;
                 return moveData(state, message.serverData, true);
             case DATA_MOVE:
-                state.dbProvider.getDb(state.currentServerServerData).
+                state.dbProvider.getDb(state.currentServerServerData.getName()).
                         put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
             case MAKE_READONLY:
@@ -83,7 +83,7 @@ public final class AdminMessageHandler {
             case PUT_REPLICATE:
                 try {
                     ServerData kvServerForKey = state.meta.findKVServerForKey(message.key);
-                    KeyValueStore db = state.dbProvider.getDb(kvServerForKey);
+                    KeyValueStore db = state.dbProvider.getDb(kvServerForKey.getName());
                     db.put(message.key, message.value);
                 } catch (KVServerNotFoundException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
@@ -91,7 +91,7 @@ public final class AdminMessageHandler {
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case DELETE_REPLICATE:
                 try {
-                    KeyValueStore db = state.dbProvider.getDb(state.meta.findKVServerForKey(message.key));
+                    KeyValueStore db = state.dbProvider.getDb(state.meta.findKVServerForKey(message.key).getName());
                     db.deleteKey(message.key);
                 } catch (KVServerNotFoundException e) {
                     return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_ERROR);
@@ -114,7 +114,7 @@ public final class AdminMessageHandler {
             return new KVAdminMessage(KVAdminMessage.StatusType.MOVE_ERROR);
         }
 
-        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData);
+        KeyValueStore db = state.dbProvider.getDb(state.currentServerServerData.getName());
         long errors = db.retrieveAllData().parallel().map(
                 d -> {
                     try {
