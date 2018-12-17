@@ -4,13 +4,10 @@ import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
 import lib.message.MarshallingException;
-import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
 import lib.server.TimedRunningState;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
