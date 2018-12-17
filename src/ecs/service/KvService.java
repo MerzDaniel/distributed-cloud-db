@@ -10,6 +10,7 @@ import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
+import lib.server.TimedRunningState;
 import lib.server.TimedRunningStateMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -172,14 +173,19 @@ public final class KvService {
         return universeIsOk;
     }
 
-    public static TimedRunningStateMap gossipServers(List<ServerData> servers, TimedRunningStateMap timedRunningStateMap) throws IOException, MarshallingException {
+    public static TimedRunningStateMap gossipServers(List<ServerData> servers, TimedRunningStateMap timedRunningStateMap) throws MarshallingException {
         Random random = new Random();
         ServerData sd = servers.get(random.nextInt(servers.size()));
 
         Messaging messaging = new Messaging();
-        messaging.connect(sd);
-        messaging.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, timedRunningStateMap));
-        KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
-        return response.timedServerStates;
+        try {
+            messaging.connect(sd);
+            messaging.sendMessage(new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, timedRunningStateMap));
+            KVAdminMessage response = (KVAdminMessage) messaging.readMessage();
+            return response.timedServerStates;
+        } catch (IOException e) {
+            timedRunningStateMap.put(sd.getName(), new TimedRunningState(RunningState.DOWN));
+            return timedRunningStateMap;
+        }
     }
 }
