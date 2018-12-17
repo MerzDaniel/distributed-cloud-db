@@ -4,7 +4,6 @@ import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
 import lib.message.MarshallingException;
-
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
@@ -13,12 +12,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 
-
 /**
  * This class represent the command for removing a {@link server.KVServer} instance
  */
 public class RemoveNodeCommand implements Command {
-
+    private String serverName;
     private Logger logger = LogManager.getLogger(RemoveNodeCommand.class);
 
     /**
@@ -26,6 +24,10 @@ public class RemoveNodeCommand implements Command {
      *
      */
     public RemoveNodeCommand() {
+    }
+
+    public RemoveNodeCommand(String serverName) {
+        this.serverName = serverName;
     }
 
     /**
@@ -42,6 +44,14 @@ public class RemoveNodeCommand implements Command {
 
         Collections.shuffle(state.storeMeta.getKvServerList());
         ServerData removedNode = state.storeMeta.getKvServerList().get(0);
+
+        if (serverName != null) {
+            try {
+                removedNode = state.storeMeta.findKvServerByName(serverName);
+            } catch (KVServerNotFoundException e) {
+                logger.error("No server with the name", e);
+            }
+        }
 
         try {
             KvService.removeNode(removedNode, state);
