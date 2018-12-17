@@ -2,6 +2,7 @@ package lib.message;
 
 import lib.Constants;
 import lib.message.AdminMessages.FullReplicationMsg;
+import lib.message.AdminMessages.ReplicateMsg;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -83,12 +84,15 @@ public final class MessageMarshaller {
                     adminMessage.timedServerStates.marshall()
             );
 
-        if (adminMessage.status == KVAdminMessage.StatusType.PUT_REPLICATE)
+        if (adminMessage.status == KVAdminMessage.StatusType.PUT_REPLICATE) {
+            ReplicateMsg msg = (ReplicateMsg) adminMessage;
             return String.join(Constants.RECORD_SEPARATOR,
-                    adminMessage.status.name(),
-                    adminMessage.key,
-                    adminMessage.value
+                    msg.status.name(),
+                    msg.replicateKey,
+                    msg.replicateValue,
+                    msg.srcServerName
             );
+        }
 
         if (adminMessage.status == KVAdminMessage.StatusType.DELETE_REPLICATE)
             return String.join(Constants.RECORD_SEPARATOR,
@@ -163,7 +167,7 @@ public final class MessageMarshaller {
             case GOSSIP_STATUS_SUCCESS:
                 return new KVAdminMessage(status, TimedRunningStateMap.unmarshall(secondPart));
             case PUT_REPLICATE:
-                return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
+                return new ReplicateMsg(kvMessageComponents[1], kvMessageComponents[2], kvMessageComponents[3]);
             case DELETE_REPLICATE:
                 return new KVAdminMessage(status, kvMessageComponents[1], kvMessageComponents[2]);
             case FULL_REPLICATE:

@@ -1,6 +1,7 @@
 package server.threads.handler;
 
 import lib.message.AdminMessages.FullReplicationMsg;
+import lib.message.AdminMessages.ReplicateMsg;
 import lib.message.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
@@ -81,13 +82,9 @@ public final class AdminMessageHandler {
                 state.stateOfAllServers.put(state.currentServerServerData.getName(), new TimedRunningState(state.runningState));
                 return new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS_SUCCESS, state.stateOfAllServers);
             case PUT_REPLICATE:
-                try {
-                    ServerData kvServerForKey = state.meta.findKVServerForKey(message.key);
-                    KeyValueStore db = state.dbProvider.getDb(kvServerForKey.getName());
-                    db.put(message.key, message.value);
-                } catch (KVServerNotFoundException e) {
-                    return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
-                }
+                ReplicateMsg replicateMsg = (ReplicateMsg) message;
+                KeyValueStore replicateDb = state.dbProvider.getDb(replicateMsg.srcServerName);
+                replicateDb.put(message.key, message.value);
                 return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
             case DELETE_REPLICATE:
                 try {
