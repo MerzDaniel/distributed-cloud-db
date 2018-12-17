@@ -2,8 +2,10 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
+import ecs.service.KvService;
 import lib.message.KVAdminMessage;
 import lib.message.MarshallingException;
+import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 
 import java.io.IOException;
@@ -24,20 +26,9 @@ public class ConfigureAllCommand implements Command {
     public void execute(State state) {
         boolean universeIsOk = true;
 
-        for (int index = 0; index < state.storeMeta.getKvServerList().size(); index++) {
-            ServerData sd = state.storeMeta.getKvServerList().get(index);
+        KVStoreMetaData meta = state.storeMeta;
 
-            try {
-                KVAdminMessage response = configure(sd, state.storeMeta, index);
-                if (!response.status.equals(KVAdminMessage.StatusType.CONFIGURE_SUCCESS)) {
-                    universeIsOk = false;
-                    System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
-                }
-            } catch (IOException | MarshallingException e) {
-                universeIsOk = false;
-                System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), e.getMessage()));
-            }
-        }
+        universeIsOk = KvService.configureAll(meta);
 
         if (universeIsOk)
             System.out.println("Successfully configured all servers");

@@ -79,19 +79,6 @@ public final class KvService {
         return response;
     }
 
-    public static KVAdminMessage configureAll(KVStoreMetaData storeMetaData) throws IOException, MarshallingException {
-        for (int index = 0; index < storeMetaData.getKvServerList().size(); index++) {
-            ServerData sd = storeMetaData.getKvServerList().get(index);
-            KVAdminMessage response = configure(sd, storeMetaData, index);
-
-            if (response.status.equals(KVAdminMessage.StatusType.CONFIGURE_ERROR)) {
-                return response;
-            }
-        }
-
-        return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
-    }
-
     public static boolean removeNode(ServerData removedNode, State state) throws KVServerNotFoundException, IOException, MarshallingException {
         state.storeMeta.getKvServerList().sort(Comparator.comparing(ServerData::getFromHash));
         //get two servers before removed node
@@ -161,5 +148,24 @@ public final class KvService {
 
         return true;
 
+    }
+
+    public static boolean configureAll(KVStoreMetaData meta) {
+        boolean universeIsOk = true;
+        for (int index = 0; index < meta.getKvServerList().size(); index++) {
+            ServerData sd = meta.getKvServerList().get(index);
+
+            try {
+                KVAdminMessage response = configure(sd, meta, index);
+                if (!response.status.equals(KVAdminMessage.StatusType.CONFIGURE_SUCCESS)) {
+                    universeIsOk = false;
+                    System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
+                }
+            } catch (IOException | MarshallingException e) {
+                universeIsOk = false;
+                System.out.println(String.format("Error while configuring the server %s:%d : %s", sd.getHost(), sd.getPort(), e.getMessage()));
+            }
+        }
+        return universeIsOk;
     }
 }
