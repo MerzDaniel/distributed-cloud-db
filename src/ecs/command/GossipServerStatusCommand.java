@@ -40,9 +40,6 @@ public class GossipServerStatusCommand implements Command {
                 System.out.format("State of Server %s: %s\n", sd2.getName(), serverState);
             });
 
-        } catch (IOException e) {
-            System.out.println("Gossip failed please try again");
-            return;
         } catch (MarshallingException e) {
             System.out.format("Invalid formatted msg. Please try again.");
             return;
