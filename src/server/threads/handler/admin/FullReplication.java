@@ -20,7 +20,6 @@ public final class FullReplication {
     static Logger logger = LogManager.getLogger(FullReplication.class);
 
     public static KVAdminMessage doFullReplication(FullReplicationMsg message, ServerState state) {
-        ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
         ServerData targetServer;
         ServerData srcData;
         try {
@@ -31,8 +30,32 @@ public final class FullReplication {
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
-        KeyValueStore db = state.dbProvider.getDb(srcData);
-        List<Exception> combinedErrors = db.retrieveAllData()
+        KeyValueStore sourceDb = state.dbProvider.getDb(srcData);
+
+        List<Exception> combinedErrors = moveDataToExternalServer(targetServer, sourceDb);
+
+        if (combinedErrors.size() > 0) {
+            logger.warn(String.format(
+                    "Errors during replication from %s (data: %s) to %s",
+                    state.currentServerServerData.getName(),
+                    srcData.getName(),
+                    targetServer.getName()));
+            combinedErrors.forEach(e -> {
+                logger.warn(e.getMessage());
+                logger.warn(Arrays.stream(e.getStackTrace())
+                        .map(s->"        "+s.toString())
+                        .collect(Collectors.joining("\n")));
+            });
+
+            return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
+        }
+
+        return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS);
+    }
+
+    private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb) {
+        ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
+        return sourceDb.retrieveAllData()
 //                .parallel()
                 .reduce(new LinkedList<>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
@@ -59,23 +82,5 @@ public final class FullReplication {
             }
             return errors;
         }, (l0, l1) -> {LinkedList<Exception> l = new LinkedList(l0); l.addAll(l1); return l;});
-
-        if (combinedErrors.size() > 0) {
-            logger.warn(String.format(
-                    "Errors during replication from %s (data: %s) to %s",
-                    state.currentServerServerData.getName(),
-                    srcData.getName(),
-                    targetServer.getName()));
-            combinedErrors.forEach(e -> {
-                logger.warn(e.getMessage());
-                logger.warn(Arrays.stream(e.getStackTrace())
-                        .map(s->"        "+s.toString())
-                        .collect(Collectors.joining("\n")));
-            });
-
-            return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_ERROR);
-        }
-
-        return new KVAdminMessage(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS);
     }
 }
