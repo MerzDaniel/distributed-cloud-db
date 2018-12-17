@@ -51,27 +51,6 @@ public class Messaging {
         return true;
     }
 
-    private void createMessageIterator(Connection con) {
-        this.con = con;
-        messageIterator = new Iterator<IMessage>() {
-            IMessage nextMsg;
-
-            @Override
-            public boolean hasNext() {
-                if (nextMsg != null) return true;
-                nextMsg = readNextMessage(con);
-                return nextMsg != null;
-            }
-
-            @Override
-            public IMessage next() {
-                IMessage result = nextMsg;
-                nextMsg = null;
-                return result;
-            }
-        };
-    }
-
     public synchronized IMessage readMessage() throws IOException {
         boolean isConnected = con.isConnected();
         boolean hasNext = messageIterator.hasNext();
@@ -93,6 +72,27 @@ public class Messaging {
 
     public void disconnect() {
         con.disconnect();
+    }
+
+    private void createMessageIterator(Connection con) {
+        this.con = con;
+        messageIterator = new Iterator<IMessage>() {
+            IMessage nextMsg;
+
+            @Override
+            public boolean hasNext() {
+                if (nextMsg != null) return true;
+                nextMsg = readNextMessage(con);
+                return nextMsg != null;
+            }
+
+            @Override
+            public IMessage next() {
+                IMessage result = nextMsg;
+                nextMsg = null;
+                return result;
+            }
+        };
     }
 
     private IMessage readNextMessage(Connection con) {
