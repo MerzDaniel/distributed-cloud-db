@@ -30,6 +30,7 @@ public class Messaging {
         this.host = host;
         this.port = port;
         int retryCounter = 0;
+        IOException lastException = null;
         while (retryCounter++ < CONNECT_RETRIES) {
             try {
                 this.con = new Connection();
@@ -37,9 +38,10 @@ public class Messaging {
                 KVMessage kvMessage = (KVMessage) readMessage();
                 return kvMessage.getStatus() == KVMessage.StatusType.CONNECT_SUCCESSFUL;
             } catch (IOException e) {
+                lastException = e;
             }
         }
-        throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries");
+        throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries", lastException);
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
