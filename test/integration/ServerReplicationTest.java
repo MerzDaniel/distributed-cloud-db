@@ -92,7 +92,7 @@ public class ServerReplicationTest {
         KeyValueStore dbSource_1 = providerSource.getDb(sdSource);
         KeyValueStore dbTarget_1 = providerTarget.getDb(sdSource);
 
-        // does not replicate this one => should be 0
+        // data should not be replicated to this server => replicated data of server0 should be zero
         assertEquals(0, dbTarget_1.retrieveAllData().count());
 
         Messaging messaging = new Messaging();
@@ -100,6 +100,7 @@ public class ServerReplicationTest {
         messaging.sendMessage(new FullReplicationMsg(sdSource.getName(), sdTarget.getName()));
         assertEquals(KVAdminMessage.StatusType.FULL_REPLICATE_SUCCESS, ((KVAdminMessage)messaging.readMessage()).status);
 
+        // now the data should be replicated to this server
         Assert.assertTrue(dbTarget_1.retrieveAllData().count() == dbSource_1.retrieveAllData().count());
     }
 
