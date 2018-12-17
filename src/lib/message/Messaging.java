@@ -114,13 +114,6 @@ public class Messaging {
                         continue;
                     }
                     return MessageMarshaller.unmarshall(msg);
-                } catch (IOException e) {
-                    if (con.isConnected()) throw e; // some other problem occurred
-
-                    logger.debug("Connection seems to be closed", e);
-                    // Everything is going down!!! Abort mission, I SAID ABORT MISSION!!!!!
-                    disconnect();
-                    break;
                 } catch (MarshallingException e) {
                     logger.warn("Marshalling exception!", e);
                     continue;
