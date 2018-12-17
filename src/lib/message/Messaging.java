@@ -55,10 +55,34 @@ public class Messaging {
     }
 
     public synchronized IMessage readMessage() throws IOException {
+        return readMessageWithSpecificTimeout(READ_MESSAGE_TIMEOUT);
+    }
+
+    public synchronized IMessage readMessageWithoutTimeout() throws IOException {
+        return readMessageWithSpecificTimeout(0);
+    }
+
+    public synchronized void sendMessage(IMessage msg) throws MarshallingException, IOException {
+        con.sendMessage(msg.marshall());
+    }
+
+    public boolean isConnected() {
+        return con.isConnected();
+    }
+
+    public void disconnect() {
+        if (con == null) return;
+        con.disconnect();
+    }
+
+    private IMessage readMessageWithSpecificTimeout(long timeout) throws IOException {
         Future<IMessage> messageFuture;
         try {
             messageFuture = readNextMessage();
-            return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+            if (timeout <= 0)
+                return messageFuture.get();
+            else
+                return messageFuture.get(timeout, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
             if (!(e.getCause() instanceof IOException)) throw new IOException(e.getCause());
 
@@ -78,19 +102,6 @@ public class Messaging {
         } catch (Exception e) {
             throw new IOException(e);
         }
-    }
-
-    public synchronized void sendMessage(IMessage msg) throws MarshallingException, IOException {
-        con.sendMessage(msg.marshall());
-    }
-
-    public boolean isConnected() {
-        return con.isConnected();
-    }
-
-    public void disconnect() {
-        if (con == null) return;
-        con.disconnect();
     }
 
     private Future<IMessage> readNextMessage() {

@@ -38,7 +38,7 @@ public class ConnectionHandler extends AbstractServerThread {
 
             while (messaging.isConnected() &&
                     !shouldStop) {
-                IMessage request = messaging.readMessage();
+                IMessage request = messaging.readMessageWithoutTimeout();
 
                 IMessage response;
                 if (request instanceof KVMessage)
