@@ -87,7 +87,7 @@ public class DbProvider {
     private String getDbName(String serverName) {
         return this.isCoordiantor(serverName) ?
                 serverName :
-                "replica<" + serverName + ">_" + coordinator.getName();
+                "replica_" + serverName + "_within_" + coordinator.getName();
     }
 
     private boolean isCoordiantor(String serverName) {
