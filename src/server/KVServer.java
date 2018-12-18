@@ -106,14 +106,18 @@ public class KVServer implements Runnable {
         } catch (InterruptedException e) {
             logger.warn("Thread aborted", e);
         } finally {
-            for (Socket s : openConnections) {
-                SocketUtil.tryClose(s);
+            try {
+                stop();
+            } catch (IOException e) {
+                logger.warn("Error on shutdown", e);
             }
-            state.dbProvider.shutdown();
         }
     }
 
     public void stop() throws IOException {
+        for (Socket s : openConnections) {
+            SocketUtil.tryClose(s);
+        }
         state.serverThreads.forEach(st -> {
             if(st!=null) st.stopServerThread();
         });
