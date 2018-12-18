@@ -21,7 +21,8 @@ public class FillupDbCommand implements Command {
         Exception ex = null;
         for (int i = 0; i < amount; i++) {
             try {
-                KVMessage put = store.put("randomKey-" + r.nextInt(), "randomValue-" + r.nextInt());
+                String key = ("randomKey-" + r.nextInt());
+                KVMessage put = store.put(key.substring(0,Math.min(key.length()-1, 19)), "randomValue-" + r.nextInt());
                 if (put.getStatus() != KVMessage.StatusType.PUT_SUCCESS) ex = new Exception(put.getStatus().name());
 
             } catch (Exception e) {
