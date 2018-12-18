@@ -12,6 +12,7 @@ import server.kv.DbError;
 import server.kv.KeyValueStore;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -78,11 +79,14 @@ public class PutHandler implements IMessageHandler {
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
 
+        List<KVAdminMessage> responses = new LinkedList<>();
         for (ServerData serverData : replicaServers) {
-            CompletableFuture.runAsync(() -> {
-                this.putToReplica(request, serverData, state.currentServerServerData.getName());
-            });
+            KVAdminMessage response = this.putToReplica(request, serverData, state.currentServerServerData.getName());
+            responses.add(response);
         }
+        if (!responses.stream().map(r -> r.status == KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS).allMatch(b -> b))
+            return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
+
         return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_SUCCESS);
     }
 
