@@ -5,9 +5,11 @@ import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
+import server.kv.DbError;
 import server.threads.handler.AdminMessageHandler;
 import server.threads.handler.KvMessageHandler;
 
+import java.io.IOException;
 import java.net.Socket;
 
 import static lib.SocketUtil.tryClose;
@@ -30,29 +32,43 @@ public class ConnectionHandler extends AbstractServerThread {
      */
     @Override
     public void run() {
+        Messaging messaging = new Messaging();
         try {
-            Messaging messaging = new Messaging();
             messaging.connect(s);
-
             messaging.sendMessage(MessageFactory.creatConnectionSuccessful());
+        } catch (Exception e) {
+            logger.warn("Error setting up new connection");
+            tryClose(s);
+            return;
+        }
 
+
+        try {
             while (messaging.isConnected() &&
                     !shouldStop) {
-                IMessage request = messaging.readMessageWithoutTimeout();
 
-                IMessage response;
-                if (request instanceof KVMessage)
-                    response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
-                else
-                    response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
+                try {
+                    IMessage request = null;
+                    request = messaging.readMessageWithoutTimeout();
+                    IMessage response;
+                    if (request instanceof KVMessage)
+                        response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
+                    else
+                        response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
 
-                messaging.sendMessage(response);
+                    messaging.sendMessage(response);
+                } catch (Exception e) {
+                    logger.warn("Error occured!", e);
+                }
             }
-        } catch (Exception e) {
-            logger.debug("Error during communication with an open connection:" + e.getMessage(), e);
         } finally {
             tryClose(s);
         }
+//        } catch (Exception e) {
+//            logger.debug("Error during communication with an open connection:" + e.getMessage(), e);
+//        } finally {
+//            tryClose(s);
+//        }
     }
 }
 
