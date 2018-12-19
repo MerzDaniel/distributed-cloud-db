@@ -1,15 +1,12 @@
 package server.threads;
 
 import lib.message.*;
-import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
-import server.kv.DbError;
 import server.threads.handler.AdminMessageHandler;
 import server.threads.handler.KvMessageHandler;
 
-import java.io.IOException;
 import java.net.Socket;
 
 import static lib.SocketUtil.tryClose;
@@ -64,11 +61,6 @@ public class ConnectionHandler extends AbstractServerThread {
         } finally {
             tryClose(s);
         }
-//        } catch (Exception e) {
-//            logger.debug("Error during communication with an open connection:" + e.getMessage(), e);
-//        } finally {
-//            tryClose(s);
-//        }
     }
 }
 
