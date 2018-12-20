@@ -7,6 +7,7 @@ import server.ServerState;
 import server.threads.handler.AdminMessageHandler;
 import server.threads.handler.KvMessageHandler;
 
+import java.io.IOException;
 import java.net.Socket;
 
 import static lib.SocketUtil.tryClose;
@@ -39,14 +40,14 @@ public class ConnectionHandler extends AbstractServerThread {
             return;
         }
 
-
         try {
             while (messaging.isConnected() &&
                     !shouldStop) {
 
+                boolean gotRequest = false;
                 try {
-                    IMessage request = null;
-                    request = messaging.readMessageWithoutTimeout();
+                    IMessage request = messaging.readMessageWithoutTimeout();
+                    gotRequest = true;
                     IMessage response;
                     if (request instanceof KVMessage)
                         response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
@@ -54,8 +55,17 @@ public class ConnectionHandler extends AbstractServerThread {
                         response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
 
                     messaging.sendMessage(response);
+                    continue;
                 } catch (Exception e) {
                     logger.warn("Error occured!", e);
+                }
+
+                if (gotRequest) {
+                    try {
+                        messaging.sendMessage(MessageFactory.createServerError());
+                    } catch (Exception e1) {
+                        logger.warn("Error occured!", e1);
+                    }
                 }
             }
         } finally {
