@@ -1,20 +1,17 @@
-package server.threads.handler.graph;
+package server.threads.handler;
 
 import lib.Json;
 import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
-import lib.message.graph.MutationMessageImpl;
-import lib.message.graph.QueryMessageImpl;
-import lib.message.graph.ResponseMessageImpl;
+import lib.message.graph.mutation.MutationMessageImpl;
+import lib.message.graph.query.QueryMessageImpl;
+import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.graph.mutation.Operations;
 import lib.message.kv.KVMessage;
 import lib.message.kv.MessageFactory;
 import server.ServerState;
 import server.threads.handler.kv.GetHandler;
-
-import static lib.message.graph.mutation.Operations.MERGE;
-import static lib.message.graph.mutation.Operations.REPLACE;
 
 public final class GraphMessageHandler {
 

@@ -4,6 +4,9 @@ import lib.Constants;
 import lib.Json;
 import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
+import lib.message.graph.mutation.MutationMessageImpl;
+import lib.message.graph.query.QueryMessageImpl;
+import lib.message.graph.response.ResponseMessageImpl;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

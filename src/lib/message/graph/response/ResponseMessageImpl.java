@@ -1,7 +1,8 @@
-package lib.message.graph;
+package lib.message.graph.response;
 
 import lib.Json;
 import lib.message.exception.MarshallingException;
+import lib.message.graph.GraphDbMessage;
 
 import static lib.Constants.RECORD_SEPARATOR;
 
