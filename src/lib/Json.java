@@ -45,7 +45,11 @@ public class Json {
         }
         public static Property deserialize(String s) throws MarshallingException {
             String split[] = s.split(":", 2);
-            return new Property(split[0], PropertyValue.deserialize(split[1]));
+            PropertyValue val;
+            if (split[1].length() == 0) val = UndefinedValue;
+            else val = PropertyValue.deserialize(split[1]);
+
+            return new Property(split[0], val);
         }
     }
 
@@ -107,7 +111,15 @@ public class Json {
         public String serialize() {
             return String.join(",", Arrays.stream(values).map(v -> v.serialize()).collect(Collectors.toList()));
         }
+    }
 
+    public static final PropertyValue UndefinedValue = new _UndefinedValue();
+
+    private static class _UndefinedValue extends PropertyValue {
+        @Override
+        public String serialize() {
+            return "";
+        }
     }
 
     public String serialize() {
