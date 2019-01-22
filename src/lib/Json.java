@@ -51,4 +51,8 @@ public class Json {
     public void addProperty(Property property){
         properties.add(property);
     }
+
+    public Property getProperty(String key) {
+        return properties.stream().filter(it -> it.key.equals(key)).findFirst().get();
+    }
 }
