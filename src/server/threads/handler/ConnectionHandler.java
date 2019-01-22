@@ -4,13 +4,12 @@ import lib.message.*;
 import lib.message.admin.KVAdminMessage;
 import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
 import server.threads.AbstractServerThread;
 import server.threads.handler.admin.AdminMessageHandler;
-import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
 import java.net.Socket;
@@ -38,7 +37,7 @@ public class ConnectionHandler extends AbstractServerThread {
         Messaging messaging = new Messaging();
         try {
             messaging.connect(s);
-            messaging.sendMessage(MessageFactory.creatConnectionSuccessful());
+            messaging.sendMessage(KvMessageFactory.creatConnectionSuccessful());
         } catch (Exception e) {
             logger.warn("Error setting up new connection");
             tryClose(s);
@@ -59,7 +58,7 @@ public class ConnectionHandler extends AbstractServerThread {
                     else if (request instanceof KVAdminMessage)
                         response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
                     else if (request instanceof GraphDbMessage)
-                        response = GraphMessageHandler.handle((GraphDbMessage) request);
+                        response = GraphMessageHandler.handle((GraphDbMessage) request, state);
                     else
                         throw new Exception("Unknown Msg");
 
@@ -71,7 +70,7 @@ public class ConnectionHandler extends AbstractServerThread {
 
                 if (gotRequest) {
                     try {
-                        messaging.sendMessage(MessageFactory.createServerError());
+                        messaging.sendMessage(KvMessageFactory.createServerError());
                     } catch (Exception e1) {
                         logger.warn("Error occured!", e1);
                     }
