@@ -103,6 +103,9 @@ public final class GraphMessageHandler {
             <id-of-some-document>: {
                 <property-key-1>: ,
                 <property-key-2>: ,
+                <property-key-of-reference-to-other-doc>|FOLLOW: {
+                    <property-of-other-doc>
+                }
             }
         }
 
@@ -110,6 +113,9 @@ public final class GraphMessageHandler {
             <id-of-some-document>: {
                 <property-key-1>: <value-1-from-database>,
                 <property-key-2>: <value-2-from-database>,
+                <property-key-of-reference-to-other-doc>: {
+                    <property-of-other-doc>: <value-from-other-doc>
+                }
             }
         }
          */
