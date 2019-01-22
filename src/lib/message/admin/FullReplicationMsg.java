@@ -1,4 +1,4 @@
-package lib.message.AdminMessage;
+package lib.message.admin;
 
 public class FullReplicationMsg extends KVAdminMessage {
 

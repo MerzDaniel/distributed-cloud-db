@@ -2,8 +2,8 @@ package ecs.service;
 
 import ecs.State;
 import ecs.command.ConfigureAllCommand;
-import lib.message.AdminMessage.FullReplicationMsg;
-import lib.message.AdminMessage.KVAdminMessage;
+import lib.message.admin.FullReplicationMsg;
+import lib.message.admin.KVAdminMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;

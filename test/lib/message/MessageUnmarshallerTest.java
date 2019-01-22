@@ -1,7 +1,7 @@
 package lib.message;
 
 import junit.framework.TestCase;
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
 import org.junit.Test;
 

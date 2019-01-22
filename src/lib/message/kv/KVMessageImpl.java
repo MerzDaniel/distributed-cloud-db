@@ -1,4 +1,4 @@
-package lib.message.KvMessage;
+package lib.message.kv;
 
 import lib.message.exception.MarshallingException;
 import lib.message.MessageMarshaller;

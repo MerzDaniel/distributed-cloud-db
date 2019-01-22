@@ -1,4 +1,4 @@
-package lib.message.AdminMessage;
+package lib.message.admin;
 
 import lib.message.IMessage;
 import lib.message.exception.MarshallingException;

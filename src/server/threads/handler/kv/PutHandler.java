@@ -1,10 +1,10 @@
 package server.threads.handler.kv;
 
 import lib.message.*;
-import lib.message.AdminMessage.KVAdminMessage;
-import lib.message.AdminMessage.ReplicateMsg;
-import lib.message.KvMessage.KVMessage;
-import lib.message.KvMessage.MessageFactory;
+import lib.message.admin.KVAdminMessage;
+import lib.message.admin.ReplicateMsg;
+import lib.message.kv.KVMessage;
+import lib.message.kv.MessageFactory;
 import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;

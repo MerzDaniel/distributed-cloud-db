@@ -6,7 +6,7 @@ import ecs.Command;
 import ecs.State;
 
 import ecs.service.KvService;
-import lib.message.AdminMessage.KVAdminMessage;
+import lib.message.admin.KVAdminMessage;
 import lib.message.exception.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;

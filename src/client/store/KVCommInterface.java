@@ -1,6 +1,6 @@
 package client.store;
 
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 
 public interface KVCommInterface {
 

@@ -2,7 +2,7 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import lib.message.AdminMessage.KVAdminMessage;
+import lib.message.admin.KVAdminMessage;
 import lib.message.Messaging;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

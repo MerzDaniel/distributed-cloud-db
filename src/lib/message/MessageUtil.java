@@ -1,6 +1,6 @@
 package lib.message;
 
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 
 /**
  * This class provides utility methods to check the validity of {@code key} and {@code value} of a {@link KVMessage}

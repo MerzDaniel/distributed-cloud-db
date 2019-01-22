@@ -1,6 +1,6 @@
 package server.threads.handler;
 
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import server.ServerState;

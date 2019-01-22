@@ -2,7 +2,7 @@ package integration;
 
 import client.store.KVStore;
 import junit.framework.TestCase;
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.junit.After;

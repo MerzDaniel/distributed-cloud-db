@@ -1,7 +1,7 @@
 package lib.message;
 
 import lib.communication.Connection;
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;

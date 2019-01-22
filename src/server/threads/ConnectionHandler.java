@@ -1,9 +1,9 @@
 package server.threads;
 
 import lib.message.*;
-import lib.message.AdminMessage.KVAdminMessage;
-import lib.message.KvMessage.KVMessage;
-import lib.message.KvMessage.MessageFactory;
+import lib.message.admin.KVAdminMessage;
+import lib.message.kv.KVMessage;
+import lib.message.kv.MessageFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;

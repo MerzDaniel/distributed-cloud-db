@@ -3,7 +3,7 @@ package ecs.command;
 import client.store.KVStore;
 import ecs.Command;
 import ecs.State;
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 
 import java.util.Random;
 

@@ -2,7 +2,7 @@ package integration;
 
 import ecs.service.KvService;
 import junit.framework.Assert;
-import lib.message.AdminMessage.KVAdminMessage;
+import lib.message.admin.KVAdminMessage;
 import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import org.junit.After;

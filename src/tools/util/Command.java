@@ -1,7 +1,7 @@
 package tools.util;
 
 import client.store.KVStore;
-import lib.message.KvMessage.KVMessage;
+import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 
