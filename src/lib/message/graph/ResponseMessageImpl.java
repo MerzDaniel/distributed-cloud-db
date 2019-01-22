@@ -9,9 +9,15 @@ public class ResponseMessageImpl extends GraphDbMessage {
     public String errorMsg;
     public Json data;
 
-    public ResponseMessageImpl(String errorMsg, Json data) {
+    public ResponseMessageImpl(String errorMsg) {
         super(GraphMessageType.RESPONSE);
         this.errorMsg = errorMsg;
+        this.data = null;
+    }
+
+    public ResponseMessageImpl(Json data) {
+        super(GraphMessageType.RESPONSE);
+        this.errorMsg = null;
         this.data = data;
     }
 
