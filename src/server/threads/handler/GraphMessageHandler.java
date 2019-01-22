@@ -27,9 +27,38 @@ public final class GraphMessageHandler {
     }
 
     private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException {
+        /*
+        MUTATION <document-id> {
+            <property-key-1>|REPLACE: new Value,
+            <property-key-2>|MERGE: [ value which will be appended to list ],
+            <property-key-2>|NESTED: {
+                <nested-property-1>|REPLACE: new value for nested prop
+            }
+        }
+
+        Example mutation
+
+        old document:
+        userDocumentId{
+            username: peter,
+            messages: [ messageId-1, messageId-2 ]
+        }
+
+        MUTATION userDocumentId {
+            username|REPLACE: christian,
+            messages|MERGE: [ messageId-3 ]
+        }
+
+        updated document:
+        userDocumentId{
+            username: christian,
+            messages: [ messageId-1, messageId-2, messageId-3 ]
+        }
+
+         */
         IMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
 
-        if (!((KVMessage) docResponse).isSuccess()) return docResponse;
+        if (!((KVMessage) docResponse).isSuccess()) return docResponse; // GET not successful (e.g. not responsible)
 
         Json doc = Json.deserialize(((KVMessage) docResponse).getValue());
 
@@ -67,6 +96,23 @@ public final class GraphMessageHandler {
     }
 
     private static ResponseMessageImpl handleQuery(QueryMessageImpl msg) {
+        // TODO GRAPH: implement query
+        // example layout:
+        /*
+        QUERY ID {
+            <id-of-some-document>: {
+                <property-key-1>: ,
+                <property-key-2>: ,
+            }
+        }
+
+        RESPONSE {
+            <id-of-some-document>: {
+                <property-key-1>: <value-1-from-database>,
+                <property-key-2>: <value-2-from-database>,
+            }
+        }
+         */
         return null;
     }
 }
