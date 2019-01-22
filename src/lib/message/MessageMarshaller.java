@@ -4,6 +4,7 @@ import lib.Constants;
 import lib.message.admin.FullReplicationMsg;
 import lib.message.admin.KVAdminMessage;
 import lib.message.admin.ReplicateMsg;
+import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KVMessageImpl;
 import lib.message.exception.MarshallingException;
@@ -135,12 +136,17 @@ public final class MessageMarshaller {
                 return unmarshallKvMessage(kvMessageComponents);
             if (isAdminMessage(kvMessageComponents[0]))
                 return unmarshallKvAdminMessage(kvMessageComponents);
+            if (isGraphMessage(kvMessageComponents[0]))
+                return unmarshallGraphMessage(kvMessageString);
 
             throw new Exception("Unknown status type");
         } catch (Exception e) {
-            logger.warn("Exception while parsing message: '" + kvMessageString + "'", e);
             throw new MarshallingException(e);
         }
+    }
+
+    private static IMessage unmarshallGraphMessage(String msgString) throws MarshallingException {
+        return GraphDbMessage.deserialize(msgString);
     }
 
     private static IMessage unmarshallKvAdminMessage(String[] kvMessageComponents) throws MarshallingException {
@@ -197,6 +203,11 @@ public final class MessageMarshaller {
             return false;
         }
         return true;
+    }
+
+    private static boolean isGraphMessage(String msgType) {
+        return GraphDbMessage.GraphMessageType.QUERY.equals(msgType) ||
+                GraphDbMessage.GraphMessageType.MUTATION.equals(msgType);
     }
 
     private static IMessage unmarshallKvMessage(String[] kvMessageComponents) {
