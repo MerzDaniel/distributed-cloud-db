@@ -206,8 +206,8 @@ public final class MessageMarshaller {
     }
 
     private static boolean isGraphMessage(String msgType) {
-        return GraphDbMessage.GraphMessageType.QUERY.equals(msgType) ||
-                GraphDbMessage.GraphMessageType.MUTATION.equals(msgType);
+        return msgType.equals(GraphDbMessage.GraphMessageType.QUERY.name()) ||
+                msgType.equals(GraphDbMessage.GraphMessageType.MUTATION.name());
     }
 
     private static IMessage unmarshallKvMessage(String[] kvMessageComponents) {

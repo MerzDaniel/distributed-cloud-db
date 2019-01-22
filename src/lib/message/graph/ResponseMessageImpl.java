@@ -21,6 +21,12 @@ public class ResponseMessageImpl extends GraphDbMessage {
         this.data = data;
     }
 
+    public ResponseMessageImpl() {
+        super(GraphMessageType.RESPONSE);
+    }
+
+    public boolean success() { return errorMsg != null; }
+
     @Override
     public String marshall() throws MarshallingException {
         return String.join(RECORD_SEPARATOR,

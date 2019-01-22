@@ -59,7 +59,7 @@ public class ConnectionHandler extends AbstractServerThread {
                     else if (request instanceof KVAdminMessage)
                         response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
                     else if (request instanceof GraphDbMessage)
-                        response = GraphMessageHandler.handle((GraphDbMessage) request);
+                        response = GraphMessageHandler.handle((GraphDbMessage) request, state);
                     else
                         throw new Exception("Unknown Msg");
 
