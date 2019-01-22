@@ -1,4 +1,7 @@
-package lib.message;
+package lib.message.KvMessage;
+
+import lib.message.exception.MarshallingException;
+import lib.message.MessageMarshaller;
 
 /**
  * The representation of the data passed between the client and the server

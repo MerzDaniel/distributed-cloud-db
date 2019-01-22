@@ -3,14 +3,7 @@ package ecs.command;
 import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
-import lib.message.KVAdminMessage;
-import lib.message.MarshallingException;
 import lib.metadata.KVStoreMetaData;
-import lib.metadata.ServerData;
-
-import java.io.IOException;
-
-import static ecs.service.KvService.configure;
 
 /**
  * This class represents  the command for configure all {@link server.KVServer} instances

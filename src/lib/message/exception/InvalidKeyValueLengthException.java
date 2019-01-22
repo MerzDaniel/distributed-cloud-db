@@ -1,4 +1,4 @@
-package lib.message;
+package lib.message.exception;
 
 public class InvalidKeyValueLengthException extends Exception {
     public InvalidKeyValueLengthException(String message) {

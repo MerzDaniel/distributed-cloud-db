@@ -2,17 +2,13 @@ package integration;
 
 import ecs.service.KvService;
 import junit.framework.Assert;
-import lib.message.AdminMessages.FullReplicationMsg;
-import lib.message.KVAdminMessage;
-import lib.message.MarshallingException;
-import lib.message.Messaging;
+import lib.message.AdminMessage.KVAdminMessage;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
-import lib.metadata.ServerData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import server.KVServer;
-import server.kv.DbProvider;
 import server.kv.KeyValueStore;
 import util.ClusterTestUtil;
 

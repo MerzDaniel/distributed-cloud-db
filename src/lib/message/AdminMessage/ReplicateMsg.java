@@ -1,6 +1,4 @@
-package lib.message.AdminMessages;
-
-import lib.message.KVAdminMessage;
+package lib.message.AdminMessage;
 
 public class ReplicateMsg extends KVAdminMessage {
     public final String replicateKey;

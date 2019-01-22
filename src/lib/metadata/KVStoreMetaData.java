@@ -1,7 +1,7 @@
 package lib.metadata;
 
 import lib.hash.HashUtil;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;

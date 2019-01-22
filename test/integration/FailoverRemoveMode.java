@@ -1,13 +1,10 @@
 package integration;
 
 import ecs.service.KvService;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
-import lib.metadata.ServerData;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import server.KVServer;
 import server.kv.KeyValueStore;
@@ -36,7 +33,6 @@ public class FailoverRemoveMode {
     }
 
     @Test
-    @Ignore
     public void testRemoveFailedNode() throws MarshallingException, KVServerNotFoundException, IOException {
         KVServer sdFailing = cluster.servers.get(0);
         KVServer follower1 = cluster.getNextServer(sdFailing);

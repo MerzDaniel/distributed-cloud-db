@@ -1,7 +1,7 @@
 package server.threads.handler;
 
-import lib.message.KVMessage;
-import lib.message.MessageFactory;
+import lib.message.KvMessage.KVMessage;
+import lib.message.KvMessage.MessageFactory;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

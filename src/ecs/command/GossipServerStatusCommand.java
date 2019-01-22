@@ -3,13 +3,12 @@ package ecs.command;
 import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.metadata.ServerData;
 import lib.server.TimedRunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;

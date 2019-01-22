@@ -1,7 +1,7 @@
 package lib.message.server.metadata;
 
 import junit.framework.TestCase;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.CacheType;

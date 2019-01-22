@@ -1,7 +1,7 @@
 package lib.metadata;
 
 import lib.Constants;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.server.CacheType;
 
 import java.math.BigInteger;

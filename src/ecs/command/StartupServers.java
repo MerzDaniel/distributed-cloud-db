@@ -2,7 +2,7 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

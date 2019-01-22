@@ -2,7 +2,7 @@ package util;
 
 import client.store.KVStore;
 import lib.hash.HashUtil;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;

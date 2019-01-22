@@ -1,6 +1,6 @@
 package lib.server;
 
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

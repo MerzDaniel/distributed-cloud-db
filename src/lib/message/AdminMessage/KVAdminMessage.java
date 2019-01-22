@@ -1,5 +1,8 @@
-package lib.message;
+package lib.message.AdminMessage;
 
+import lib.message.IMessage;
+import lib.message.exception.MarshallingException;
+import lib.message.MessageMarshaller;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;

@@ -1,8 +1,8 @@
 package server.threads.handler.admin;
 
-import lib.message.AdminMessages.FullReplicationMsg;
-import lib.message.AdminMessages.ReplicateMsg;
-import lib.message.KVAdminMessage;
+import lib.message.AdminMessage.FullReplicationMsg;
+import lib.message.AdminMessage.ReplicateMsg;
+import lib.message.AdminMessage.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;

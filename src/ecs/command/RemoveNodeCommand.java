@@ -3,7 +3,7 @@ package ecs.command;
 import ecs.Command;
 import ecs.State;
 import ecs.service.KvService;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;

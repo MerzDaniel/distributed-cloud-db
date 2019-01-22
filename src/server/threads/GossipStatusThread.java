@@ -1,7 +1,7 @@
 package server.threads;
 
 import lib.message.IMessage;
-import lib.message.KVAdminMessage;
+import lib.message.AdminMessage.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.ServerData;
 import lib.server.RunningState;

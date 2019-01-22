@@ -2,7 +2,7 @@ package tools;
 
 import client.store.KVStore;
 import lib.TimeWatch;
-import lib.message.KVMessage;
+import lib.message.KvMessage.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;

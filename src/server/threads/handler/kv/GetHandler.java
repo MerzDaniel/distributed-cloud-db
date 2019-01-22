@@ -1,7 +1,7 @@
 package server.threads.handler.kv;
 
-import lib.message.KVMessage;
-import lib.message.MessageFactory;
+import lib.message.KvMessage.KVMessage;
+import lib.message.KvMessage.MessageFactory;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;

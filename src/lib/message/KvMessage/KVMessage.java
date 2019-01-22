@@ -1,4 +1,6 @@
-package lib.message;
+package lib.message.KvMessage;
+
+import lib.message.IMessage;
 
 /**
  * Represents the abstract structure of the message passed between client and the server

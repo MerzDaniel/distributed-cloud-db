@@ -1,7 +1,7 @@
 package lib.server;
 
 import lib.Constants;
-import lib.message.MarshallingException;
+import lib.message.exception.MarshallingException;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,16 +1,9 @@
 package ecs.command;
 
 import ecs.State;
-import lib.SocketUtil;
-import lib.message.KVAdminMessage;
-import lib.message.KVMessage;
-import lib.message.MessageMarshaller;
+import lib.message.AdminMessage.KVAdminMessage;
 import lib.message.Messaging;
 import lib.metadata.ServerData;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 
 /**
  * This class represent the command for starting a {@link server.KVServer} instance

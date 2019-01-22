@@ -1,4 +1,4 @@
-package lib.message;
+package lib.message.exception;
 
 public class MarshallingException extends Exception {
     public MarshallingException(Exception e) {

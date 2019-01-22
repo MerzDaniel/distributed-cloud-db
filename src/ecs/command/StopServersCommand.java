@@ -2,15 +2,12 @@ package ecs.command;
 
 import ecs.Command;
 import ecs.State;
-import lib.SocketUtil;
-import lib.message.KVAdminMessage;
-import lib.message.MessageMarshaller;
+import lib.message.AdminMessage.KVAdminMessage;
 import lib.message.Messaging;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class StopServersCommand implements Command {

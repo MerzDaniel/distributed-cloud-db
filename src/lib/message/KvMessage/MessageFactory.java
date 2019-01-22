@@ -1,4 +1,7 @@
-package lib.message;
+package lib.message.KvMessage;
+
+import lib.message.KvMessage.KVMessage;
+import lib.message.KvMessage.KVMessageImpl;
 
 /**
  * This class provides the methods to create instances of {@link KVMessage}

@@ -1,6 +1,6 @@
 package tools;
 
-import lib.message.KVMessage;
+import lib.message.KvMessage.KVMessage;
 import tools.util.PerformanceData;
 
 import java.io.File;

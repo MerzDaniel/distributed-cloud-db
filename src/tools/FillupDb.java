@@ -1,15 +1,11 @@
 package tools;
 
 import client.store.KVStore;
-import lib.message.MarshallingException;
-import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import tools.util.EnroneBenchmarkDataLoader;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.stream.Stream;
