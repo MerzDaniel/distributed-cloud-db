@@ -1,0 +1,26 @@
+package lib.message.graph;
+
+import lib.Json;
+import lib.message.exception.MarshallingException;
+
+import static lib.Constants.RECORD_SEPARATOR;
+
+public class MutationMessageImpl extends GraphDbMessage {
+    public String key;
+    public Json mutations;
+
+    public MutationMessageImpl(String key, Json mutations) {
+        super(GraphMessageType.MUTATION);
+        this.key = key;
+        this.mutations = mutations;
+    }
+
+    @Override
+    public String marshall() throws MarshallingException {
+        return String.join(RECORD_SEPARATOR,
+                messageType.name(),
+                key,
+                mutations.serialize()
+        );
+    }
+}
