@@ -19,8 +19,8 @@ public class MutationMessageImpl extends GraphDbMessage {
     public String marshall() throws MarshallingException {
         return String.join(RECORD_SEPARATOR,
                 messageType.name(),
-                key,
-                mutations.serialize()
+                key != null ? key : "",
+                mutations != null ? mutations.serialize() : "{}"
         );
     }
 }

@@ -18,7 +18,7 @@ public class QueryMessageImpl extends GraphDbMessage {
     public String marshall() throws MarshallingException {
         return String.join(RECORD_SEPARATOR,
                 messageType.name(),
-                request.serialize()
+                request != null ? request.serialize() : "{}"
                 );
     }
 }

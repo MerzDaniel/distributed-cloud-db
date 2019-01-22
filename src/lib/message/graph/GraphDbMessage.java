@@ -13,6 +13,7 @@ public abstract class GraphDbMessage implements IMessage {
     public static enum GraphMessageType {
         QUERY,
         MUTATION,
+        RESPONSE,
     }
 
     public GraphDbMessage(GraphMessageType type) {
@@ -29,6 +30,9 @@ public abstract class GraphDbMessage implements IMessage {
             }
             if (GraphMessageType.MUTATION.equals(splitt[0])) {
                 return new MutationMessageImpl(splitt[1], Json.deserialize(splitt[2]));
+            }
+            if (GraphMessageType.RESPONSE.equals(splitt[0])) {
+                return new ResponseMessageImpl(splitt[1], Json.deserialize(splitt[2]));
             }
         } catch (Exception e) {
             throw new MarshallingException(e);
