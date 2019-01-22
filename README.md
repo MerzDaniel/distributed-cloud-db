@@ -1,6 +1,6 @@
 # Practical Course Cloud Databases
 
-A distributed key-value database for the master praktikum "Cloud Databases"
+A distributed key-value database for the master seminar "Cloud Databases"
 
 ## SETUP
 Run tests: 
@@ -25,21 +25,3 @@ Run the ECS (make sure `ecs.config` file is available in the root folder)
 - `db` contains dbs
 - `docs` contains the performance evaluation
 - `tools` contains performance tools
-
-## dev tasks
-
-### Optimizations
-- COMMUNICATION: Message ids for parallel GET requests
-- DB: separated KEY file for managing keys 
-  - Tuple: <KEY,bytePosition>
-  - Seperate key cache
-- DB: Keep keys in memory 
-  - a max key length is needed
-- DB: Fragmentation Handling in DB file
-- MESSAGING: remove need of (un)escaping characters by using unprintable characters in message encoding
-- CLIENT: Try reconnect
-- Message compression
-
-### Care about possible Bugs
-- Escaping in messages
-- Interrupted messaging / hanging client
