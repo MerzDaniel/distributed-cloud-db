@@ -1,7 +1,7 @@
 package server.threads.handler.kv;
 
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,18 +22,18 @@ public final class KvMessageHandler {
             logger.info(String.format("Client issued %s while server is in state %s",
                     kvMessage.getStatus().toString(), state.runningState.toString())
             );
-            return MessageFactory.creatServerStopped();
+            return KvMessageFactory.creatServerStopped();
         }
 
         if (!MessageHandlerUtils.isResponsible(state, kvMessage.getKey(), kvMessage.getStatus())) {
-            return MessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
+            return KvMessageFactory.createServerNotResponsibleMessage(kvMessage.getKey(), state.meta.marshall());
         }
 
         if (state.runningState == RunningState.READONLY && kvMessage.getStatus() != KVMessage.StatusType.GET) {
             logger.info(String.format("Client issued %s while server is in state %s",
                     kvMessage.getStatus().toString(), state.runningState.toString())
             );
-            return MessageFactory.createServerWriteLock();
+            return KvMessageFactory.createServerWriteLock();
         }
 
         logger.debug(String.format(
@@ -43,7 +43,7 @@ public final class KvMessageHandler {
 
         if (!isValidKeyValueLength(kvMessage)) {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
-            return MessageFactory.createInvalidMessage();
+            return KvMessageFactory.createInvalidMessage();
         }
 
         switch (kvMessage.getStatus()) {
@@ -53,9 +53,9 @@ public final class KvMessageHandler {
                 logger.debug(String.format("New PUT message from client: <%s,%s>", kvMessage.getKey(), kvMessage.getValue()));
                 return new PutHandler().handleRequest(kvMessage, state);
             case DELETE:
-                return MessageFactory.createDeleteErrorMessage();
+                return KvMessageFactory.createDeleteErrorMessage();
             default:
-                return MessageFactory.createInvalidMessage();
+                return KvMessageFactory.createInvalidMessage();
         }
     }
 

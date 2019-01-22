@@ -5,7 +5,7 @@ import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import org.junit.Before;
 import org.junit.Test;
 import server.ServerState;
@@ -29,7 +29,7 @@ public class GraphHandlerTest {
         state = TestServerState.create();
         Json doc = Json.Factory.create().withStringProperty(propKey, propVal).finish();
 
-        KVMessage putMsg = MessageFactory.createPutMessage(docId, doc.serialize());
+        KVMessage putMsg = KvMessageFactory.createPutMessage(docId, doc.serialize());
         new PutHandler().handleRequest(putMsg, state);
     }
 
@@ -40,7 +40,7 @@ public class GraphHandlerTest {
                 new Json.StringValue(newPropVal)).finish();
         GraphMessageHandler.handle(mutationMsg,state);
 
-        KVMessage response = new GetHandler().handleRequest(MessageFactory.createGetMessage(docId), state);
+        KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
         Json newDoc = Json.deserialize(response.getValue());
 
         assertEquals(newPropVal, newDoc.get(newPropKey).serialize());

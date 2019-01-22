@@ -3,7 +3,7 @@ package lib.message.kv;
 /**
  * This class provides the methods to create instances of {@link KVMessage}
  */
-public class MessageFactory {
+public class KvMessageFactory {
     public static KVMessage createGetMessage(String key) {
         return new KVMessageImpl(key, null, KVMessage.StatusType.GET);
     }

@@ -2,7 +2,7 @@ package client.store;
 
 import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import lib.message.Messaging;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.KVStoreMetaData;
@@ -72,7 +72,7 @@ public class KVStore implements KVCommInterface {
      * @throws MarshallingException if any error happens during the unmarshall process
      */
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException  {
-        KVMessage kvMessageRequest = MessageFactory.createGetMessage(key);
+        KVMessage kvMessageRequest = KvMessageFactory.createGetMessage(key);
 
         ServerData coordinator = kvStoreMetaData.findKVServerForKey(key);
         List<ServerData> replicas = kvStoreMetaData.findReplicaKVServers(key);
@@ -84,7 +84,7 @@ public class KVStore implements KVCommInterface {
         Collections.shuffle(candidateServers);
         boolean connectSuccess = this.connect(candidateServers.get(0).getHost(), candidateServers.get(0).getPort());
 
-        if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
+        if (!connectSuccess) return KvMessageFactory.createConnectErrorMessage();
 
         this.messaging.sendMessage(kvMessageRequest);
         KVMessage response = (KVMessage) this.messaging.readMessage();
@@ -107,12 +107,12 @@ public class KVStore implements KVCommInterface {
      * @throws MarshallingException if any error happens during the unmarshall process
      */
     public KVMessage put(String key, String value) throws IOException, MarshallingException, KVServerNotFoundException, NoSuchAlgorithmException {
-        KVMessage kvMessageRequest = MessageFactory.createPutMessage(key, value);
+        KVMessage kvMessageRequest = KvMessageFactory.createPutMessage(key, value);
 
         ServerData serverServerData = kvStoreMetaData.findKVServerForKey(key);
         boolean connectSuccess = this.connect(serverServerData.getHost(), serverServerData.getPort());
 
-        if (!connectSuccess) return MessageFactory.createConnectErrorMessage();
+        if (!connectSuccess) return KvMessageFactory.createConnectErrorMessage();
 
         this.messaging.sendMessage(kvMessageRequest);
         KVMessage response = (KVMessage) this.messaging.readMessage();

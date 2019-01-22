@@ -9,7 +9,7 @@ import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.graph.mutation.Operations;
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import server.ServerState;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
@@ -27,7 +27,7 @@ public final class GraphMessageHandler {
     }
 
     private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException {
-        IMessage docResponse = new GetHandler().handleRequest(MessageFactory.createGetMessage(message.key), state);
+        IMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
 
         if (!((KVMessage) docResponse).isSuccess()) return docResponse;
 
@@ -56,7 +56,7 @@ public final class GraphMessageHandler {
             }
         }
 
-        KVMessage putResponse = new PutHandler().handleRequest(MessageFactory.createPutMessage(message.key, doc.serialize()), state);
+        KVMessage putResponse = new PutHandler().handleRequest(KvMessageFactory.createPutMessage(message.key, doc.serialize()), state);
 
         if (!putResponse.isSuccess()) {
             return new ResponseMessageImpl("Mutation failed: " + putResponse.getStatus());

@@ -4,7 +4,7 @@ import lib.message.*;
 import lib.message.admin.KVAdminMessage;
 import lib.message.admin.ReplicateMsg;
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
@@ -31,21 +31,21 @@ public class PutHandler implements IMessageHandler {
         if (shouldDelete(request.getValue())) {
             try {
                 db.deleteKey(request.getKey());
-                response = MessageFactory.createDeleteSuccessMessage();
+                response = KvMessageFactory.createDeleteSuccessMessage();
                 this.deleteFromReplicas(request, state);
             } catch (DbError dbError) {
                 logger.warn("PUT: Databaseerror while deleting a value", dbError);
-                response = MessageFactory.createDeleteErrorMessage();
+                response = KvMessageFactory.createDeleteErrorMessage();
             }
         } else {
             try {
                 boolean updated = db.put(request.getKey(), request.getValue());
-                if (updated) response = MessageFactory.createPutUpdateMessage();
-                else response = MessageFactory.createPutSuccessMessage();
+                if (updated) response = KvMessageFactory.createPutUpdateMessage();
+                else response = KvMessageFactory.createPutSuccessMessage();
                 this.putToReplicas(request, state);
             } catch (DbError dbError) {
                 logger.warn("PUT: Databaseerror while PUT a value", dbError);
-                response = MessageFactory.createPutErrorMessage();
+                response = KvMessageFactory.createPutErrorMessage();
             }
         }
 

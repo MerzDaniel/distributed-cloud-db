@@ -4,7 +4,7 @@ import lib.message.*;
 import lib.message.admin.KVAdminMessage;
 import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
-import lib.message.kv.MessageFactory;
+import lib.message.kv.KvMessageFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
@@ -37,7 +37,7 @@ public class ConnectionHandler extends AbstractServerThread {
         Messaging messaging = new Messaging();
         try {
             messaging.connect(s);
-            messaging.sendMessage(MessageFactory.creatConnectionSuccessful());
+            messaging.sendMessage(KvMessageFactory.creatConnectionSuccessful());
         } catch (Exception e) {
             logger.warn("Error setting up new connection");
             tryClose(s);
@@ -70,7 +70,7 @@ public class ConnectionHandler extends AbstractServerThread {
 
                 if (gotRequest) {
                     try {
-                        messaging.sendMessage(MessageFactory.createServerError());
+                        messaging.sendMessage(KvMessageFactory.createServerError());
                     } catch (Exception e1) {
                         logger.warn("Error occured!", e1);
                     }
