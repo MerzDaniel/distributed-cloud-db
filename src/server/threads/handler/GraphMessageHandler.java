@@ -44,9 +44,11 @@ public final class GraphMessageHandler {
                     break;
 
                 case MERGE:
+                    // TODO GRAPH: Implement
                     throw new MarshallingException("Not implemented");
 
                 case NESTED:
+                    // TODO GRAPH: (optional) Implement
                     throw new MarshallingException("Not implemented");
 
                 default:

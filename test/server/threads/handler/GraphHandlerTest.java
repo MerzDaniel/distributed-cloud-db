@@ -46,4 +46,7 @@ public class GraphHandlerTest {
         assertEquals(newPropVal, newDoc.get(newPropKey).serialize());
 
     }
+    // TODO GRAPH: Add tests for (1) replaceExisting prop and for (2) write a non existing doc (it should be created)
+
+    // TODO GRAPH: Write tests for MERGE properties (merge json and arrays)
 }
