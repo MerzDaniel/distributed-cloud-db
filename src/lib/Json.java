@@ -12,10 +12,10 @@ public class Json {
         public abstract String serialize();
     }
 
-    static class ComplexProperty extends Property {
+    static class JsonProperty extends Property {
         public Json value;
 
-        public ComplexProperty(String name, Json value) {
+        public JsonProperty(String name, Json value) {
             this.name = name;
             this.value = value;
         }
@@ -26,10 +26,10 @@ public class Json {
         }
     }
 
-    static class SimpleProperty extends Property {
+    static class StringProperty extends Property {
         public String value;
 
-        public SimpleProperty(String name, String value) {
+        public StringProperty(String name, String value) {
             this.name = name;
             this.value = value;
         }

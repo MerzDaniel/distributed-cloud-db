@@ -9,7 +9,7 @@ public class JsonTest {
     @Test
     public void testSerialize(){
         Json j = new Json();
-        j.addProperty(new Json.SimpleProperty("name", "Jhon"));
+        j.addProperty(new Json.StringProperty("name", "Jhon"));
         String s = j.serialize();
         assertEquals("{name:Jhon}", s);
     }
@@ -17,9 +17,9 @@ public class JsonTest {
     @Test
     public void testSerializeMultipleProperties(){
         Json j = new Json();
-        j.addProperty(new Json.SimpleProperty("name", "Jhon"));
-        j.addProperty(new Json.SimpleProperty("age", "35"));
-        j.addProperty(new Json.SimpleProperty("country", "USA"));
+        j.addProperty(new Json.StringProperty("name", "Jhon"));
+        j.addProperty(new Json.StringProperty("age", "35"));
+        j.addProperty(new Json.StringProperty("country", "USA"));
         String s = j.serialize();
         assertEquals("{name:Jhon,age:35,country:USA}", s);
     }
@@ -27,15 +27,15 @@ public class JsonTest {
     @Test
     public void testSerializeComplexProperties(){
         Json j = new Json();
-        j.addProperty(new Json.SimpleProperty("name", "Jhon"));
-        j.addProperty(new Json.SimpleProperty("age", "35"));
-        j.addProperty(new Json.SimpleProperty("country", "USA"));
+        j.addProperty(new Json.StringProperty("name", "Jhon"));
+        j.addProperty(new Json.StringProperty("age", "35"));
+        j.addProperty(new Json.StringProperty("country", "USA"));
 
         Json f = new Json();
-        f.addProperty(new Json.SimpleProperty("name", "Khan"));
-        f.addProperty(new Json.SimpleProperty("age", "34"));
+        f.addProperty(new Json.StringProperty("name", "Khan"));
+        f.addProperty(new Json.StringProperty("age", "34"));
 
-        j.addProperty(new Json.ComplexProperty("friend", f));
+        j.addProperty(new Json.JsonProperty("friend", f));
         String s = j.serialize();
         assertEquals("{name:Jhon,age:35,country:USA,friend:{name:Khan,age:34}}", s);
     }
