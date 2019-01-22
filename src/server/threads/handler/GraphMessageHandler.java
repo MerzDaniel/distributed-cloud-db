@@ -12,6 +12,7 @@ import lib.message.kv.KVMessage;
 import lib.message.kv.MessageFactory;
 import server.ServerState;
 import server.threads.handler.kv.GetHandler;
+import server.threads.handler.kv.PutHandler;
 
 public final class GraphMessageHandler {
 
@@ -34,7 +35,7 @@ public final class GraphMessageHandler {
 
         for (Json.Property p : message.mutations.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
-            String operationSplit[] = p.key.split("|");
+            String operationSplit[] = p.key.split("[|]");
             String propertyKey = operationSplit[0];
             Operations op = Operations.valueOf(operationSplit[1]);
             switch (op) {
@@ -51,6 +52,12 @@ public final class GraphMessageHandler {
                 default:
                     throw new MarshallingException("Not implemented");
             }
+        }
+
+        KVMessage putResponse = new PutHandler().handleRequest(MessageFactory.createPutMessage(message.key, doc.serialize()), state);
+
+        if (!putResponse.isSuccess()) {
+            return new ResponseMessageImpl("Mutation failed: " + putResponse.getStatus());
         }
 
         // success
