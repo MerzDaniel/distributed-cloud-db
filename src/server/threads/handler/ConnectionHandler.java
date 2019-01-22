@@ -2,6 +2,7 @@ package server.threads.handler;
 
 import lib.message.*;
 import lib.message.admin.KVAdminMessage;
+import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
 import lib.message.kv.MessageFactory;
 import org.apache.log4j.LogManager;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import server.ServerState;
 import server.threads.AbstractServerThread;
 import server.threads.handler.admin.AdminMessageHandler;
+import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
 import java.net.Socket;
@@ -54,8 +56,12 @@ public class ConnectionHandler extends AbstractServerThread {
                     IMessage response;
                     if (request instanceof KVMessage)
                         response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
-                    else
+                    else if (request instanceof KVAdminMessage)
                         response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
+                    else if (request instanceof GraphDbMessage)
+                        response = GraphMessageHandler.handle((GraphDbMessage) request);
+                    else
+                        throw new Exception("Unknown Msg");
 
                     messaging.sendMessage(response);
                     continue;

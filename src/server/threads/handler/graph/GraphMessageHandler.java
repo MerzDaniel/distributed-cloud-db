@@ -5,8 +5,8 @@ import lib.message.graph.MutationMessageImpl;
 import lib.message.graph.QueryMessageImpl;
 import lib.message.graph.ResponseMessageImpl;
 
-public class GraphMessageHandler {
-    public ResponseMessageImpl handle(GraphDbMessage message) {
+public final class GraphMessageHandler {
+    public static ResponseMessageImpl handle(GraphDbMessage message) {
         switch (message.messageType) {
             case QUERY: return handleQuery((QueryMessageImpl) message);
             case MUTATION: return handleMutation((MutationMessageImpl) message);
@@ -16,11 +16,11 @@ public class GraphMessageHandler {
         return new ResponseMessageImpl("");
     }
 
-    private ResponseMessageImpl handleMutation(MutationMessageImpl message) {
+    private static ResponseMessageImpl handleMutation(MutationMessageImpl message) {
         return null;
     }
 
-    private ResponseMessageImpl handleQuery(QueryMessageImpl msg) {
+    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg) {
         return null;
     }
 }
