@@ -1,4 +1,4 @@
-package server.threads.handler;
+package server.threads.handler.kv;
 
 import lib.message.kv.KVMessage;
 import lib.message.kv.MessageFactory;
@@ -6,8 +6,7 @@ import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
-import server.threads.handler.kv.GetHandler;
-import server.threads.handler.kv.PutHandler;
+import server.threads.handler.MessageHandlerUtils;
 
 import java.util.Arrays;
 

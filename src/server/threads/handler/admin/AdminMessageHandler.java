@@ -1,4 +1,4 @@
-package server.threads.handler;
+package server.threads.handler.admin;
 
 import lib.message.admin.FullReplicationMsg;
 import lib.message.admin.ReplicateMsg;
@@ -14,7 +14,6 @@ import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyValueStore;
 import server.threads.GossipStatusThread;
-import server.threads.handler.admin.FullReplication;
 import server.threads.util.gossip.RunningStates;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

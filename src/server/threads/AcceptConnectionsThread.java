@@ -1,9 +1,9 @@
 package server.threads;
 
-import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
+import server.threads.handler.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
