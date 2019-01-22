@@ -1,42 +1,42 @@
 package lib;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Json {
-    private List<Property> properties = new ArrayList<>();
+    public List<Property> properties = new LinkedList<>();
 
-    abstract static class Property {
-        public String name;
+    public abstract static class Property {
+        public String key;
         public abstract String serialize();
     }
 
-    static class JsonProperty extends Property {
+    public static class JsonProperty extends Property {
         public Json value;
 
-        public JsonProperty(String name, Json value) {
-            this.name = name;
+        public JsonProperty(String key, Json value) {
+            this.key = key;
             this.value = value;
         }
 
         @Override
         public String serialize() {
-            return name + ":" + value.serialize();
+            return key + ":" + value.serialize();
         }
     }
 
-    static class StringProperty extends Property {
+    public static class StringProperty extends Property {
         public String value;
 
-        public StringProperty(String name, String value) {
-            this.name = name;
+        public StringProperty(String key, String value) {
+            this.key = key;
             this.value = value;
         }
 
         @Override
         public String serialize() {
-            return name + ":" + value;
+            return key + ":" + value;
         }
     }
 
