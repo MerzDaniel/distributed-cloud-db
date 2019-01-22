@@ -10,6 +10,20 @@ import java.util.stream.Collectors;
 public class Json {
     public List<Property> properties = new LinkedList<>();
 
+    public Property findProp(String key) {
+        for (Property p : properties)
+            if (p.key.equals(key)) return p;
+
+        return null;
+    }
+
+    public void setProperty(Property property){
+        Property oldProp = findProp(property.key);
+        if (oldProp != null) properties.remove(oldProp);
+
+        properties.add(property);
+    }
+
     public static class Property {
         public String key;
         public PropertyValue value;
@@ -100,14 +114,10 @@ public class Json {
         if (s.length() > 2) {
             String split[] = s.substring(1, s.length()-2).split(",");
             for (String prop : split) {
-                result.addProperty(Property.deserialize(prop));
+                result.setProperty(Property.deserialize(prop));
             }
         }
         return result;
-    }
-
-    public void addProperty(Property property){
-        properties.add(property);
     }
 
     public static class Factory {
@@ -121,12 +131,12 @@ public class Json {
         public Json finish() { return json; }
 
         public Factory withStringProperty(String key, String value) {
-            json.addProperty(new Property(key, new StringValue(value)));
+            json.setProperty(new Property(key, new StringValue(value)));
             return this;
         }
 
         public Factory withJsonProperty(String key, Json value) {
-            json.addProperty(new Property(key, new JsonValue(value)));
+            json.setProperty(new Property(key, new JsonValue(value)));
             return this;
         }
     }
