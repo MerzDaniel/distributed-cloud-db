@@ -129,6 +129,11 @@ public class Json {
             json.setProperty(new Property(propKey, propVal));
             return this;
         }
+
+        public Builder withArrayProperty(String arrPropKey, PropertyValue[] arrPropVal) {
+            json.setProperty(new Property(arrPropKey, new ArrayValue(arrPropVal)));
+            return this;
+        }
     }
 
     public Property getProperty(String key) {

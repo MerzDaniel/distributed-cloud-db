@@ -8,9 +8,9 @@ import static lib.Constants.RECORD_SEPARATOR;
 
 public class QueryMessageImpl extends GraphDbMessage {
 
-    QueryType queryType;
-    String queryParam;
-    Json request;
+    public QueryType queryType;
+    public String queryParam;
+    public Json request;
 
     public QueryMessageImpl(QueryType queryType, String queryParam, Json request) {
         super(GraphMessageType.QUERY);
@@ -36,6 +36,8 @@ public class QueryMessageImpl extends GraphDbMessage {
         private Builder(String docId) {
             this.docId = docId;
         }
+
+        public static Builder create(String docId) {return new Builder(docId);}
 
         public QueryMessageImpl finish() {
             return new QueryMessageImpl(QueryType.ID, docId, queryBuilder.finish());
