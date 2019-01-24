@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Json {
-    // TODO GRAPH: Write working parser for nested objects
     public List<Property> properties = new LinkedList<>();
 
     public PropertyValue get(String key) {
@@ -44,35 +43,10 @@ public class Json {
         public String serialize() {
             return key + ":" + value.serialize();
         }
-        public static Property deserialize(String s) throws MarshallingException {
-            String split[] = s.split(":", 2);
-            PropertyValue val;
-            if (split[1].length() == 0) val = UndefinedValue;
-            else val = PropertyValue.deserialize(split[1]);
-
-            return new Property(split[0], val);
-        }
     }
 
     public abstract static class PropertyValue {
         public abstract String serialize();
-        public static PropertyValue deserialize(String s) throws MarshallingException {
-            if (s.startsWith("{")) return new JsonValue(Json.deserialize(s));
-            if (s.startsWith("[")) {
-                PropertyValue values[] = (PropertyValue[]) Arrays.stream(s.substring(1, s.length() - 2).split(",")).map(
-                        v -> {
-                            try {
-                                return PropertyValue.deserialize(v);
-                            } catch (MarshallingException e) {
-                                return null;
-                            }
-                        }
-                ).collect(Collectors.toList()).toArray();
-                return new ArrayValue(values);
-            }
-
-            return new StringValue(s);
-        }
     }
 
     public static class StringValue extends PropertyValue {
@@ -126,18 +100,12 @@ public class Json {
     public String serialize() {
         return String.format("{%s}", properties.stream().map(p -> p.serialize()).collect(Collectors.joining(",")));
     }
-
     public static Json deserialize(String s) throws MarshallingException {
-        if (!(s.startsWith("{") && s.endsWith("}"))) throw new MarshallingException("Unexpected Format: " + s);
-
-        Json result = new Json();
-        if (s.length() > 2) {
-            String split[] = s.substring(1, s.length()-1).split(",");
-            for (String prop : split) {
-                result.setProperty(Property.deserialize(prop));
-            }
+        try {
+            return JsonParser.parse(s);
+        } catch (JsonFormatException e) {
+            throw new MarshallingException(e);
         }
-        return result;
     }
 
     public static class Builder {
@@ -149,6 +117,7 @@ public class Json {
             return new Builder();
         }
         public Json finish() { return json; }
+
 
         public Builder withStringProperty(String key, String value) {
             json.setProperty(new Property(key, new StringValue(value)));

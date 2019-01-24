@@ -27,7 +27,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testSerializeComplexProperties() {
+    public void testSerializeComplexProperties() throws MarshallingException {
 
         Json f = Json.Builder.create()
                 .withStringProperty("name", "Khan")
@@ -43,5 +43,7 @@ public class JsonTest {
         
         String s = j.serialize();
         assertEquals("{name:Jhon,age:35,country:USA,friend:{name:Khan,age:34}}", s);
+
+        assertEquals(s, Json.deserialize(s).serialize());
     }
 }
