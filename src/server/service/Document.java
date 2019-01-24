@@ -36,4 +36,22 @@ public class Document {
         KeyValueStore db = state.dbProvider.getDb(responsible.getName());
         return db.get(key);
     }
+    public static boolean writeDocument(String key, String value, ServerState state) throws KVServerNotFoundException, DbError, IOException, MarshallingException {
+        if (!isResponsible(state, key, KVMessage.StatusType.PUT)) {
+            KVMessage getMessage = KvMessageFactory.createPutMessage(key, value);
+            ServerData responsibleServer = state.meta.findKVServerForKey(key);
+            Messaging messaging = new Messaging(responsibleServer);
+            messaging.sendMessage(getMessage);
+
+            KVMessage response = (KVMessage) messaging.readMessage();
+            if (!response.isSuccess()) {
+                throw new IOException("Could not write data: " + response.getStatus());
+            }
+
+            return true;
+        }
+        ServerData responsible = state.meta.findKVServerForKey(key);
+        KeyValueStore db = state.dbProvider.getDb(responsible.getName());
+        return db.put(key, value);
+    }
 }
