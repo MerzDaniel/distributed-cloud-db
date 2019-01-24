@@ -51,7 +51,10 @@ public class MutationMessageImpl extends GraphDbMessage {
             mutationBuilder.withProperty(propKey + OPERATION_SEPARATOR + Operations.REPLACE.name(), propVal);
             return this;
         }
-
+        public Builder withMerge(String propKey, Json.PropertyValue propVal) {
+            mutationBuilder.withProperty(propKey + OPERATION_SEPARATOR + Operations.MERGE.name(), propVal);
+            return this;
+        }
 
     }
 }

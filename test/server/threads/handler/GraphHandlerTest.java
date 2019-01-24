@@ -63,7 +63,7 @@ public class GraphHandlerTest {
         assertTrue(newDoc.properties.size() == 1);
 
     }
-    // TODO GRAPH: write a non existing doc (it should be created)
+
     @Test
     public void writeToNonExistingDoc() throws MarshallingException {
         final String nonExistDocId = "nonExisitingDocId";
