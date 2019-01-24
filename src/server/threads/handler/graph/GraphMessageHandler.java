@@ -1,4 +1,4 @@
-package server.threads.handler;
+package server.threads.handler.graph;
 
 import lib.Json;
 import lib.message.IMessage;
@@ -101,6 +101,9 @@ public final class GraphMessageHandler {
         /*
         QUERY ID {
             <id-of-some-document>: {
+                messages|FOLLOW: [
+                    { to: [ { name, } ] }
+                ],
                 <property-key-1>: ,
                 <property-key-2>: ,
                 <property-key-of-reference-to-other-doc>|FOLLOW: {
@@ -118,6 +121,11 @@ public final class GraphMessageHandler {
                 }
             }
         }
+
+        doc1: { key: value, refKey: doc2}
+        doc2: { key: value2, key2: value3 }
+        query ID { doc1: { key, refKey|FOLLOW: { key } } }
+        response { key: value , refKey: { key: value2 }}
          */
         return null;
     }
