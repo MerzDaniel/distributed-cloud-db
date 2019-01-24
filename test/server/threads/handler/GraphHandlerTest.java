@@ -1,6 +1,6 @@
 package server.threads.handler;
 
-import lib.Json;
+import lib.json.Json;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.graph.mutation.MutationMessageImpl;

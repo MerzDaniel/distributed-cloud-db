@@ -1,6 +1,6 @@
 package lib.message.graph.response;
 
-import lib.Json;
+import lib.json.Json;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 

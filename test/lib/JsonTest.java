@@ -1,5 +1,7 @@
 package lib;
 
+import lib.json.Json;
+import lib.message.exception.MarshallingException;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

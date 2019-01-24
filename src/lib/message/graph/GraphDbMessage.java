@@ -1,7 +1,7 @@
 package lib.message.graph;
 
 import lib.Constants;
-import lib.Json;
+import lib.json.Json;
 import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.mutation.MutationMessageImpl;

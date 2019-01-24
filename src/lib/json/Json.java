@@ -1,4 +1,4 @@
-package lib;
+package lib.json;
 
 import lib.message.exception.MarshallingException;
 
