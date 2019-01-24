@@ -10,14 +10,15 @@ import static junit.framework.Assert.assertTrue;
 public class JsonTest {
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws MarshallingException {
         Json j = Json.Builder.create().withStringProperty("name", "Jhon").finish();
         String s = j.serialize();
         assertEquals("{name:Jhon}", s);
+        assertEquals(s, Json.deserialize(s).serialize());
     }
 
     @Test
-    public void testSerializeMultipleProperties() {
+    public void testSerializeMultipleProperties() throws MarshallingException {
         Json j = Json.Builder.create()
                 .withStringProperty("name", "Jhon")
                 .withStringProperty("age", "35")
@@ -25,6 +26,7 @@ public class JsonTest {
                 .finish();
         String s = j.serialize();
         assertEquals("{name:Jhon,age:35,country:USA}", s);
+        assertEquals(s, Json.deserialize(s).serialize());
     }
 
     @Test
