@@ -56,11 +56,11 @@ public final class GraphMessageHandler {
         }
 
          */
-        IMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
+        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
 
-        if (!((KVMessage) docResponse).isSuccess()) return docResponse; // GET not successful (e.g. not responsible)
+        if (!docResponse.isSuccess()) return docResponse; // GET not successful (e.g. not responsible)
 
-        Json doc = Json.deserialize(((KVMessage) docResponse).getValue());
+        Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
 
         for (Json.Property p : message.mutations.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
