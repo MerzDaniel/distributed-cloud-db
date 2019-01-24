@@ -1,19 +1,14 @@
 package server.threads.handler;
 
 import lib.json.Json;
-import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
-import lib.message.graph.GraphDbMessage;
-import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
-import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
 import org.junit.Before;
 import org.junit.Test;
 import server.ServerState;
 import server.threads.handler.graph.GraphMessageHandler;
-import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
 
@@ -78,5 +73,34 @@ public class QueryTest {
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
         assertEquals(stringPropVal, response.data.get(stringPropKey).serialize());
+    }
+
+    @Test
+    public void queryMultipleProps() throws MarshallingException {
+        QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
+                .withProperty(stringPropKey)
+                .withProperty(arrPropKey)
+                .withProperty(jsonPropKey)
+                .finish();
+        ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
+
+        assertEquals(3, response.data.properties.size());
+        assertEquals(stringPropVal, response.data.get(stringPropKey).serialize());
+    }
+
+    @Test
+    public void queryNestedDocuments() throws MarshallingException {
+        QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
+                .withFollowReferenceProperty(
+                        refPropKey,
+                        Json.Builder.create().withUndefinedProperty(referencedPropKey)
+                                .finish())
+                .finish();
+        ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
+
+        Json.JsonValue val = response.data.get(refPropKey);
+
+        assertTrue(val != null);
+        assertEquals(referencedPropVal, val.value.get(referencedPropKey).serialize());
     }
 }
