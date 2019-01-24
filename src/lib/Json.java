@@ -164,4 +164,8 @@ public class Json {
             return this;
         }
     }
+
+    public Property getProperty(String key) {
+        return properties.stream().filter(it -> it.key.equals(key)).findFirst().get();
+    }
 }
