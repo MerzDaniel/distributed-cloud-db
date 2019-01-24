@@ -5,13 +5,17 @@ import lib.message.exception.MarshallingException;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.kv.KvMessageFactory;
+import lib.metadata.KVServerNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import server.ServerState;
+import server.kv.DbError;
+import server.kv.KeyNotFoundException;
 import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
@@ -68,7 +72,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryStringProp() throws MarshallingException {
+    public void queryStringProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId).withProperty(stringPropKey).finish();
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
@@ -76,7 +80,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryMultipleProps() throws MarshallingException {
+    public void queryMultipleProps() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
                 .withProperty(stringPropKey)
                 .withProperty(arrPropKey)
@@ -89,7 +93,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryNestedDocuments() throws MarshallingException {
+    public void queryNestedDocuments() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
                 .withFollowReferenceProperty(
                         refPropKey,

@@ -6,13 +6,19 @@ import lib.message.graph.GraphDbMessage;
 import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
+import lib.metadata.KVServerNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import server.ServerState;
+import server.kv.DbError;
+import server.kv.KeyNotFoundException;
 import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
+
+import java.io.IOException;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -36,7 +42,7 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void writeNewProp() throws MarshallingException {
+    public void writeNewProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
                 newPropKey,
                 new Json.StringValue(newPropVal)).finish();
@@ -50,7 +56,7 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void replaceExistingProp() throws MarshallingException {
+    public void replaceExistingProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
                 propKey,
                 new Json.StringValue(newPropVal)).finish();
@@ -65,7 +71,7 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void writeToNonExistingDoc() throws MarshallingException {
+    public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         final String nonExistDocId = "nonExisitingDocId";
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(nonExistDocId).withReplace(
                 propKey,

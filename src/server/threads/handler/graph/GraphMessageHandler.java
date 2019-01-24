@@ -6,14 +6,21 @@ import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.graph.query.QueryMessageImpl;
+import lib.message.graph.query.QueryOperation;
 import lib.message.graph.query.QueryType;
 import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.graph.mutation.Operations;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
+import lib.metadata.KVServerNotFoundException;
 import server.ServerState;
+import server.kv.DbError;
+import server.kv.KeyNotFoundException;
+import server.service.Document;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
+
+import java.io.IOException;
 
 public final class GraphMessageHandler {
     /* TODO GRAPH: For external docs request them not using GetHandler but use GetMessage functionality. Currently
@@ -21,7 +28,7 @@ public final class GraphMessageHandler {
        TODO             always return ResponseMessages
     */
 
-    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException {
+    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError {
         switch (message.messageType) {
             case QUERY:
                 return handleQuery((QueryMessageImpl) message, state);
@@ -130,14 +137,11 @@ public final class GraphMessageHandler {
      query ID { doc1: { key, refKey|FOLLOW: { key } } }
      response { key: value , refKey: { key: value2 }}
      */
-    private static IMessage handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException {
+    private static IMessage handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException, KeyNotFoundException {
         // TODO GRAPH: implement query
         if(msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
-        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(msg.queryParam), state);
 
-        if (!docResponse.isSuccess()) return docResponse;
-
-        Json doc = Json.deserialize(docResponse.getValue());
+        Json doc = Json.deserialize(Document.loadDocument(msg.queryParam, state));
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
             String key = property.key;

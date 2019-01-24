@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import static server.threads.handler.MessageHandlerUtils.isResponsible;
 
-public class Document {
+public final class Document {
     public static String loadDocument(String key, ServerState state) throws KVServerNotFoundException, KeyNotFoundException, DbError, IOException, MarshallingException {
         if (!isResponsible(state, key, KVMessage.StatusType.GET)) {
             KVMessage getMessage = KvMessageFactory.createGetMessage(key);
