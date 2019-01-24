@@ -19,8 +19,10 @@ import server.kv.KeyNotFoundException;
 import server.service.Document;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 public final class GraphMessageHandler {
     /* TODO GRAPH: For external docs request them not using GetHandler but use GetMessage functionality. Currently
@@ -137,10 +139,11 @@ public final class GraphMessageHandler {
      * query ID { doc1: { key, refKey|FOLLOW: { key } } }
      * response { key: value , refKey: { key: value2 }}
      */
-    private static IMessage handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException, KeyNotFoundException {
+    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException, KeyNotFoundException {
         // TODO GRAPH: implement query
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
+        LinkedList errors = new LinkedList();
         Json doc = Json.deserialize(Document.loadDocument(msg.queryParam, state));
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
@@ -152,15 +155,28 @@ public final class GraphMessageHandler {
                 op = QueryOperation.READ;
             }
 
-            String key = opSplit[0];
+            String propKey = opSplit[0];
+            Json.PropertyValue queryPropValue = property.value;
 
-            if (doc.get(key) == null) {
-                responseBuilder.withProperty(key, Json.UndefinedValue);
+            if (doc.get(propKey) == null) {
+                responseBuilder.withProperty(propKey, Json.UndefinedValue);
                 continue;
             }
 
+            Json.PropertyValue docPropVal = doc.get(propKey);
             if (op == QueryOperation.READ) {
-                responseBuilder.withProperty(key, doc.get(key));
+                responseBuilder.withProperty(propKey, docPropVal);
+                continue;
+            }
+            if (op == QueryOperation.FOLLOW) {
+                if (queryPropValue instanceof Json.JsonValue) {
+                    Json referencedDoc = Json.deserialize(Document.loadDocument(propKey, state));
+                    // todo
+                    throw new NotImplementedException();
+
+                } else {
+                    errors.add("Follow prop operation must have a json value");
+                }
             }
         }
 
