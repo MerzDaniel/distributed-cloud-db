@@ -23,6 +23,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public final class GraphMessageHandler {
     /* TODO GRAPH: For external docs request them not using GetHandler but use GetMessage functionality. Currently
@@ -143,11 +144,11 @@ public final class GraphMessageHandler {
         // TODO GRAPH: implement query
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
-        LinkedList errors = new LinkedList();
+        LinkedList<String> errors = new LinkedList();
         Json doc = Json.deserialize(Document.loadDocument(msg.queryParam, state));
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
-            String opSplit[] = property.key.split(QueryMessageImpl.OPERATION_SEPARATOR);
+            String opSplit[] = property.key.split(String.format("[%s]",QueryMessageImpl.OPERATION_SEPARATOR));
             QueryOperation op;
             if (opSplit.length > 1) {
                 op = QueryOperation.valueOf(opSplit[1]);
@@ -170,16 +171,32 @@ public final class GraphMessageHandler {
             }
             if (op == QueryOperation.FOLLOW) {
                 if (queryPropValue instanceof Json.JsonValue) {
-                    Json referencedDoc = Json.deserialize(Document.loadDocument(propKey, state));
-                    // todo
-                    throw new NotImplementedException();
+                    if (!(docPropVal instanceof Json.StringValue)) throw new NotImplementedException();
 
+                    String referencedDocId = ((Json.StringValue) docPropVal).value;
+                    Json referencedDoc = Json.deserialize(Document.loadDocument(referencedDocId, state));
+                    Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
+                    responseBuilder.withJsonProperty(propKey, result);
                 } else {
                     errors.add("Follow prop operation must have a json value");
                 }
             }
         }
 
+        if (errors.size() > 0) {
+            String errorString = errors.stream().collect(Collectors.joining(";"));
+            return new ResponseMessageImpl(errorString);
+        }
         return new ResponseMessageImpl(responseBuilder.finish());
+    }
+
+    private static Json loadPropsFromDoc(Json query, Json doc) {
+        Json.Builder resultBuilder = Json.Builder.create();
+        for (Json.Property property : query.properties) {
+            Json.PropertyValue docPropVal = doc.get(property.key);
+            if (docPropVal == null) docPropVal = Json.UndefinedValue;
+            resultBuilder.withProperty(property.key, docPropVal);
+        }
+        return resultBuilder.finish();
     }
 }
