@@ -23,6 +23,9 @@ public class Messaging {
 
     public Messaging() {
     }
+    public Messaging(ServerData sd) throws IOException {
+        connect(sd);
+    }
 
     public synchronized boolean connect(ServerData sd) throws IOException {
         return connect(sd.getHost(), sd.getPort());
