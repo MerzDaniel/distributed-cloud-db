@@ -16,6 +16,10 @@ import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 
 public final class GraphMessageHandler {
+    /* TODO GRAPH: For external docs request them not using GetHandler but use GetMessage functionality. Currently
+       TODO            the GetHandler would return a NotResponsibleMessage. After this is done this GraphHandler can
+       TODO             always return ResponseMessages
+    */
 
     public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException {
         switch (message.messageType) {
