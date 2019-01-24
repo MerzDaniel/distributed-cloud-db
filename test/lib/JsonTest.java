@@ -5,6 +5,7 @@ import lib.message.exception.MarshallingException;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class JsonTest {
 
@@ -45,5 +46,17 @@ public class JsonTest {
         assertEquals("{name:Jhon,age:35,country:USA,friend:{name:Khan,age:34}}", s);
 
         assertEquals(s, Json.deserialize(s).serialize());
+    }
+
+    @Test
+    public void testSerializeUndefined() throws MarshallingException {
+        Json j = Json.Builder.create()
+                .withProperty("prop", Json.UndefinedValue)
+                .finish();
+
+        String serialized = j.serialize();
+        Json deserialized = Json.deserialize(serialized);
+        assertEquals(serialized, deserialized.serialize());
+        assertTrue(deserialized.get("prop") instanceof Json._UndefinedValue);
     }
 }

@@ -60,7 +60,10 @@ public class JsonParser {
         if (lookahead() == '{') return new Json.JsonValue(parseObject());
         if (lookahead() == '[') return new Json.ArrayValue(parseArray());
 
-        return new Json.StringValue(consumeCharsTillBeforeSpecialChar());
+        String value = consumeCharsTillBeforeSpecialChar();
+
+        if (value.length() == 0) return Json.UndefinedValue;
+        return new Json.StringValue(value);
     }
 
     private Json.PropertyValue[] parseArray() throws JsonFormatException {

@@ -87,7 +87,8 @@ public class Json {
 
     public static final PropertyValue UndefinedValue = new _UndefinedValue();
 
-    private static class _UndefinedValue extends PropertyValue {
+    public static class _UndefinedValue extends PropertyValue {
+        protected _UndefinedValue() {}
         @Override
         public String serialize() {
             return "";
