@@ -44,7 +44,7 @@ public class JsonParser {
             properties.add(next);
 
             if (lookahead() != ',') break;
-            consomueChar();
+            consumeChar();
         }
         return properties;
     }
@@ -75,13 +75,13 @@ public class JsonParser {
         return (Json.PropertyValue[]) propVals.toArray();
     }
 
-    private char consomueChar() {
+    private char consumeChar() {
         return input.charAt(index++);
     }
 
     private char consumeExpectedChar(char c) throws JsonFormatException {
         if (lookahead() != c) throw new JsonFormatException();
-        return consomueChar();
+        return consumeChar();
     }
     private String consumeCharsTillBefore(char c) {
         int indexOfChar = input.indexOf(c, index);
@@ -99,7 +99,7 @@ public class JsonParser {
                 if (special == current) { isSpecial = true; break; }
 
             if (isSpecial) break;
-            stringBuilder.append(consomueChar());
+            stringBuilder.append(consumeChar());
         }
         return stringBuilder.toString();
     }
