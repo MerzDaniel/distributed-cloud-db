@@ -51,7 +51,7 @@ public class GraphHandlerTest {
 
     @Test
     public void replaceExistingProp() throws MarshallingException {
-        GraphDbMessage mutationMsg = MutationMessageImpl.Factory.create(docId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
                 propKey,
                 new Json.StringValue(newPropVal)).finish();
         GraphMessageHandler.handle(mutationMsg,state);
@@ -63,11 +63,11 @@ public class GraphHandlerTest {
         assertTrue(newDoc.properties.size() == 1);
 
     }
-    // TODO GRAPH: write a non existing doc (it should be created)
+
     @Test
     public void writeToNonExistingDoc() throws MarshallingException {
         final String nonExistDocId = "nonExisitingDocId";
-        GraphDbMessage mutationMsg = MutationMessageImpl.Factory.create(nonExistDocId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(nonExistDocId).withReplace(
                 propKey,
                 new Json.StringValue(propVal)).finish();
         GraphMessageHandler.handle(mutationMsg,state);
