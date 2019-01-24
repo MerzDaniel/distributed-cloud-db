@@ -19,10 +19,7 @@ public class Json {
     }
 
     public Property findProp(String key) {
-        for (Property p : properties)
-            if (p.key.equals(key)) return p;
-
-        return null;
+       return properties.stream().filter(it -> it.key.equals(key)).findAny().orElse(null);
     }
 
     public void setProperty(Property property){
