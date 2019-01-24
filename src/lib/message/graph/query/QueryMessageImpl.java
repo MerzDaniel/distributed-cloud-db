@@ -29,20 +29,20 @@ public class QueryMessageImpl extends GraphDbMessage {
                 );
     }
 
-    public static class Factory {
+    public static class Builder {
         String docId;
-        Json.Factory queryFactory = Json.Factory.create();
+        Json.Builder queryBuilder = Json.Builder.create();
 
-        private Factory (String docId) {
+        private Builder(String docId) {
             this.docId = docId;
         }
 
         public QueryMessageImpl finish() {
-            return new QueryMessageImpl(QueryType.ID, docId, queryFactory.finish());
+            return new QueryMessageImpl(QueryType.ID, docId, queryBuilder.finish());
         }
 
-        public Factory withProperty(String key) {
-            queryFactory.withProperty(key, Json.UndefinedValue);
+        public Builder withProperty(String key) {
+            queryBuilder.withProperty(key, Json.UndefinedValue);
             return this;
         }
     }

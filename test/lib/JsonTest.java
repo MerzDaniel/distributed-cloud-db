@@ -8,14 +8,14 @@ public class JsonTest {
 
     @Test
     public void testSerialize() {
-        Json j = Json.Factory.create().withStringProperty("name", "Jhon").finish();
+        Json j = Json.Builder.create().withStringProperty("name", "Jhon").finish();
         String s = j.serialize();
         assertEquals("{name:Jhon}", s);
     }
 
     @Test
     public void testSerializeMultipleProperties() {
-        Json j = Json.Factory.create()
+        Json j = Json.Builder.create()
                 .withStringProperty("name", "Jhon")
                 .withStringProperty("age", "35")
                 .withStringProperty("country", "USA")
@@ -27,12 +27,12 @@ public class JsonTest {
     @Test
     public void testSerializeComplexProperties() {
 
-        Json f = Json.Factory.create()
+        Json f = Json.Builder.create()
                 .withStringProperty("name", "Khan")
                 .withStringProperty("age", "34")
                 .finish();
 
-        Json j = Json.Factory.create()
+        Json j = Json.Builder.create()
                 .withStringProperty("name", "Jhon")
                 .withStringProperty("age", "35")
                 .withStringProperty("country", "USA")

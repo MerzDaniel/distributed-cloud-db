@@ -27,28 +27,28 @@ public class MutationMessageImpl extends GraphDbMessage {
         );
     }
 
-    public static class Factory {
-        Json.Factory mutationFactory = Json.Factory.create();
+    public static class Builder {
+        Json.Builder mutationBuilder = Json.Builder.create();
         String docId;
 
-        private Factory () {}
+        private Builder() {}
 
-        public static Factory create(String docId) {
-            Factory f = new Factory();
+        public static Builder create(String docId) {
+            Builder f = new Builder();
             f.docId = docId;
             return f;
         }
 
         public MutationMessageImpl finish() {
-            return new MutationMessageImpl(docId, mutationFactory.finish());
+            return new MutationMessageImpl(docId, mutationBuilder.finish());
         }
 
-        public Factory withReplace(Json.Property prop) {
-            mutationFactory.withProperty(prop.key + OPERATION_SEPARATOR + Operations.REPLACE.name(), prop.value);
+        public Builder withReplace(Json.Property prop) {
+            mutationBuilder.withProperty(prop.key + OPERATION_SEPARATOR + Operations.REPLACE.name(), prop.value);
             return this;
         }
-        public Factory withReplace(String propKey, Json.PropertyValue propVal) {
-            mutationFactory.withProperty(propKey + OPERATION_SEPARATOR + Operations.REPLACE.name(), propVal);
+        public Builder withReplace(String propKey, Json.PropertyValue propVal) {
+            mutationBuilder.withProperty(propKey + OPERATION_SEPARATOR + Operations.REPLACE.name(), propVal);
             return this;
         }
 

@@ -9,6 +9,7 @@ import lib.message.kv.KvMessageFactory;
 import org.junit.Before;
 import org.junit.Test;
 import server.ServerState;
+import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
@@ -27,7 +28,7 @@ public class GraphHandlerTest {
     @Before
     public void setup() {
         state = TestServerState.create();
-        Json doc = Json.Factory.create().withStringProperty(propKey, propVal).finish();
+        Json doc = Json.Builder.create().withStringProperty(propKey, propVal).finish();
 
         KVMessage putMsg = KvMessageFactory.createPutMessage(docId, doc.serialize());
         new PutHandler().handleRequest(putMsg, state);
@@ -35,7 +36,7 @@ public class GraphHandlerTest {
 
     @Test
     public void writeNewProp() throws MarshallingException {
-        GraphDbMessage mutationMsg = MutationMessageImpl.Factory.create(docId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
                 newPropKey,
                 new Json.StringValue(newPropVal)).finish();
         GraphMessageHandler.handle(mutationMsg,state);

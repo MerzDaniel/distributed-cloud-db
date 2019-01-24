@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Json {
+    // TODO GRAPH: Write working parser for nested objects
     public List<Property> properties = new LinkedList<>();
 
     public PropertyValue get(String key) {
@@ -139,26 +140,26 @@ public class Json {
         return result;
     }
 
-    public static class Factory {
+    public static class Builder {
         private Json json = new Json();
-        private Factory() {
+        private Builder() {
 
         }
-        public static Factory create() {
-            return new Factory();
+        public static Builder create() {
+            return new Builder();
         }
         public Json finish() { return json; }
 
-        public Factory withStringProperty(String key, String value) {
+        public Builder withStringProperty(String key, String value) {
             json.setProperty(new Property(key, new StringValue(value)));
             return this;
         }
 
-        public Factory withJsonProperty(String key, Json value) {
+        public Builder withJsonProperty(String key, Json value) {
             json.setProperty(new Property(key, new JsonValue(value)));
             return this;
         }
-        public Factory withProperty(String propKey, PropertyValue propVal) {
+        public Builder withProperty(String propKey, PropertyValue propVal) {
             json.setProperty(new Property(propKey, propVal));
             return this;
         }
