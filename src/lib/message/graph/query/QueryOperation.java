@@ -4,5 +4,6 @@ public enum QueryOperation {
     /**
      * Follows references into other documents
      */
+    READ,
     FOLLOW,
 }

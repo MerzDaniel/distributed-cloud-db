@@ -108,46 +108,58 @@ public final class GraphMessageHandler {
     }
 
     /**
-     // example layout:
-     QUERY ID {
-     <id-of-some-document>: {
-     messages|FOLLOW: [
-     { to: [ { name, } ] }
-     ],
-     <property-key-1>: ,
-     <property-key-2>: ,
-     <property-key-of-reference-to-other-doc>|FOLLOW: {
-     <property-of-other-doc>
-     }
-     }
-     }
-
-     RESPONSE {
-     <id-of-some-document>: {
-     <property-key-1>: <value-1-from-database>,
-     <property-key-2>: <value-2-from-database>,
-     <property-key-of-reference-to-other-doc>: {
-     <property-of-other-doc>: <value-from-other-doc>
-     }
-     }
-     }
-
-     doc1: { key: value, refKey: doc2}
-     doc2: { key: value2, key2: value3 }
-     query ID { doc1: { key, refKey|FOLLOW: { key } } }
-     response { key: value , refKey: { key: value2 }}
+     * // example layout:
+     * QUERY ID {
+     * <id-of-some-document>: {
+     * messages|FOLLOW: [
+     * { to: [ { name, } ] }
+     * ],
+     * <property-key-1>: ,
+     * <property-key-2>: ,
+     * <property-key-of-reference-to-other-doc>|FOLLOW: {
+     * <property-of-other-doc>
+     * }
+     * }
+     * }
+     * <p>
+     * RESPONSE {
+     * <id-of-some-document>: {
+     * <property-key-1>: <value-1-from-database>,
+     * <property-key-2>: <value-2-from-database>,
+     * <property-key-of-reference-to-other-doc>: {
+     * <property-of-other-doc>: <value-from-other-doc>
+     * }
+     * }
+     * }
+     * <p>
+     * doc1: { key: value, refKey: doc2}
+     * doc2: { key: value2, key2: value3 }
+     * query ID { doc1: { key, refKey|FOLLOW: { key } } }
+     * response { key: value , refKey: { key: value2 }}
      */
     private static IMessage handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException, KeyNotFoundException {
         // TODO GRAPH: implement query
-        if(msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
+        if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
         Json doc = Json.deserialize(Document.loadDocument(msg.queryParam, state));
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
-            String key = property.key;
+            String opSplit[] = property.key.split(QueryMessageImpl.OPERATION_SEPARATOR);
+            QueryOperation op;
+            if (opSplit.length > 1) {
+                op = QueryOperation.valueOf(opSplit[1]);
+            } else {
+                op = QueryOperation.READ;
+            }
+
+            String key = opSplit[0];
+
             if (doc.get(key) == null) {
                 responseBuilder.withProperty(key, Json.UndefinedValue);
-            } else {
+                continue;
+            }
+
+            if (op == QueryOperation.READ) {
                 responseBuilder.withProperty(key, doc.get(key));
             }
         }
