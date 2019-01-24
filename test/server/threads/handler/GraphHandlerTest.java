@@ -13,6 +13,7 @@ import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class GraphHandlerTest {
     ServerState state;
@@ -46,7 +47,37 @@ public class GraphHandlerTest {
         assertEquals(newPropVal, newDoc.get(newPropKey).serialize());
 
     }
-    // TODO GRAPH: Add tests for (1) replaceExisting prop and for (2) write a non existing doc (it should be created)
+
+    @Test
+    public void replaceExistingProp() throws MarshallingException {
+        GraphDbMessage mutationMsg = MutationMessageImpl.Factory.create(docId).withReplace(
+                propKey,
+                new Json.StringValue(newPropVal)).finish();
+        GraphMessageHandler.handle(mutationMsg,state);
+
+        KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
+        Json newDoc = Json.deserialize(response.getValue());
+
+        assertEquals(newPropVal, newDoc.get(propKey).serialize());
+        assertTrue(newDoc.properties.size() == 1);
+
+    }
+    // TODO GRAPH: write a non existing doc (it should be created)
+    @Test
+    public void writeToNonExistingDoc() throws MarshallingException {
+        final String nonExistDocId = "nonExisitingDocId";
+        GraphDbMessage mutationMsg = MutationMessageImpl.Factory.create(nonExistDocId).withReplace(
+                propKey,
+                new Json.StringValue(propVal)).finish();
+        GraphMessageHandler.handle(mutationMsg,state);
+
+        KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(nonExistDocId), state);
+        Json newDoc = Json.deserialize(response.getValue());
+
+        assertEquals(propVal, newDoc.get(propKey).serialize());
+        assertTrue(newDoc.properties.size() == 1);
+
+    }
 
     // TODO GRAPH: Write tests for MERGE properties (merge json and arrays)
 }
