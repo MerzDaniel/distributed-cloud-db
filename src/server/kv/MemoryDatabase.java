@@ -21,7 +21,9 @@ public class MemoryDatabase implements KeyValueStore {
 
     @Override
     public String get(String key) throws KeyNotFoundException, DbError {
-        return db.get(key);
+        String result = db.get(key);
+        if (result == null) throw new KeyNotFoundException(key);
+        return result;
     }
 
     @Override
