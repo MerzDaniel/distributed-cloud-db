@@ -80,4 +80,6 @@ public class GraphHandlerTest {
     }
 
     // TODO GRAPH: Write tests for MERGE properties (merge json and arrays)
+
+    //TODO GRAPH: if the document is not a valid json throw an error
 }
