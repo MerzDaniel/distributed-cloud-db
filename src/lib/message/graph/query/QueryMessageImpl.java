@@ -12,6 +12,8 @@ public class QueryMessageImpl extends GraphDbMessage {
     public String queryParam;
     public Json request;
 
+    public static final String OPERATION_SEPARATOR = "|";
+
     public QueryMessageImpl(QueryType queryType, String queryParam, Json request) {
         super(GraphMessageType.QUERY);
         this.queryType = queryType;
@@ -26,7 +28,7 @@ public class QueryMessageImpl extends GraphDbMessage {
                 queryType.name(),
                 queryParam,
                 request.serialize()
-                );
+        );
     }
 
     public static class Builder {
@@ -37,7 +39,9 @@ public class QueryMessageImpl extends GraphDbMessage {
             this.docId = docId;
         }
 
-        public static Builder create(String docId) {return new Builder(docId);}
+        public static Builder create(String docId) {
+            return new Builder(docId);
+        }
 
         public QueryMessageImpl finish() {
             return new QueryMessageImpl(QueryType.ID, docId, queryBuilder.finish());
@@ -45,6 +49,14 @@ public class QueryMessageImpl extends GraphDbMessage {
 
         public Builder withProperty(String key) {
             queryBuilder.withProperty(key, Json.UndefinedValue);
+            return this;
+        }
+
+        public Builder withFollowReferenceProperty(String key, Json subQuery) {
+            queryBuilder.withProperty(
+                    key + OPERATION_SEPARATOR + QueryOperation.FOLLOW,
+                    new Json.JsonValue(subQuery)
+            );
             return this;
         }
     }

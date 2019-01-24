@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 public class Json {
     public List<Property> properties = new LinkedList<>();
 
-    public PropertyValue get(String key) {
+    public <T extends PropertyValue> T get (String key) {
         Property p = findProp(key);
         if (p == null) return null;
 
-        return p.value;
+        return (T) p.value;
     }
 
     public Property findProp(String key) {
@@ -64,7 +64,7 @@ public class Json {
             this.value = value;
         }
 
-        Json value;
+        public Json value;
 
         @Override
         public String serialize() {
@@ -73,7 +73,7 @@ public class Json {
     }
 
     public static class ArrayValue extends PropertyValue {
-        PropertyValue[] values;
+        public PropertyValue[] values;
 
         public ArrayValue(PropertyValue[] values) {
             this.values = values;
@@ -133,6 +133,11 @@ public class Json {
 
         public Builder withArrayProperty(String arrPropKey, PropertyValue[] arrPropVal) {
             json.setProperty(new Property(arrPropKey, new ArrayValue(arrPropVal)));
+            return this;
+        }
+
+        public Builder withUndefinedProperty(String key) {
+            json.setProperty(new Property(key, UndefinedValue));
             return this;
         }
     }
