@@ -74,15 +74,8 @@ public class KVStore implements KVCommInterface {
     public KVMessage get(String key) throws IOException, MarshallingException, KVServerNotFoundException  {
         KVMessage kvMessageRequest = KvMessageFactory.createGetMessage(key);
 
-        ServerData coordinator = kvStoreMetaData.findKVServerForKey(key);
-        List<ServerData> replicas = kvStoreMetaData.findReplicaKVServers(key);
-
-        List<ServerData> candidateServers = new ArrayList<>();
-        candidateServers.add(coordinator);
-        candidateServers.addAll(replicas);
-
-        Collections.shuffle(candidateServers);
-        boolean connectSuccess = this.connect(candidateServers.get(0).getHost(), candidateServers.get(0).getPort());
+        ServerData responsibleServer = kvStoreMetaData.findRandomResponsibleForGet(key);
+        boolean connectSuccess = this.connect(responsibleServer.getHost(), responsibleServer.getPort());
 
         if (!connectSuccess) return KvMessageFactory.createConnectErrorMessage();
 
