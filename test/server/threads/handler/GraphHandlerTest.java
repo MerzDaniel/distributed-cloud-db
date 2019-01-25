@@ -38,6 +38,10 @@ public class GraphHandlerTest {
     final String innerJsonPropKey = "innerJsonPropKey";
     final String innerJsonPropVal = "innerJsonPropVal";
 
+    //json with json array
+    final String docIdWithArray = "docIdWithArray";
+    final String propKeyWithArray = "propKeyWithArray";
+
     @Before
     public void setup() {
         state = TestServerState.create();
@@ -47,10 +51,17 @@ public class GraphHandlerTest {
         new PutHandler().handleRequest(putMsg1, state);
 
         //setup json data with inner json
-        Json doc2 = Json.Builder.create().withJsonProperty(propKey, Json.Builder.create().withStringProperty(innerJsonPropKey, innerJsonPropVal).finish()).finish();
+        Json innerJson = Json.Builder.create().withStringProperty(innerJsonPropKey, innerJsonPropVal).finish();
+        Json doc2 = Json.Builder.create().withJsonProperty(propKey, innerJson).finish();
 
         KVMessage putMsg2 = KvMessageFactory.createPutMessage(docIdWithInnerJson, doc2.serialize());
         new PutHandler().handleRequest(putMsg2, state);
+
+        //setup json data with json arrays
+        Json doc3 = Json.Builder.create().withArrayProperty(propKey, new Json.PropertyValue[]{new Json.JsonValue(doc1), new Json.JsonValue(innerJson)}).finish();
+
+        KVMessage putMsg3 = KvMessageFactory.createPutMessage(docIdWithArray, doc3.serialize());
+        new PutHandler().handleRequest(putMsg3, state);
     }
 
     @Test
@@ -108,6 +119,7 @@ public class GraphHandlerTest {
 
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithInnerJson), state);
         Json newDoc = Json.deserialize(response.getValue());
+
         assertEquals(String.format("{%s:%s,key001,val001", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
 
     }
@@ -121,6 +133,7 @@ public class GraphHandlerTest {
                 propKey,
                 new Json.JsonValue(propVal)).finish();
         ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+
         assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
     }
 
@@ -132,8 +145,67 @@ public class GraphHandlerTest {
                 propKey,
                 new Json.StringValue("somevalue")).finish();
         ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+
         assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
     }
 
-    // TODO GRAPH: Write tests for MERGE properties (for arrays)
+    @Test
+    //the document has an string property and the message is an array
+    public void testMergeJsonForInvalidDocument() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        Json propVal = Json.Builder.create().withStringProperty("key001", "val001").finish();
+
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withMerge(
+                propKey,
+                new Json.JsonValue(propVal)).finish();
+        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+
+        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+    }
+
+    @Test
+    //the document has an array property and the message is an string value
+    public void testMergeJsonForInvalidMessage() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+                propKey,
+                new Json.StringValue("newPropVal")).finish();
+        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+
+        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+    }
+
+    @Test
+    //the document has an array property and the message is an json object
+    public void testMergeMsgJsonWithArray() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        Json json = Json.Builder.create().withStringProperty("key001", "val001").finish();
+
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+                propKey,
+                new Json.JsonValue(json)).finish();
+        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+
+        KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
+        Json newDoc = Json.deserialize(response.getValue());
+
+        assertEquals(String.format("[%s:%s,%s:%s,key001,val001]", propKey, json, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+    }
+
+    @Test
+    //the document has an array property and the message also an array
+    public void testMergeMsgArrayWithArray() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        Json json1 = Json.Builder.create().withStringProperty("key001", "val001").finish();
+        Json json2 = Json.Builder.create().withStringProperty("key002", "val002").finish();
+
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+                propKey,
+                new Json.ArrayValue(new Json.PropertyValue[]{
+                        new Json.JsonValue(json1),
+                        new Json.JsonValue(json2)
+                })).finish();
+        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+
+        KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
+        Json newDoc = Json.deserialize(response.getValue());
+
+        assertEquals(String.format("[%s:%s,%s:%s,key001:val001,key002:val002]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+    }
 }
