@@ -81,7 +81,7 @@ public class Json {
 
         @Override
         public String serialize() {
-            return String.join(",", Arrays.stream(values).map(v -> v.serialize()).collect(Collectors.toList()));
+            return String.format("[%s]", String.join(",", Arrays.stream(values).map(v -> v.serialize()).collect(Collectors.toList())));
         }
     }
 
