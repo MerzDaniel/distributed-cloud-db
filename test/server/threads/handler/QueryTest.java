@@ -2,6 +2,7 @@ package server.threads.handler;
 
 import lib.json.Json;
 import lib.message.exception.MarshallingException;
+import lib.message.exception.UnsupportedJsonStructureFoundException;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.kv.KvMessageFactory;
@@ -72,7 +73,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryStringProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+    public void queryStringProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId).withProperty(stringPropKey).finish();
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
@@ -80,7 +81,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryMultipleProps() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+    public void queryMultipleProps() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
                 .withProperty(stringPropKey)
                 .withProperty(arrPropKey)
@@ -93,7 +94,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryNestedDocuments() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+    public void queryNestedDocuments() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
                 .withFollowReferenceProperty(
                         refPropKey,
