@@ -14,6 +14,7 @@ import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
 import lib.metadata.KVServerNotFoundException;
 import server.ServerState;
+import lib.message.exception.UnsupportedJsonStructureFoundException;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.service.Document;
@@ -22,7 +23,9 @@ import server.threads.handler.kv.PutHandler;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class GraphMessageHandler {
@@ -31,7 +34,7 @@ public final class GraphMessageHandler {
        TODO             always return ResponseMessages
     */
 
-    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError {
+    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError, UnsupportedJsonStructureFoundException {
         switch (message.messageType) {
             case QUERY:
                 return handleQuery((QueryMessageImpl) message, state);
@@ -41,7 +44,7 @@ public final class GraphMessageHandler {
         return new ResponseMessageImpl("Unsupported MessageType!");
     }
 
-    private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException {
+    private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
         /*
         MUTATION <document-id> {
             <property-key-1>|REPLACE: new Value,
@@ -88,8 +91,8 @@ public final class GraphMessageHandler {
                     break;
 
                 case MERGE:
-                    // TODO GRAPH: Implement
-                    throw new MarshallingException("Not implemented");
+                    handleMerge(doc, p);
+                    break;
 
                 case NESTED:
                     // TODO GRAPH: (optional) Implement
@@ -199,4 +202,33 @@ public final class GraphMessageHandler {
         }
         return resultBuilder.finish();
     }
+
+    private static void handleMerge(Json doc, Json.Property msgProp) throws UnsupportedJsonStructureFoundException{
+        String key = msgProp.key.split("[|]")[0];
+        Json.PropertyValue docProp = doc.get(key);
+        if (docProp instanceof Json.JsonValue && msgProp.value instanceof Json.JsonValue) {
+            Json.JsonValue docPropJv = (Json.JsonValue) docProp;
+            ((Json.JsonValue)msgProp.value).value.properties.stream().forEach(it -> docPropJv.value.setProperty(new Json.Property(it.key, it.value)));
+            return;
+        }
+
+        if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.JsonValue) {
+            Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
+            List<Json.PropertyValue> allElements = Arrays.asList(docPropJv.values);
+            allElements.add(msgProp.value);
+            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            return;
+        }
+
+        if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.ArrayValue) {
+            Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
+            List<Json.PropertyValue> allElements = Arrays.asList(docPropJv.values);
+            allElements.addAll(Arrays.asList((((Json.ArrayValue) msgProp.value).values)));
+            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            return;
+        }
+
+        throw new UnsupportedJsonStructureFoundException();
+    }
+
 }
