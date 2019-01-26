@@ -1,5 +1,6 @@
 package server.service;
 
+import lib.json.Json;
 import lib.message.IMessage;
 import lib.message.Messaging;
 import lib.message.exception.MarshallingException;
@@ -17,6 +18,9 @@ import java.io.IOException;
 import static server.threads.handler.MessageHandlerUtils.isResponsible;
 
 public final class Document {
+    public static Json loadJsonDocument(String key, ServerState state) throws DbError, IOException, MarshallingException, KVServerNotFoundException, KeyNotFoundException {
+        return Json.deserialize(loadDocument(key, state));
+    }
     public static String loadDocument(String key, ServerState state) throws KVServerNotFoundException, KeyNotFoundException, DbError, IOException, MarshallingException {
         if (!isResponsible(state, key, KVMessage.StatusType.GET)) {
             KVMessage getMessage = KvMessageFactory.createGetMessage(key);
@@ -35,6 +39,9 @@ public final class Document {
         ServerData responsible = state.meta.findKVServerForKey(key);
         KeyValueStore db = state.dbProvider.getDb(responsible.getName());
         return db.get(key);
+    }
+    public static boolean writeJsonDocument(String key, Json value, ServerState state) throws IOException, MarshallingException, KVServerNotFoundException, DbError {
+        return writeDocument(key, value.serialize(), state);
     }
     public static boolean writeDocument(String key, String value, ServerState state) throws KVServerNotFoundException, DbError, IOException, MarshallingException {
         if (!isResponsible(state, key, KVMessage.StatusType.PUT)) {

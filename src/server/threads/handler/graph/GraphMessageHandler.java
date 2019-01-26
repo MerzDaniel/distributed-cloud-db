@@ -32,7 +32,7 @@ public final class GraphMessageHandler {
        TODO             always return ResponseMessages
     */
 
-    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError, UnsupportedJsonStructureFoundException {
+    public static ResponseMessageImpl handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError  {
         switch (message.messageType) {
             case QUERY:
                 return handleQuery((QueryMessageImpl) message, state);
@@ -42,7 +42,7 @@ public final class GraphMessageHandler {
         return new ResponseMessageImpl("Unsupported MessageType!");
     }
 
-    private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
+    private static ResponseMessageImpl handleMutation(MutationMessageImpl message, ServerState state) {
         /*
         MUTATION <document-id> {
             document-id {
@@ -75,15 +75,18 @@ public final class GraphMessageHandler {
 
          */
 
-        LinkedList<IMessage> responses = new LinkedList<>();
+        StringBuilder errors = new StringBuilder();
         for (Json.Property docMutations : message.mutations.properties) {
             Json mutation = ((Json.JsonValue)docMutations.value).value;
-            responses.add(handleSingleDocMutation(docMutations.key, mutation, state));
+            try {
+                handleSingleDocMutation(docMutations.key, mutation, state);
+            } catch (Exception err) {
+                errors.append(err.getMessage());
+            }
         }
-        // TODO GRAPH: combine responses
-        return responses.get(0);
+        return new ResponseMessageImpl(errors.toString());
     }
-    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
+    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError {
 
         KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
 
@@ -114,11 +117,7 @@ public final class GraphMessageHandler {
             }
         }
 
-        KVMessage putResponse = new PutHandler().handleRequest(KvMessageFactory.createPutMessage(docId, doc.serialize()), state);
-
-        if (!putResponse.isSuccess()) {
-            return new ResponseMessageImpl("Mutation failed: " + putResponse.getStatus());
-        }
+        Document.writeJsonDocument(docId, doc, state);
 
         // success
         return new ResponseMessageImpl();
