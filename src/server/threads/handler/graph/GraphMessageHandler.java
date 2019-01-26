@@ -22,6 +22,7 @@ import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
@@ -86,13 +87,9 @@ public final class GraphMessageHandler {
         }
         return new ResponseMessageImpl(errors.toString());
     }
-    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError {
+    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError, KeyNotFoundException {
 
-        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
-
-        if (!docResponse.isSuccess() && !docResponse.getStatus().equals(KVMessage.StatusType.GET_NOT_FOUND)) return docResponse; // GET not successful (e.g. not responsible)
-
-        Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
+        Json doc = Document.loadJsonDocument(docId, state);
 
         for (Json.Property p : mutation.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
@@ -158,7 +155,7 @@ public final class GraphMessageHandler {
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
         LinkedList<String> errors = new LinkedList();
-        Json doc = Json.deserialize(Document.loadDocument(msg.queryParam, state));
+        Json doc = Document.loadJsonDocument(msg.queryParam, state);
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
             String opSplit[] = property.key.split(String.format("[%s]",QueryMessageImpl.OPERATION_SEPARATOR));
@@ -187,7 +184,7 @@ public final class GraphMessageHandler {
                     if (!(docPropVal instanceof Json.StringValue)) throw new NotImplementedException();
 
                     String referencedDocId = ((Json.StringValue) docPropVal).value;
-                    Json referencedDoc = Json.deserialize(Document.loadDocument(referencedDocId, state));
+                    Json referencedDoc = Document.loadJsonDocument(referencedDocId, state);
                     Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
                     responseBuilder.withJsonProperty(propKey, result);
                 } else {
