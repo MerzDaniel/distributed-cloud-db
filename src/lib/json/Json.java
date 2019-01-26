@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 public class Json {
     public List<Property> properties = new LinkedList<>();
 
-    public <T extends PropertyValue> T get (String key) {
+    public PropertyValue get (String key) {
         Property p = findProp(key);
         if (p == null) return null;
 
-        return (T) p.value;
+        return p.value;
     }
 
     public Property findProp(String key) {

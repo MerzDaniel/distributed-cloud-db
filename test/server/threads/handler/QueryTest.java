@@ -103,7 +103,7 @@ public class QueryTest {
                 .finish();
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
-        Json.JsonValue val = response.data.get(refPropKey);
+        Json.JsonValue val = (Json.JsonValue) response.data.get(refPropKey);
 
         assertTrue(val != null);
         assertEquals(referencedPropVal, val.value.get(referencedPropKey).serialize());
