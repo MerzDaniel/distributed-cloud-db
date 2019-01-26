@@ -120,7 +120,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithInnerJson), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("{%s:%s,key001,val001", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("{%s:%s,key001,val001}", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
 
     }
 
