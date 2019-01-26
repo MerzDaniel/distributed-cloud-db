@@ -5,6 +5,8 @@ import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static lib.Constants.RECORD_SEPARATOR;
 
@@ -29,7 +31,8 @@ public class MutationMessageImpl extends GraphDbMessage {
     public static class Builder {
         HashMap<String, Json.Builder> docMutationBuilders = new HashMap<>();
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public static Builder create() {
             Builder f = new Builder();
@@ -48,10 +51,29 @@ public class MutationMessageImpl extends GraphDbMessage {
             getMutationBuilder(docId).withProperty(prop.key + OPERATION_SEPARATOR + Operations.REPLACE.name(), prop.value);
             return this;
         }
+
+        public Builder withReplace(String docId, String propKey, String val) {
+            return withReplace(docId, propKey, new Json.StringValue(val));
+        }
+
         public Builder withReplace(String docId, String propKey, Json.PropertyValue propVal) {
             getMutationBuilder(docId).withProperty(propKey + OPERATION_SEPARATOR + Operations.REPLACE.name(), propVal);
             return this;
         }
+
+        public Builder withMerge(String docId, String propKey, String val) {
+            return withMerge(docId, propKey, new Json.StringValue(val));
+        }
+
+        public Builder withMerge(String id, String toUser, List<String> users) {
+            return withMerge(id, toUser, new Json.ArrayValue(
+                            users.stream()
+                                    .map(u -> new Json.StringValue(u))
+                                    .collect(Collectors.toList())
+                    )
+            );
+        }
+
         public Builder withMerge(String docId, String propKey, Json.PropertyValue propVal) {
             getMutationBuilder(docId).withProperty(propKey + OPERATION_SEPARATOR + Operations.MERGE.name(), propVal);
             return this;
