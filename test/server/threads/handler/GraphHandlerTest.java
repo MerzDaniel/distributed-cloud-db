@@ -99,7 +99,7 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
+    public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException  {
         final String nonExistDocId = "nonExisitingDocId";
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withReplace(
                 nonExistDocId,

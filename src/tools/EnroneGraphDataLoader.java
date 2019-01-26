@@ -1,12 +1,14 @@
 package tools;
 
-import lib.message.exception.MarshallingException;
 import lib.message.graph.mutation.MutationMessageImpl;
 import org.jetbrains.annotations.NotNull;
 import tools.util.EnroneBenchmarkDataLoader;
 
 import java.io.File;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,11 +31,7 @@ public final class EnroneGraphDataLoader {
     }
 
     private static void print(MutationMessageImpl m) {
-        try {
-            System.out.println(m.marshall());
-        } catch (MarshallingException e) {
-            System.out.println(e.getMessage());
-        }
+        System.out.println(m.prettyPrint());
     }
 
     private static MutationMessageImpl createMutations(Message m) {

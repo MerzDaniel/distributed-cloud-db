@@ -10,18 +10,33 @@ import java.util.stream.Collectors;
 public class Json {
     public List<Property> properties = new LinkedList<>();
 
-    public PropertyValue get (String key) {
+    public PropertyValue get(String key) {
         Property p = findProp(key);
         if (p == null) return null;
 
         return p.value;
     }
 
-    public Property findProp(String key) {
-       return properties.stream().filter(it -> it.key.equals(key)).findAny().orElse(null);
+    public String prettyPrint() {
+        return "{\n" +
+                prettyPrint("  ") + "\n" +
+                "}";
     }
 
-    public void setProperty(Property property){
+    private String prettyPrint(String offset) {
+        if (properties.size() == 0) return "";
+        return
+                properties.stream()
+                        .map(p -> p.prettyPrint(offset))
+                        .collect(Collectors.joining(",\n"));
+
+    }
+
+    public Property findProp(String key) {
+        return properties.stream().filter(it -> it.key.equals(key)).findAny().orElse(null);
+    }
+
+    public void setProperty(Property property) {
         Property oldProp = findProp(property.key);
         if (oldProp != null) properties.remove(oldProp);
 
@@ -40,10 +55,16 @@ public class Json {
         public String serialize() {
             return "\"" + key + "\":" + value.serialize();
         }
+
+        public String prettyPrint(String offset) {
+            return offset + key + ": " + value.prettyPrint(offset);
+        }
     }
 
     public abstract static class PropertyValue {
         public abstract String serialize();
+
+        public abstract String prettyPrint(String s);
     }
 
     public static class StringValue extends PropertyValue {
@@ -57,9 +78,14 @@ public class Json {
         public String serialize() {
             return "\"" + value + "\"";
         }
+
+        @Override
+        public String prettyPrint(String s) {
+            return value;
+        }
     }
 
-    public static class JsonValue extends PropertyValue{
+    public static class JsonValue extends PropertyValue {
         public JsonValue(Json value) {
             this.value = value;
         }
@@ -70,6 +96,14 @@ public class Json {
         public String serialize() {
             return value.serialize();
         }
+
+        @Override
+        public String prettyPrint(String offset) {
+            if (value.properties.size() == 0) return "{}";
+            return "{\n" +
+                    value.prettyPrint(offset + "  ") + "\n" +
+                    offset + "}";
+        }
     }
 
     public static class ArrayValue extends PropertyValue {
@@ -78,6 +112,7 @@ public class Json {
         public ArrayValue(List<PropertyValue> values) {
             this.values = values;
         }
+
         public ArrayValue(PropertyValue[] values) {
             this.values = Arrays.asList(values);
         }
@@ -86,21 +121,38 @@ public class Json {
         public String serialize() {
             return String.format("[%s]", String.join(",", values.stream().map(v -> v.serialize()).collect(Collectors.toList())));
         }
+
+        @Override
+        public String prettyPrint(String offset) {
+            if (values.size() == 0) return "[]";
+            String prettyElements = values.stream().map(v -> offset + "  " + v.prettyPrint(offset + "  ")).collect(Collectors.joining(",\n"));
+            return "[\n" +
+                    prettyElements + ",\n" +
+                    offset + "]";
+        }
     }
 
     public static final PropertyValue UndefinedValue = new _UndefinedValue();
 
     public static class _UndefinedValue extends PropertyValue {
-        protected _UndefinedValue() {}
+        protected _UndefinedValue() {
+        }
+
         @Override
         public String serialize() {
             return "\"\"";
+        }
+
+        @Override
+        public String prettyPrint(String s) {
+            return "";
         }
     }
 
     public String serialize() {
         return String.format("{%s}", properties.stream().map(p -> p.serialize()).collect(Collectors.joining(",")));
     }
+
     public static Json deserialize(String s) throws MarshallingException {
         try {
             return JsonParser.parse(s);
@@ -111,13 +163,18 @@ public class Json {
 
     public static class Builder {
         private Json json = new Json();
+
         private Builder() {
 
         }
+
         public static Builder create() {
             return new Builder();
         }
-        public Json finish() { return json; }
+
+        public Json finish() {
+            return json;
+        }
 
 
         public Builder withStringProperty(String key, String value) {
@@ -129,6 +186,7 @@ public class Json {
             json.setProperty(new Property(key, new JsonValue(value)));
             return this;
         }
+
         public Builder withProperty(String propKey, PropertyValue propVal) {
             json.setProperty(new Property(propKey, propVal));
             return this;
@@ -139,6 +197,7 @@ public class Json {
             json.setProperty(new Property(arrPropKey, new ArrayValue(Arrays.asList((arrPropVal)))));
             return this;
         }
+
         public Builder withArrayProperty(String arrPropKey, List<PropertyValue> arrPropVal) {
 
             json.setProperty(new Property(arrPropKey, new ArrayValue(arrPropVal)));

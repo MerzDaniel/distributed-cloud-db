@@ -28,6 +28,10 @@ public class MutationMessageImpl extends GraphDbMessage {
         );
     }
 
+    public String prettyPrint() {
+        return GraphMessageType.MUTATION.name() + " " + mutations.prettyPrint();
+    }
+
     public static class Builder {
         HashMap<String, Json.Builder> docMutationBuilders = new HashMap<>();
 
