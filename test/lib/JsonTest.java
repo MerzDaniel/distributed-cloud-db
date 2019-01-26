@@ -13,7 +13,7 @@ public class JsonTest {
     public void testSerialize() throws MarshallingException {
         Json j = Json.Builder.create().withStringProperty("name", "Jhon").finish();
         String s = j.serialize();
-        assertEquals("{name:Jhon}", s);
+        assertEquals("{\"name\":\"Jhon\"}", s);
         assertEquals(s, Json.deserialize(s).serialize());
     }
 
@@ -25,7 +25,7 @@ public class JsonTest {
                 .withStringProperty("country", "USA")
                 .finish();
         String s = j.serialize();
-        assertEquals("{name:Jhon,age:35,country:USA}", s);
+        assertEquals("{\"name\":\"Jhon\",\"age\":\"35\",\"country\":\"USA\"}", s);
         assertEquals(s, Json.deserialize(s).serialize());
     }
 
@@ -45,7 +45,7 @@ public class JsonTest {
                 .finish();
         
         String s = j.serialize();
-        assertEquals("{name:Jhon,age:35,country:USA,friend:{name:Khan,age:34}}", s);
+        assertEquals("{\"name\":\"Jhon\",\"age\":\"35\",\"country\":\"USA\",\"friend\":{\"name\":\"Khan\",\"age\":\"34\"}}", s);
 
         assertEquals(s, Json.deserialize(s).serialize());
     }

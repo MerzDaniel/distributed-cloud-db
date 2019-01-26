@@ -38,7 +38,7 @@ public class Json {
         }
 
         public String serialize() {
-            return key + ":" + value.serialize();
+            return "\"" + key + "\":" + value.serialize();
         }
     }
 
@@ -55,7 +55,7 @@ public class Json {
 
         @Override
         public String serialize() {
-            return value;
+            return "\"" + value + "\"";
         }
     }
 
@@ -94,7 +94,7 @@ public class Json {
         protected _UndefinedValue() {}
         @Override
         public String serialize() {
-            return "";
+            return "\"\"";
         }
     }
 
