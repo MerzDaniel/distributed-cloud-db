@@ -30,6 +30,8 @@ public class CommandParser {
             return new DisconnectCommand();
         if (commandName.equals("loglevel"))
             return new LogCommand(tokens[1]);
+        if (commandName.equals("query"))
+            return new QueryCommand(tokens[1]);
         return new InvalidCommand();
     }
 }

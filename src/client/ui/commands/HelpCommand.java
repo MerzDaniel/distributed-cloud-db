@@ -15,6 +15,7 @@ public class HelpCommand implements Command {
         writeLine("connect <host> <port> : Connect to a host");
         writeLine("put <key> <value>     : Put <key,value> to the data store. <key> should not have any whitespaces");
         writeLine("get <key>             : Get <value> for the <key> from the data store");
+        writeLine("query <query>         : Get the result for <query> from the data store");
         writeLine("logLevel <level>      : Set loglevel. Supported logLevels are ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF");
         writeLine("disconnect            : Disconnects from the connected host");
         writeLine("c                     : Fast connect to localhost:50000");
