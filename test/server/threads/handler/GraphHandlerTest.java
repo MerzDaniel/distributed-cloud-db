@@ -120,7 +120,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithInnerJson), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("{%s:%s,key001,val001}", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("{%s:%s,key001:val001}", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
 
     }
 
@@ -210,7 +210,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("[%s:%s,%s:%s,key001,val001]", propKey, json, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("[{%s:%s},{%s:%s},{key001:val001}]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
     }
 
     @Test
@@ -230,6 +230,6 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("[%s:%s,%s:%s,key001:val001,key002:val002]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("[{%s:%s},{%s:%s},{key001:val001},{key002:val002}]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
     }
 }

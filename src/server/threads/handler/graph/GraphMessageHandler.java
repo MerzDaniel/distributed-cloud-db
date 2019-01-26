@@ -23,9 +23,7 @@ import server.threads.handler.kv.PutHandler;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public final class GraphMessageHandler {
@@ -76,7 +74,7 @@ public final class GraphMessageHandler {
          */
         KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
 
-        if (!docResponse.isSuccess()) return docResponse; // GET not successful (e.g. not responsible)
+        if (!docResponse.isSuccess() && !docResponse.getStatus().equals(KVMessage.StatusType.GET_NOT_FOUND)) return docResponse; // GET not successful (e.g. not responsible)
 
         Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
 
@@ -214,17 +212,13 @@ public final class GraphMessageHandler {
 
         if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.JsonValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            List<Json.PropertyValue> allElements = docPropJv.values;
-            allElements.add(msgProp.value);
-            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            docPropJv.values.add(msgProp.value);
             return;
         }
 
         if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.ArrayValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            List<Json.PropertyValue> allElements = docPropJv.values;
-            allElements.addAll((((Json.ArrayValue) msgProp.value).values));
-            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            docPropJv.values.addAll((((Json.ArrayValue) msgProp.value).values));
             return;
         }
 
