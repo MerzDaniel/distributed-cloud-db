@@ -14,6 +14,23 @@ import java.util.stream.Stream;
 
 public final class EnroneGraphDataLoader {
 
+    /*
+    user: <id-is-email>: {
+        id: <email>,
+        messages: [<messagesIds>],
+        messagesReceived: [<messageIds>]
+    }
+
+    message: <message-id>: {
+        id: <message-id>,
+        date: <date>,
+        subject: <txt>,
+        fromUser: <user-id>,
+        toUsers: [<user-ids>],
+    }
+
+     */
+
     public static void main(@NotNull String[] args) {
         if (args.length != 1) System.out.println("loader.jar <path-to-enrone-test-data-set>");
 
