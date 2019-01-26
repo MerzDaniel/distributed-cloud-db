@@ -18,6 +18,8 @@ public class CommandParser {
             return new QuitCommand();
         if (commandName.equals("get") && tokens.length == 2)
             return new GetCommand(tokens[1]);
+        if (commandName.equals("query") && tokens.length == 3)
+            return new QueryCommand(tokens[1], Arrays.asList(tokens[2].split(",")));
         if (commandName.equals("put") && tokens.length >= 2)
             return new PutCommand(tokens[1], Arrays.asList(tokens).subList(2, tokens.length).stream().collect(Collectors.joining(" ")));
         if (commandName.equals("connect")
@@ -30,8 +32,6 @@ public class CommandParser {
             return new DisconnectCommand();
         if (commandName.equals("loglevel"))
             return new LogCommand(tokens[1]);
-        if (commandName.equals("query"))
-            return new QueryCommand(tokens[1]);
         return new InvalidCommand();
     }
 }
