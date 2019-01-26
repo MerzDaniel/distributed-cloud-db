@@ -73,15 +73,18 @@ public class Json {
     }
 
     public static class ArrayValue extends PropertyValue {
-        public PropertyValue[] values;
+        public List<PropertyValue> values;
 
-        public ArrayValue(PropertyValue[] values) {
+        public ArrayValue(List<PropertyValue> values) {
             this.values = values;
+        }
+        public ArrayValue(PropertyValue[] values) {
+            this.values = Arrays.asList(values);
         }
 
         @Override
         public String serialize() {
-            return String.format("[%s]", String.join(",", Arrays.stream(values).map(v -> v.serialize()).collect(Collectors.toList())));
+            return String.format("[%s]", String.join(",", values.stream().map(v -> v.serialize()).collect(Collectors.toList())));
         }
     }
 
@@ -132,6 +135,12 @@ public class Json {
         }
 
         public Builder withArrayProperty(String arrPropKey, PropertyValue[] arrPropVal) {
+
+            json.setProperty(new Property(arrPropKey, new ArrayValue(Arrays.asList((arrPropVal)))));
+            return this;
+        }
+        public Builder withArrayProperty(String arrPropKey, List<PropertyValue> arrPropVal) {
+
             json.setProperty(new Property(arrPropKey, new ArrayValue(arrPropVal)));
             return this;
         }

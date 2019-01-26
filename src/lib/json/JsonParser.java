@@ -2,6 +2,7 @@ package lib.json;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class JsonParser {
 
@@ -66,7 +67,7 @@ public class JsonParser {
         return new Json.StringValue(value);
     }
 
-    private Json.PropertyValue[] parseArray() throws JsonFormatException {
+    private List<Json.PropertyValue> parseArray() throws JsonFormatException {
         LinkedList<Json.PropertyValue> propVals = new LinkedList<>();
         consumeExpectedChar('[');
         while(true) {
@@ -75,7 +76,7 @@ public class JsonParser {
             consumeExpectedChar(',');
         }
         consumeExpectedChar(']');
-        return (Json.PropertyValue[]) propVals.toArray();
+        return propVals;
     }
 
     private char consumeChar() {
