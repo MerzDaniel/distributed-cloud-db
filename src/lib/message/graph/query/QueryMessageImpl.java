@@ -4,6 +4,8 @@ import lib.json.Json;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 
+import java.util.List;
+
 import static lib.Constants.RECORD_SEPARATOR;
 
 public class QueryMessageImpl extends GraphDbMessage {
@@ -49,6 +51,11 @@ public class QueryMessageImpl extends GraphDbMessage {
 
         public Builder withProperty(String key) {
             queryBuilder.withProperty(key, Json.UndefinedValue);
+            return this;
+        }
+
+        public Builder withProperties(List<String> keys) {
+            keys.stream().forEach(it -> queryBuilder.withProperty(it, Json.UndefinedValue));
             return this;
         }
 
