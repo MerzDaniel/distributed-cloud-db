@@ -214,17 +214,13 @@ public final class GraphMessageHandler {
 
         if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.JsonValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            List<Json.PropertyValue> allElements = docPropJv.values;
-            allElements.add(msgProp.value);
-            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            docPropJv.values.add(msgProp.value);
             return;
         }
 
         if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.ArrayValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            List<Json.PropertyValue> allElements = docPropJv.values;
-            allElements.addAll((((Json.ArrayValue) msgProp.value).values));
-            doc.setProperty(new Json.Property(key, new Json.ArrayValue((Json.PropertyValue[]) allElements.toArray())));
+            docPropJv.values.addAll((((Json.ArrayValue) msgProp.value).values));
             return;
         }
 
