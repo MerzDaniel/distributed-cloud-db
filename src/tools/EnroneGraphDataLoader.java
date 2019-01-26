@@ -1,7 +1,5 @@
 package tools;
 
-
-import lib.json.Json;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.mutation.MutationMessageImpl;
 import tools.util.EnroneBenchmarkDataLoader;

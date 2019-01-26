@@ -45,10 +45,12 @@ public final class GraphMessageHandler {
     private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
         /*
         MUTATION <document-id> {
-            <property-key-1>|REPLACE: new Value,
-            <property-key-2>|MERGE: [ value which will be appended to list ],
-            <property-key-2>|NESTED: {
-                <nested-property-1>|REPLACE: new value for nested prop
+            document-id {
+                <property-key-1>|REPLACE: new Value,
+                <property-key-2>|MERGE: [ value which will be appended to list ],
+                <property-key-2>|NESTED: {
+                    <nested-property-1>|REPLACE: new value for nested prop
+                }
             }
         }
 
@@ -72,13 +74,24 @@ public final class GraphMessageHandler {
         }
 
          */
-        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
+
+        LinkedList<IMessage> responses = new LinkedList<>();
+        for (Json.Property docMutations : message.mutations.properties) {
+            Json mutation = ((Json.JsonValue)docMutations.value).value;
+            responses.add(handleSingleDocMutation(docMutations.key, mutation, state));
+        }
+        // TODO GRAPH: combine responses
+        return responses.get(0);
+    }
+    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
+
+        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
 
         if (!docResponse.isSuccess() && !docResponse.getStatus().equals(KVMessage.StatusType.GET_NOT_FOUND)) return docResponse; // GET not successful (e.g. not responsible)
 
         Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
 
-        for (Json.Property p : message.mutations.properties) {
+        for (Json.Property p : mutation.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
             String operationSplit[] = p.key.split("[|]");
             String propertyKey = operationSplit[0];
@@ -101,7 +114,7 @@ public final class GraphMessageHandler {
             }
         }
 
-        KVMessage putResponse = new PutHandler().handleRequest(KvMessageFactory.createPutMessage(message.key, doc.serialize()), state);
+        KVMessage putResponse = new PutHandler().handleRequest(KvMessageFactory.createPutMessage(docId, doc.serialize()), state);
 
         if (!putResponse.isSuccess()) {
             return new ResponseMessageImpl("Mutation failed: " + putResponse.getStatus());
