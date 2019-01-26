@@ -1,7 +1,6 @@
 package server.threads.handler;
 
 import lib.json.Json;
-import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.exception.UnsupportedJsonStructureFoundException;
 import lib.message.graph.GraphDbMessage;
@@ -22,9 +21,7 @@ import util.TestServerState;
 
 import java.io.IOException;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 public class GraphHandlerTest {
     ServerState state;
@@ -77,7 +74,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(newPropVal, newDoc.get(newPropKey).serialize());
+        assertEquals(e(newPropVal), newDoc.get(newPropKey).serialize());
 
     }
 
@@ -92,9 +89,13 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(newPropVal, newDoc.get(propKey).serialize());
+        assertEquals(e(newPropVal), newDoc.get(propKey).serialize());
         assertTrue(newDoc.properties.size() == 1);
 
+    }
+
+    private String e(String s) {
+        return "\"" + s + "\"";
     }
 
     @Test
@@ -109,9 +110,8 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(nonExistDocId), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(propVal, newDoc.get(propKey).serialize());
+        assertEquals(e(propVal), newDoc.get(propKey).serialize());
         assertTrue(newDoc.properties.size() == 1);
-
     }
 
     @Test
@@ -126,7 +126,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithInnerJson), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("{%s:%s,key001:val001}", innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("{%s:%s,\"key001\":\"val001\"}", e(innerJsonPropKey), e(innerJsonPropVal)), newDoc.get(propKey).serialize());
 
     }
 
@@ -198,7 +198,7 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("[{%s:%s},{%s:%s},{key001:val001}]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("[{%s:%s},{%s:%s},{\"key001\":\"val001\"}]", e(propKey), e(propVal), e(innerJsonPropKey), e(innerJsonPropVal)), newDoc.get(propKey).serialize());
     }
 
     @Test
@@ -219,6 +219,6 @@ public class GraphHandlerTest {
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithArray), state);
         Json newDoc = Json.deserialize(response.getValue());
 
-        assertEquals(String.format("[{%s:%s},{%s:%s},{key001:val001},{key002:val002}]", propKey, propVal, innerJsonPropKey, innerJsonPropVal), newDoc.get(propKey).serialize());
+        assertEquals(String.format("[{%s:%s},{%s:%s},{\"key001\":\"val001\"},{\"key002\":\"val002\"}]", e(propKey), e(propVal), e(innerJsonPropKey), e(innerJsonPropVal)), newDoc.get(propKey).serialize());
     }
 }

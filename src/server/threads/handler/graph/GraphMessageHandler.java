@@ -3,26 +3,21 @@ package server.threads.handler.graph;
 import lib.json.Json;
 import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
+import lib.message.exception.UnsupportedJsonStructureFoundException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.graph.mutation.MutationMessageImpl;
+import lib.message.graph.mutation.Operations;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.query.QueryOperation;
 import lib.message.graph.query.QueryType;
 import lib.message.graph.response.ResponseMessageImpl;
-import lib.message.graph.mutation.Operations;
-import lib.message.kv.KVMessage;
-import lib.message.kv.KvMessageFactory;
 import lib.metadata.KVServerNotFoundException;
 import server.ServerState;
-import lib.message.exception.UnsupportedJsonStructureFoundException;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.service.Document;
-import server.threads.handler.kv.GetHandler;
-import server.threads.handler.kv.PutHandler;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
@@ -33,7 +28,7 @@ public final class GraphMessageHandler {
        TODO             always return ResponseMessages
     */
 
-    public static ResponseMessageImpl handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError  {
+    public static ResponseMessageImpl handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError {
         switch (message.messageType) {
             case QUERY:
                 return handleQuery((QueryMessageImpl) message, state);
@@ -78,7 +73,7 @@ public final class GraphMessageHandler {
 
         StringBuilder errors = new StringBuilder();
         for (Json.Property docMutations : message.mutations.properties) {
-            Json mutation = ((Json.JsonValue)docMutations.value).value;
+            Json mutation = ((Json.JsonValue) docMutations.value).value;
             try {
                 handleSingleDocMutation(docMutations.key, mutation, state);
             } catch (Exception err) {
@@ -87,9 +82,14 @@ public final class GraphMessageHandler {
         }
         return new ResponseMessageImpl(errors.toString());
     }
-    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError, KeyNotFoundException {
 
-        Json doc = Document.loadJsonDocument(docId, state);
+    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError {
+        Json doc;
+        try {
+            doc = Document.loadJsonDocument(docId, state);
+        } catch (KeyNotFoundException notFoundErr) {
+            doc = new Json();
+        }
 
         for (Json.Property p : mutation.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
@@ -158,7 +158,7 @@ public final class GraphMessageHandler {
         Json doc = Document.loadJsonDocument(msg.queryParam, state);
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
-            String opSplit[] = property.key.split(String.format("[%s]",QueryMessageImpl.OPERATION_SEPARATOR));
+            String opSplit[] = property.key.split(String.format("[%s]", QueryMessageImpl.OPERATION_SEPARATOR));
             QueryOperation op;
             if (opSplit.length > 1) {
                 op = QueryOperation.valueOf(opSplit[1]);
@@ -210,12 +210,12 @@ public final class GraphMessageHandler {
         return resultBuilder.finish();
     }
 
-    private static void handleMerge(Json doc, Json.Property msgProp) throws UnsupportedJsonStructureFoundException{
+    private static void handleMerge(Json doc, Json.Property msgProp) throws UnsupportedJsonStructureFoundException {
         String key = msgProp.key.split("[|]")[0];
         Json.PropertyValue docProp = doc.get(key);
         if (docProp instanceof Json.JsonValue && msgProp.value instanceof Json.JsonValue) {
             Json.JsonValue docPropJv = (Json.JsonValue) docProp;
-            ((Json.JsonValue)msgProp.value).value.properties.stream().forEach(it -> docPropJv.value.setProperty(new Json.Property(it.key, it.value)));
+            ((Json.JsonValue) msgProp.value).value.properties.stream().forEach(it -> docPropJv.value.setProperty(new Json.Property(it.key, it.value)));
             return;
         }
 
