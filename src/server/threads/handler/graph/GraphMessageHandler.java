@@ -32,7 +32,7 @@ public final class GraphMessageHandler {
        TODO             always return ResponseMessages
     */
 
-    public static IMessage handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError, UnsupportedJsonStructureFoundException {
+    public static ResponseMessageImpl handle(GraphDbMessage message, ServerState state) throws MarshallingException, KeyNotFoundException, IOException, KVServerNotFoundException, DbError  {
         switch (message.messageType) {
             case QUERY:
                 return handleQuery((QueryMessageImpl) message, state);
@@ -42,13 +42,15 @@ public final class GraphMessageHandler {
         return new ResponseMessageImpl("Unsupported MessageType!");
     }
 
-    private static IMessage handleMutation(MutationMessageImpl message, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException {
+    private static ResponseMessageImpl handleMutation(MutationMessageImpl message, ServerState state) {
         /*
         MUTATION <document-id> {
-            <property-key-1>|REPLACE: new Value,
-            <property-key-2>|MERGE: [ value which will be appended to list ],
-            <property-key-2>|NESTED: {
-                <nested-property-1>|REPLACE: new value for nested prop
+            document-id {
+                <property-key-1>|REPLACE: new Value,
+                <property-key-2>|MERGE: [ value which will be appended to list ],
+                <property-key-2>|NESTED: {
+                    <nested-property-1>|REPLACE: new value for nested prop
+                }
             }
         }
 
@@ -72,13 +74,27 @@ public final class GraphMessageHandler {
         }
 
          */
-        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
+
+        StringBuilder errors = new StringBuilder();
+        for (Json.Property docMutations : message.mutations.properties) {
+            Json mutation = ((Json.JsonValue)docMutations.value).value;
+            try {
+                handleSingleDocMutation(docMutations.key, mutation, state);
+            } catch (Exception err) {
+                errors.append(err.getMessage());
+            }
+        }
+        return new ResponseMessageImpl(errors.toString());
+    }
+    private static IMessage handleSingleDocMutation(String docId, Json mutation, ServerState state) throws MarshallingException, UnsupportedJsonStructureFoundException, KVServerNotFoundException, IOException, DbError {
+
+        KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
 
         if (!docResponse.isSuccess() && !docResponse.getStatus().equals(KVMessage.StatusType.GET_NOT_FOUND)) return docResponse; // GET not successful (e.g. not responsible)
 
         Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
 
-        for (Json.Property p : message.mutations.properties) {
+        for (Json.Property p : mutation.properties) {
             // two operations allowed: REPLACE and MERGE (and possibly NESTED)
             String operationSplit[] = p.key.split("[|]");
             String propertyKey = operationSplit[0];
@@ -101,11 +117,7 @@ public final class GraphMessageHandler {
             }
         }
 
-        KVMessage putResponse = new PutHandler().handleRequest(KvMessageFactory.createPutMessage(message.key, doc.serialize()), state);
-
-        if (!putResponse.isSuccess()) {
-            return new ResponseMessageImpl("Mutation failed: " + putResponse.getStatus());
-        }
+        Document.writeJsonDocument(docId, doc, state);
 
         // success
         return new ResponseMessageImpl();

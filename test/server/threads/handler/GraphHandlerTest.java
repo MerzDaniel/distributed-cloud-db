@@ -1,6 +1,7 @@
 package server.threads.handler;
 
 import lib.json.Json;
+import lib.message.IMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.exception.UnsupportedJsonStructureFoundException;
 import lib.message.graph.GraphDbMessage;
@@ -22,6 +23,7 @@ import util.TestServerState;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public class GraphHandlerTest {
@@ -66,10 +68,11 @@ public class GraphHandlerTest {
 
     @Test
     public void writeNewProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withReplace(
+                docId,
                 newPropKey,
                 new Json.StringValue(newPropVal)).finish();
-        GraphMessageHandler.handle(mutationMsg,state);
+        GraphMessageHandler.handle(mutationMsg, state);
 
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
         Json newDoc = Json.deserialize(response.getValue());
@@ -80,10 +83,11 @@ public class GraphHandlerTest {
 
     @Test
     public void replaceExistingProp() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withReplace(
+                docId,
                 propKey,
                 new Json.StringValue(newPropVal)).finish();
-        GraphMessageHandler.handle(mutationMsg,state);
+        GraphMessageHandler.handle(mutationMsg, state);
 
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docId), state);
         Json newDoc = Json.deserialize(response.getValue());
@@ -96,10 +100,11 @@ public class GraphHandlerTest {
     @Test
     public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException, UnsupportedJsonStructureFoundException {
         final String nonExistDocId = "nonExisitingDocId";
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(nonExistDocId).withReplace(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withReplace(
+                nonExistDocId,
                 propKey,
                 new Json.StringValue(propVal)).finish();
-        GraphMessageHandler.handle(mutationMsg,state);
+        GraphMessageHandler.handle(mutationMsg, state);
 
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(nonExistDocId), state);
         Json newDoc = Json.deserialize(response.getValue());
@@ -112,10 +117,11 @@ public class GraphHandlerTest {
     @Test
     public void testMergeJson() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
         Json propVal = Json.Builder.create().withStringProperty("key001", "val001").finish();
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithInnerJson).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docIdWithInnerJson,
                 propKey,
                 new Json.JsonValue(propVal)).finish();
-        GraphMessageHandler.handle(mutationMsg,state);
+        GraphMessageHandler.handle(mutationMsg, state);
 
         KVMessage response = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(docIdWithInnerJson), state);
         Json newDoc = Json.deserialize(response.getValue());
@@ -127,73 +133,54 @@ public class GraphHandlerTest {
     @Test
     public void testMergePropForInvalidDocument() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         Json propVal = Json.Builder.create().withStringProperty("key001", "val001").finish();
-        boolean exception = false;
         //the property of the document which is going to be merged is type of StringValue
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docId,
                 propKey,
                 new Json.JsonValue(propVal)).finish();
-        ResponseMessageImpl iMessage = null;
-        try {
-            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
-        } catch (UnsupportedJsonStructureFoundException e) {
-            exception = true;
-        }
+        ResponseMessageImpl responseMessage = GraphMessageHandler.handle(mutationMsg, state);
 
-        assertTrue(exception);
+        assertNotNull(responseMessage.errorMsg);
     }
 
     @Test
     public void testMergePropForInvalidMessage() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
-        boolean exception = false;
         //the property of the message which is going to be merged is type of StringValue
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithInnerJson).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docIdWithInnerJson,
                 propKey,
                 new Json.StringValue("somevalue")).finish();
-        ResponseMessageImpl iMessage = null;
-        try {
-            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
-        } catch (UnsupportedJsonStructureFoundException e) {
-            exception = true;
-        }
 
-        assertTrue(exception);
+        ResponseMessageImpl responseMessage = GraphMessageHandler.handle(mutationMsg, state);
+
+        assertNotNull(responseMessage.errorMsg);
     }
 
     @Test
     //the document has an string property and the message is an array
     public void testMergeJsonForInvalidDocument() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         Json propVal = Json.Builder.create().withStringProperty("key002", "val002").finish();
-        boolean exception = false;
 
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docId,
                 propKey,
                 new Json.JsonValue(propVal)).finish();
-        ResponseMessageImpl iMessage = null;
-        try {
-            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
-        } catch (UnsupportedJsonStructureFoundException e) {
-            exception = true;
-        }
+        ResponseMessageImpl response = GraphMessageHandler.handle(mutationMsg, state);
 
-        assertTrue(exception);
+        assertNotNull(response.errorMsg);
     }
 
     @Test
     //the document has an array property and the message is an string value
     public void testMergeJsonForInvalidMessage() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
-        boolean exception = false;
 
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docIdWithArray,
                 propKey,
                 new Json.StringValue("newPropVal")).finish();
-        ResponseMessageImpl iMessage = null;
-        try {
-            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
-        } catch (UnsupportedJsonStructureFoundException e) {
-            exception = true;
-        }
+        ResponseMessageImpl responseMessage = GraphMessageHandler.handle(mutationMsg, state);
 
-        assertTrue(exception);
+        assertNotNull(responseMessage.errorMsg);
     }
 
     @Test
@@ -202,7 +189,8 @@ public class GraphHandlerTest {
         Json json = Json.Builder.create().withStringProperty("key001", "val001").finish();
         boolean exception = false;
 
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docIdWithArray,
                 propKey,
                 new Json.JsonValue(json)).finish();
         ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
@@ -219,7 +207,8 @@ public class GraphHandlerTest {
         Json json1 = Json.Builder.create().withStringProperty("key001", "val001").finish();
         Json json2 = Json.Builder.create().withStringProperty("key002", "val002").finish();
 
-        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withMerge(
+                docIdWithArray,
                 propKey,
                 new Json.ArrayValue(new Json.PropertyValue[]{
                         new Json.JsonValue(json1),

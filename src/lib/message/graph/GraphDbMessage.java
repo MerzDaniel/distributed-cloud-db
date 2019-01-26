@@ -33,7 +33,7 @@ public abstract class GraphDbMessage implements IMessage {
                 return new QueryMessageImpl(QueryType.valueOf(split[1]), split[2], Json.deserialize(split[3]));
             }
             if (GraphMessageType.MUTATION.equals(split[0])) {
-                return new MutationMessageImpl(split[1], Json.deserialize(split[2]));
+                return new MutationMessageImpl(Json.deserialize(split[1]));
             }
             if (GraphMessageType.RESPONSE.equals(split[0])) {
                 // data

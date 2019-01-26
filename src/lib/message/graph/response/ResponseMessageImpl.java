@@ -26,7 +26,9 @@ public class ResponseMessageImpl extends GraphDbMessage {
         super(GraphMessageType.RESPONSE);
     }
 
-    public boolean success() { return errorMsg != null; }
+    public boolean success() {
+        return errorMsg == null || errorMsg.equals("");
+    }
 
     @Override
     public String marshall() throws MarshallingException {
