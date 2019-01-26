@@ -1,5 +1,8 @@
 package client.store;
 
+import lib.message.IMessage;
+import lib.message.graph.query.QueryMessageImpl;
+import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
 import lib.message.kv.KvMessageFactory;
@@ -116,6 +119,33 @@ public class KVStore implements KVCommInterface {
         }
 
         return response;
+    }
+
+    /**
+     * Get the ResponseMessageImpl for the {@code key} from backend
+     *
+     * @return ResponseMessageImpl with information about operation success or failure
+     * @throws IOException          if any I/O error happens
+     * @throws MarshallingException if any error happens during the unmarshall process of response query
+     */
+    public ResponseMessageImpl query() throws IOException, MarshallingException {
+        //todo create the query message
+        QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create("").finish();
+
+        ServerData kvServer = kvStoreMetaData.getKvServerList().get(0);
+        boolean connectSuccess = this.connect(kvServer.getHost(), kvServer.getPort());
+
+        if (!connectSuccess) return new ResponseMessageImpl("Connection error!");
+
+        this.messaging.sendMessage(queryMessage);
+        IMessage response = this.messaging.readMessage();
+
+        //errors SERVER_STOPPED and SERVER_WRITE_LOCK
+        if (response instanceof KVMessage) {
+             return new ResponseMessageImpl(((KVMessage) response).getStatus().name());
+        }
+
+        return (ResponseMessageImpl) response;
     }
 
     private void applyNewMetadata(KVMessage response) {
