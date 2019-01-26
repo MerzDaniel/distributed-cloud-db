@@ -125,58 +125,82 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void testMergePropForInvalidDocument() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+    public void testMergePropForInvalidDocument() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         Json propVal = Json.Builder.create().withStringProperty("key001", "val001").finish();
-
+        boolean exception = false;
         //the property of the document which is going to be merged is type of StringValue
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withMerge(
                 propKey,
                 new Json.JsonValue(propVal)).finish();
-        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+        ResponseMessageImpl iMessage = null;
+        try {
+            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+        } catch (UnsupportedJsonStructureFoundException e) {
+            exception = true;
+        }
 
-        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+        assertTrue(exception);
     }
 
     @Test
-    public void testMergePropForInvalidMessage() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
-
+    public void testMergePropForInvalidMessage() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        boolean exception = false;
         //the property of the message which is going to be merged is type of StringValue
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithInnerJson).withMerge(
                 propKey,
                 new Json.StringValue("somevalue")).finish();
-        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+        ResponseMessageImpl iMessage = null;
+        try {
+            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg,state);
+        } catch (UnsupportedJsonStructureFoundException e) {
+            exception = true;
+        }
 
-        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+        assertTrue(exception);
     }
 
     @Test
     //the document has an string property and the message is an array
-    public void testMergeJsonForInvalidDocument() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
-        Json propVal = Json.Builder.create().withStringProperty("key001", "val001").finish();
+    public void testMergeJsonForInvalidDocument() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        Json propVal = Json.Builder.create().withStringProperty("key002", "val002").finish();
+        boolean exception = false;
 
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docId).withMerge(
                 propKey,
                 new Json.JsonValue(propVal)).finish();
-        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+        ResponseMessageImpl iMessage = null;
+        try {
+            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+        } catch (UnsupportedJsonStructureFoundException e) {
+            exception = true;
+        }
 
-        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+        assertTrue(exception);
     }
 
     @Test
     //the document has an array property and the message is an string value
-    public void testMergeJsonForInvalidMessage() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+    public void testMergeJsonForInvalidMessage() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
+        boolean exception = false;
+
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
                 propKey,
                 new Json.StringValue("newPropVal")).finish();
-        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+        ResponseMessageImpl iMessage = null;
+        try {
+            iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+        } catch (UnsupportedJsonStructureFoundException e) {
+            exception = true;
+        }
 
-        assertEquals("Unsupported structure of the message/document to perform the operation", iMessage.errorMsg);
+        assertTrue(exception);
     }
 
     @Test
     //the document has an array property and the message is an json object
     public void testMergeMsgJsonWithArray() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
         Json json = Json.Builder.create().withStringProperty("key001", "val001").finish();
+        boolean exception = false;
 
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create(docIdWithArray).withMerge(
                 propKey,
