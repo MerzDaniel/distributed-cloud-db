@@ -74,7 +74,7 @@ public final class GraphMessageHandler {
          */
         KVMessage docResponse = new GetHandler().handleRequest(KvMessageFactory.createGetMessage(message.key), state);
 
-        if (!docResponse.isSuccess()) return docResponse; // GET not successful (e.g. not responsible)
+        if (!docResponse.isSuccess() && !docResponse.getStatus().equals(KVMessage.StatusType.GET_NOT_FOUND)) return docResponse; // GET not successful (e.g. not responsible)
 
         Json doc = docResponse.getValue() != null ? Json.deserialize(docResponse.getValue()) : Json.Builder.create().finish();
 
