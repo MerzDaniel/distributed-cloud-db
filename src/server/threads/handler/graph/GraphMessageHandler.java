@@ -150,12 +150,17 @@ public final class GraphMessageHandler {
      * query ID { doc1: { key, refKey|FOLLOW: { key } } }
      * response { key: value , refKey: { key: value2 }}
      */
-    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException, KeyNotFoundException {
+    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException  {
         // TODO GRAPH: implement query
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
         LinkedList<String> errors = new LinkedList();
-        Json doc = Document.loadJsonDocument(msg.queryParam, state);
+        Json doc = null;
+        try {
+            doc = Document.loadJsonDocument(msg.queryParam, state);
+        } catch (KeyNotFoundException e) {
+            return new ResponseMessageImpl("NOT FOUND");
+        }
         Json.Builder responseBuilder = Json.Builder.create();
         for (Json.Property property : msg.request.properties) {
             String opSplit[] = property.key.split(String.format("[%s]", QueryMessageImpl.OPERATION_SEPARATOR));
@@ -184,9 +189,14 @@ public final class GraphMessageHandler {
                     if (!(docPropVal instanceof Json.StringValue)) throw new NotImplementedException();
 
                     String referencedDocId = ((Json.StringValue) docPropVal).value;
-                    Json referencedDoc = Document.loadJsonDocument(referencedDocId, state);
-                    Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
-                    responseBuilder.withJsonProperty(propKey, result);
+                    Json referencedDoc = null;
+                    try {
+                        referencedDoc = Document.loadJsonDocument(referencedDocId, state);
+                        Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
+                        responseBuilder.withJsonProperty(propKey, result);
+                    } catch (KeyNotFoundException e) {
+                        responseBuilder.withStringProperty(propKey, "ERR_NOT_FOUND");
+                    }
                 } else {
                     errors.add("Follow prop operation must have a json value");
                 }
