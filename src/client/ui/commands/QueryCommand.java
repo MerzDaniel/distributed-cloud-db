@@ -49,6 +49,10 @@ public class QueryCommand implements Command {
             return;
         }
 
+        if (graphMessageResponse.success()) {
+            writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
+            return;
+        }
 
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_STOPPED.name())) {
             logger.info(KVMessage.StatusType.SERVER_STOPPED + String.format("The server is stopped so cannot perform the request query<%s>", queryMessage.prettyPrint()));
@@ -62,10 +66,7 @@ public class QueryCommand implements Command {
             return;
         }
 
-        if (graphMessageResponse.errorMsg != null && !graphMessageResponse.errorMsg.equals(""))
-            writeLine("Errors occured: " + graphMessageResponse.errorMsg);
-        else
-            writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
+        writeLine("Errors occured: " + graphMessageResponse.errorMsg);
     }
 
     @Override
