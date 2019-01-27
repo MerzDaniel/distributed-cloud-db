@@ -1,15 +1,11 @@
 package client.ui.commands;
 
-import org.apache.log4j.Logger;
+import client.ui.ApplicationState;
+import client.ui.Command;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import client.ui.ApplicationState;
-import client.ui.Command;
-import client.ui.Util;
-
-import static client.ui.Util.writeLine;
 
 /**
  * Sets the logLevel
@@ -59,13 +55,13 @@ public class LogCommand implements Command {
                 ctx.updateLoggers(conf);
                 break;
             default:
-                Util.writeLine("Unsupported log level specified. Please use 'help' to check supported logLevels");
+                System.out.println("Unsupported log level specified. Please use 'help' to check supported logLevels");
                 unsupportedLogLevel = true;
                 break;
         }
 
         if (!unsupportedLogLevel){
-            Util.writeLine("current log level is " + logLevel);
+            System.out.println("current log level is " + logLevel);
         }
     }
 }

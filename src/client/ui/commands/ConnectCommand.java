@@ -11,8 +11,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static client.ui.Util.writeLine;
-
 /**
  * Connects to a server.
  */
@@ -39,10 +37,10 @@ public class ConnectCommand implements Command {
             success = false;
         }
         if (!success) {
-            writeLine("There was an error while connecting to the server :(");
+            System.out.println("There was an error while connecting to the server :(");
             return;
         }
 
-        writeLine("Successfully connected to the server :)");
+        System.out.println("Successfully connected to the server :)");
     }
 }

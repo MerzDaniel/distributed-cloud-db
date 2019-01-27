@@ -5,8 +5,6 @@ import client.ui.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import static client.ui.Util.writeLine;
-
 /**
  * Used to print "unexpected error message" and write the log with the error state.
  */
@@ -22,6 +20,6 @@ public class ErrorCommand implements Command {
     public void execute(ApplicationState state) {
         logger.error(ex.getMessage(), ex);
 
-        writeLine("Oh no some unexpected error occured :( " + ex.getMessage());
+        System.out.println("Oh no some unexpected error occured :( " + ex.getMessage());
     }
 }

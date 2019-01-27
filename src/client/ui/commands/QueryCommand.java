@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static client.ui.Util.writeLine;
-
 /**
  * Issues a Query on the server
  */
@@ -37,36 +35,36 @@ public class QueryCommand implements Command {
         QueryMessageImpl queryMessage = null;
         try {
             queryMessage = constructQueryMsg();
-            writeLine(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
+            System.out.println(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
             graphMessageResponse = state.kvStore.query(queryMessage);
         } catch (IOException e) {
             logger.error("error", e);
-            writeLine(String.format("An Error occurred during the QUERY : %s (%d ms)", e.getMessage(), t.time()));
+            System.out.println(String.format("An Error occurred during the QUERY : %s (%d ms)", e.getMessage(), t.time()));
             return;
         } catch (MarshallingException e) {
             logger.error("Error during unmarshalling.", e);
-            writeLine("Response from the server was invalid.");
+            System.out.println("Response from the server was invalid.");
             return;
         }
 
         if (graphMessageResponse.success()) {
-            writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
+            System.out.println(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
             return;
         }
 
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_STOPPED.name())) {
             logger.info(KVMessage.StatusType.SERVER_STOPPED + String.format("The server is stopped so cannot perform the request query<%s>", queryMessage.prettyPrint()));
-            writeLine("The server is stopped so cannot perform the request");
+            System.out.println("The server is stopped so cannot perform the request");
             return;
         }
 
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_WRITE_LOCK.name())) {
             logger.info(KVMessage.StatusType.SERVER_WRITE_LOCK + String.format("The server is locked for writing so cannot perform the request query<%s>", queryMessage.prettyPrint()));
-            writeLine("The server is locked for writing. Please try again later");
+            System.out.println("The server is locked for writing. Please try again later");
             return;
         }
 
-        writeLine("Errors occured: " + graphMessageResponse.errorMsg);
+        System.out.println("Errors occured: " + graphMessageResponse.errorMsg);
     }
 
     @Override

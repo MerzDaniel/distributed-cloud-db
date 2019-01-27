@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static client.ui.Util.writeLine;
 import static lib.message.MessageUtil.isValidKey;
 
 /**
@@ -28,7 +27,7 @@ public class GetCommand implements Command {
     @Override
     public void execute(ApplicationState state) {
         if (!isValidKey(key)) {
-            writeLine("Key is too long. Only 20characters are allowed.");
+            System.out.println("Key is too long. Only 20characters are allowed.");
             return;
         }
 
@@ -38,43 +37,43 @@ public class GetCommand implements Command {
             kVMessageResponse = state.kvStore.get(key);
         } catch (IOException e) {
             logger.error("error", e);
-            writeLine(String.format("An Error occurred during the GET : %s (%d ms)", e.getMessage(), t.time()));
+            System.out.println(String.format("An Error occurred during the GET : %s (%d ms)", e.getMessage(), t.time()));
             return;
         } catch (MarshallingException e) {
             logger.error("Error during unmarshalling.", e);
-            writeLine("Response from the server was invalid.");
+            System.out.println("Response from the server was invalid.");
             return;
         } catch (KVServerNotFoundException e) {
             logger.error(String.format("Couldn't find the server responsible for the key <%s>", key), e);
-            writeLine("Couldn't find the server to connect");
+            System.out.println("Couldn't find the server to connect");
             return;
         }
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.GET_NOT_FOUND) {
             logger.info(kVMessageResponse.getStatus() + String.format(": The requested key<%s> is not found in the database", key));
-            writeLine(String.format("The key '%s' was not found in the database (%dms)", key, t.time()));
+            System.out.println(String.format("The key '%s' was not found in the database (%dms)", key, t.time()));
             return;
         }
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_STOPPED) {
             logger.info(kVMessageResponse.getStatus() + String.format("The server is stopped so cannot perform the request key<%s>", key));
-            writeLine("The server is stopped so cannot perform the request");
+            System.out.println("The server is stopped so cannot perform the request");
             return;
         }
 
         if (kVMessageResponse.getStatus() == KVMessage.StatusType.SERVER_WRITE_LOCK) {
             logger.info(kVMessageResponse.getStatus() + String.format("The server is locked for writing so cannot perform the request key<%s>", key));
-            writeLine("The server is locked for writing. Please try again later");
+            System.out.println("The server is locked for writing. Please try again later");
             return;
         }
 
         if (kVMessageResponse.getStatus() != KVMessage.StatusType.GET_SUCCESS) {
-            writeLine("GET was not successful. Possibly connection hang up.");
+            System.out.println("GET was not successful. Possibly connection hang up.");
             logger.warn(String.format("Get '%s' was not successful: '%s'. Possibly an error in the db. ", kVMessageResponse.toString()));
             return;
         }
 
-        writeLine(String.format("Value of %s is: '%s' (%d ms)", key, kVMessageResponse.getValue(), t.time()));
+        System.out.println(String.format("Value of %s is: '%s' (%d ms)", key, kVMessageResponse.getValue(), t.time()));
     }
 
     @Override

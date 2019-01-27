@@ -1,11 +1,11 @@
 package client.ui;
 
 import client.store.KVStore;
+import client.ui.commands.ErrorCommand;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import client.ui.commands.ErrorCommand;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class KVClient {
         init();
         logger.info("Start application");
         while (!state.stopRequested) {
-            System.out.print("EchoClient> ");
+            System.out.print("Client> ");
             processInput();
         }
         logger.info("Stop application");
