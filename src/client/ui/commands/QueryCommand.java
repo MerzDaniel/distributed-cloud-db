@@ -62,7 +62,10 @@ public class QueryCommand implements Command {
         }
 
         writeLine(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
-        writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
+        if (graphMessageResponse.errorMsg != null && !graphMessageResponse.errorMsg.equals(""))
+            writeLine("Errors occured: " + graphMessageResponse.errorMsg);
+        else
+            writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
     }
 
     @Override

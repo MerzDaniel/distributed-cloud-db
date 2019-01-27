@@ -1,10 +1,9 @@
 package client.ui.commands;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import client.ui.ApplicationState;
 import client.ui.Command;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import static client.ui.Util.writeLine;
 
@@ -23,6 +22,6 @@ public class ErrorCommand implements Command {
     public void execute(ApplicationState state) {
         logger.error(ex.getMessage(), ex);
 
-        writeLine("Oh no some unexpected error occured :(");
+        writeLine("Oh no some unexpected error occured :( " + ex.getMessage());
     }
 }
