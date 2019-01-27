@@ -1,12 +1,12 @@
 package server;
 
-import server.command.CommandLine;
-import server.command.CommandParser;
+import lib.server.CacheType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import lib.server.CacheType;
+import server.command.CommandLine;
+import server.command.CommandParser;
 
 import java.util.Random;
 
@@ -38,6 +38,8 @@ public class Main {
 
         String name = "kitten-" + new Random().nextInt();
         new KVServer(name, "localhost", port, cacheSize, cacheType).run();
+        // ensure process stop
+        System.exit(0);
     }
 
     static {
