@@ -48,8 +48,8 @@ public class GossipStatusThread extends AbstractLoopingServerThread {
         state.stateOfAllServers.put(state.currentServerServerData.getName(), new TimedRunningState(state.runningState));
         IMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.GOSSIP_STATUS, state.stateOfAllServers);
         TimedRunningStateMap remoteServerStates = servers.stream().parallel().map(s -> {
-            Messaging messaging = new Messaging();
-            try {
+
+            try(Messaging messaging = new Messaging();) {
                 messaging.connect(s);
                 messaging.sendMessage(msg);
                 KVAdminMessage response = (KVAdminMessage) messaging.readMessage();

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.*;
 
-public class Messaging {
+public class Messaging implements AutoCloseable{
     public static final int CONNECT_RETRIES = 3;
     public static long READ_MESSAGE_TIMEOUT = 7000;
 
@@ -131,5 +131,10 @@ public class Messaging {
             }
             throw new IOException("Not connected");
         });
+    }
+
+    @Override
+    public void close() throws Exception {
+        disconnect();
     }
 }

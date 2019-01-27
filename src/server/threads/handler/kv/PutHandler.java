@@ -1,11 +1,10 @@
 package server.threads.handler.kv;
 
-import lib.message.*;
+import lib.message.Messaging;
 import lib.message.admin.KVAdminMessage;
 import lib.message.admin.ReplicateMsg;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
-import lib.message.exception.MarshallingException;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
@@ -15,7 +14,6 @@ import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyValueStore;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -57,16 +55,15 @@ public class PutHandler implements IMessageHandler {
     }
 
     private KVAdminMessage putToReplica(KVMessage request, ServerData serverData, String thisServerName) {
-        Messaging con;
         KVAdminMessage response;
 
-        con = new Messaging();
-        try {
+
+        try(Messaging con = new Messaging(); ) {
             con.connect(serverData.getHost(), serverData.getPort());
             KVAdminMessage msg = new ReplicateMsg(request.getKey(), request.getValue(), thisServerName);
             con.sendMessage(msg);
             response = (KVAdminMessage) con.readMessage();
-        } catch (IOException | MarshallingException e) {
+        } catch (Exception e) {
             logger.warn("An error occurred while replicating data ", e);
             return new KVAdminMessage(KVAdminMessage.StatusType.PUT_REPLICATE_ERROR);
         }
@@ -95,16 +92,15 @@ public class PutHandler implements IMessageHandler {
     }
 
     private KVAdminMessage deleteFromReplica(KVMessage request, ServerData serverData) {
-        Messaging con;
         KVAdminMessage response;
 
-        con = new Messaging();
-        try {
+
+        try(Messaging con = new Messaging();) {
             con.connect(serverData.getHost(), serverData.getPort());
             KVAdminMessage msg = new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE, request.getKey(), request.getValue());
             con.sendMessage(msg);
             response = (KVAdminMessage) con.readMessage();
-        } catch (IOException | MarshallingException e) {
+        } catch (Exception e) {
             logger.warn("An error occurred while replicating data ", e);
             return new KVAdminMessage(KVAdminMessage.StatusType.DELETE_REPLICATE_ERROR);
         }

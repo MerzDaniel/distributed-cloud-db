@@ -1,9 +1,9 @@
 package server.threads.handler.admin;
 
-import lib.message.admin.FullReplicationMsg;
-import lib.message.admin.ReplicateMsg;
-import lib.message.admin.KVAdminMessage;
 import lib.message.Messaging;
+import lib.message.admin.FullReplicationMsg;
+import lib.message.admin.KVAdminMessage;
+import lib.message.admin.ReplicateMsg;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
@@ -74,7 +74,6 @@ public final class FullReplication {
     private static List<Exception> moveDataToExternalServer(ServerData targetServer, KeyValueStore sourceDb, String srcDbName) {
         ConcurrentHashMap<Long, Messaging> messagingHashMap = new ConcurrentHashMap<>();
         return sourceDb.retrieveAllData()
-//                .parallel()
                 .reduce(new LinkedList<>(), (errors, d) -> {
             Long currentThreadId = Thread.currentThread().getId();
             try {
@@ -94,6 +93,7 @@ public final class FullReplication {
                     throw new Exception("Problem during replicate");
 
             } catch (Exception e) {
+                messagingHashMap.get(currentThreadId).disconnect();
                 messagingHashMap.remove(currentThreadId);
                 errors.add(e);
                 return errors;

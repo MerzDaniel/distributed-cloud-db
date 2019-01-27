@@ -44,6 +44,7 @@ public class ConnectionHandler extends AbstractServerThread {
             messaging.sendMessage(KvMessageFactory.creatConnectionSuccessful());
         } catch (Exception e) {
             logger.warn("Error setting up new connection");
+            messaging.disconnect();
             tryClose(s);
             return;
         }
