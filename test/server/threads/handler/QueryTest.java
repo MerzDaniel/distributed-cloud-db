@@ -109,6 +109,25 @@ public class QueryTest {
         assertEquals(e(referencedPropVal), val.value.get(referencedPropKey).serialize());
     }
 
+    @Test
+    public void queryListReferences() throws IOException, DbError, KVServerNotFoundException, MarshallingException, KeyNotFoundException {
+        QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId)
+                .withFollowReferenceProperty(
+                        refArrPropKey,
+                        Json.Builder.create()
+                                .withUndefinedProperty(referencedPropKey)
+                                .finish())
+                .finish();
+
+        ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
+
+        Json.JsonValue val = (Json.JsonValue) response.data.get(refPropKey);
+
+        assertTrue(val != null);
+        assertEquals(e(referencedPropVal), val.value.get(referencedPropKey).serialize());
+    }
+
+
     private String e(String s) {
         return "\"" + s + "\"";
     }
