@@ -151,7 +151,6 @@ public final class GraphMessageHandler {
      * response { key: value , refKey: { key: value2 }}
      */
     private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException  {
-        // TODO GRAPH: implement query
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
         LinkedList<String> errors = new LinkedList();

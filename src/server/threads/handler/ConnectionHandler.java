@@ -53,6 +53,7 @@ public class ConnectionHandler extends AbstractServerThread {
                 boolean gotRequest = false;
                 try {
                     IMessage request = messaging.readMessageWithoutTimeout();
+                    logger.debug("REQUEST: " + request.marshall());
                     gotRequest = true;
                     IMessage response;
                     if (request instanceof KVMessage)
@@ -64,6 +65,7 @@ public class ConnectionHandler extends AbstractServerThread {
                     else
                         throw new Exception("Unknown Msg");
 
+                    logger.debug("RESPONSE: " + response.marshall());
                     messaging.sendMessage(response);
                     continue;
                 } catch (Exception e) {
