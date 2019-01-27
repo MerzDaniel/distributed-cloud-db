@@ -16,7 +16,9 @@ public class HelpCommand implements Command {
         writeLine("put <key> <value>     : Put <key,value> to the data store. <key> should not have any whitespaces");
         writeLine("get <key>             : Get <value> for the <key> from the data store");
         writeLine("query <documentId> <property1>,<property2>, ...         " +
-                                        ": Get the result <property1>, <property2>, ... for document of <documentId>");
+                                        ": Get the result <property1>,<property2>, ... for document of <documentId>");
+        writeLine("mutate <documentId> <property1>:<value1>,<property2>:<value2>, ...         " +
+                ": Create a new document {property1:value1,property2:value2,...} with id <documentId>");
         writeLine("logLevel <level>      : Set loglevel. Supported logLevels are ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF");
         writeLine("disconnect            : Disconnects from the connected host");
         writeLine("c                     : Fast connect to localhost:50000");
