@@ -67,14 +67,14 @@ public class ConnectionHandler extends AbstractServerThread {
                     messaging.sendMessage(response);
                     continue;
                 } catch (Exception e) {
-                    logger.warn("Error occured!", e);
+                    logger.info("Error occured!", e);
                 }
 
                 if (gotRequest) {
                     try {
                         messaging.sendMessage(KvMessageFactory.createServerError());
                     } catch (Exception e1) {
-                        logger.warn("Error occured!", e1);
+                        logger.info("Error occured!", e1);
                     }
                 }
                 return;

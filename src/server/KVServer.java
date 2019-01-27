@@ -7,10 +7,7 @@ import lib.server.CacheType;
 import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import server.kv.*;
-import server.kv.cache.FifoCachedKeyValueStore;
-import server.kv.cache.LFUCachedKeyValueStore;
-import server.kv.cache.LRUCachedKeyValueStore;
+import server.kv.KeyValueStore;
 import server.threads.AcceptConnectionsThread;
 
 import java.io.IOException;
@@ -130,7 +127,8 @@ public class KVServer implements Runnable {
             if(st!=null) st.stop();
         });
         state.runningState = RunningState.SHUTTINGDOWN;
-        state.dbProvider.shutdown();
+        if (state.dbProvider != null)
+            state.dbProvider.shutdown();
     }
 
     /** Only use in Tests! */

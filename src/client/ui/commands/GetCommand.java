@@ -3,8 +3,8 @@ package client.ui.commands;
 import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
-import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
+import lib.message.kv.KVMessage;
 import lib.metadata.KVServerNotFoundException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,7 +27,7 @@ public class GetCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        if (!isValidKey(key)) {
+        if (false && !isValidKey(key)) {
             writeLine("Key is too long. Only 20characters are allowed.");
             return;
         }
