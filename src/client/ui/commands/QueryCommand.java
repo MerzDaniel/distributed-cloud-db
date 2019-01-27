@@ -37,6 +37,7 @@ public class QueryCommand implements Command {
         QueryMessageImpl queryMessage = null;
         try {
             queryMessage = constructQueryMsg();
+            writeLine(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
             graphMessageResponse = state.kvStore.query(queryMessage);
         } catch (IOException e) {
             logger.error("error", e);
@@ -61,7 +62,6 @@ public class QueryCommand implements Command {
             return;
         }
 
-        writeLine(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
         if (graphMessageResponse.errorMsg != null && !graphMessageResponse.errorMsg.equals(""))
             writeLine("Errors occured: " + graphMessageResponse.errorMsg);
         else
