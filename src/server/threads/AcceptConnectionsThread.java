@@ -10,6 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
+import static lib.SocketUtil.tryClose;
+
 public class AcceptConnectionsThread extends AbstractServerThread {
     private Logger logger = LogManager.getLogger(AcceptConnectionsThread.class);
     private ServerSocket s;
@@ -29,8 +31,10 @@ public class AcceptConnectionsThread extends AbstractServerThread {
             try {
                 clientSocket = s.accept();
             } catch (IOException e) {
-                logger.info("error on client connection");
+                logger.debug("error on client connection");
                 continue;
+            } catch (Exception e) {
+                return;
             }
             logger.debug("Accepted connection from client: " + clientSocket.getInetAddress());
             openConnections.add(clientSocket);
@@ -38,5 +42,14 @@ public class AcceptConnectionsThread extends AbstractServerThread {
             ch.start();
             state.serverThreads.add(ch);
         }
+    }
+
+    @Override
+    public void stopServerThread() {
+        super.stopServerThread();
+        for (Socket openConnection : openConnections) {
+            tryClose(openConnection);
+        }
+        tryClose(s);
     }
 }
