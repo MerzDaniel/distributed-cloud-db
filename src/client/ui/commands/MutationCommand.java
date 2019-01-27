@@ -49,6 +49,11 @@ public class MutationCommand implements Command {
             return;
         }
 
+        if (graphMessageResponse.success()) {
+            System.out.println(String.format("Data save successfully (%d ms)", t.time()));
+            return;
+        }
+
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_STOPPED.name())) {
             logger.info(KVMessage.StatusType.SERVER_STOPPED + String.format("The server is stopped so cannot perform the request query<%s>", mutationMessage.prettyPrint()));
             System.out.println("The server is stopped so cannot perform the request");
@@ -60,11 +65,6 @@ public class MutationCommand implements Command {
             System.out.println("The server is locked for writing. Please try again later");
             return;
         }
-
-        if (graphMessageResponse.errorMsg != null && !graphMessageResponse.errorMsg.equals(""))
-            System.out.println("Errors occured: " + graphMessageResponse.errorMsg);
-        else
-            System.out.println(String.format("Data saved successfully >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
     }
 
     @Override
