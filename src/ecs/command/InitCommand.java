@@ -4,7 +4,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import ecs.Command;
 import ecs.State;
-
 import ecs.service.KvService;
 import lib.message.admin.KVAdminMessage;
 import lib.message.exception.MarshallingException;
@@ -18,9 +17,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 
-import static ecs.service.SshService.startKvServer;
-import static ecs.service.KvService.getStatus;
 import static ecs.service.KvService.configure;
+import static ecs.service.KvService.getStatus;
+import static ecs.service.SshService.startKvServer;
 
 
 /**
@@ -100,6 +99,7 @@ public class InitCommand implements Command {
                     universeIsOk = false;
                     System.out.println(String.format("Error while init the server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
                 }
+                System.out.println(String.format("configured %s:%d : %s", sd.getHost(), sd.getPort(), sd.getName()));
             } catch (IOException | MarshallingException | InterruptedException e) {
                 universeIsOk = false;
                 logger.warn("Error", e);
