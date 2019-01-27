@@ -1,8 +1,8 @@
 package server.threads;
 
 import lib.message.IMessage;
-import lib.message.admin.KVAdminMessage;
 import lib.message.Messaging;
+import lib.message.admin.KVAdminMessage;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
 import lib.server.TimedRunningState;
@@ -37,9 +37,11 @@ public class GossipStatusThread extends AbstractLoopingServerThread {
         Random random = new Random();
         List<ServerData> servers = new LinkedList<>();
         int i = 0, gossipServerCount;
+        if (state.meta.getKvServerList().size() <= 1) return;
+
         while (i++ < (gossipServerCount = Math.min(GOSSIP_NODE_COUNT, state.meta.getKvServerList().size()))) {
             ServerData sd = state.meta.getKvServerList().get(random.nextInt(gossipServerCount));
-            if (servers.contains(sd)) continue; // try another random server
+            if (servers.contains(sd) || sd.equals(state.currentServerServerData)) continue; // try another random server
             servers.add(sd);
         }
 
