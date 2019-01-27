@@ -89,16 +89,37 @@ public class QueryCommand implements Command {
             if (querySplit.contains("|")) {
                 isFollowQuery = true;
                 jsonBuilder = Json.Builder.create();
-                jsonBuilder.withUndefinedProperty(querySplit.split("[{]")[1]);
                 followKey = querySplit.split("[|]")[0];
             }
 
-            if (isFollowQuery && querySplit.contains("}")) {
+            if (isFollowQuery) {
+                if (querySplit.contains("{") && querySplit.contains("}")) {
+                    jsonBuilder.withUndefinedProperty(querySplit.split("\\{")[1].split("}")[0]);
+                    queryMessageBuilder.withFollowReferenceProperty(followKey, jsonBuilder.finish());
+                    jsonBuilder = null;
+                    isFollowQuery = false;
+                    followKey = null;
+                    continue;
+                }
+
+                if (querySplit.contains("{")) {
+                    jsonBuilder.withUndefinedProperty(querySplit.split("\\{")[1]);
+                    continue;
+                }
+
+                if (querySplit.contains("}")) {
                     jsonBuilder.withUndefinedProperty(querySplit.split("}")[0]);
                     queryMessageBuilder.withFollowReferenceProperty(followKey, jsonBuilder.finish());
                     jsonBuilder = null;
                     isFollowQuery = false;
                     followKey = null;
+                    continue;
+                }
+
+                if (!querySplit.contains("{") && !querySplit.contains("}")) {
+                    jsonBuilder.withUndefinedProperty(querySplit);
+                    continue;
+                }
             }
         }
 
