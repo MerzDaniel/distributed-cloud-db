@@ -3,7 +3,6 @@ package tools;
 import lib.message.Messaging;
 import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
-import org.jetbrains.annotations.NotNull;
 import tools.util.EnroneBenchmarkDataLoader;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public final class EnroneGraphDataLoader {
 
      */
 
-    public static void main(@NotNull String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         if (args.length != 1) System.out.println("loader.jar <path-to-enrone-test-data-set>");
 
         int index = 0;

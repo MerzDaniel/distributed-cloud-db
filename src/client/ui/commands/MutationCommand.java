@@ -12,6 +12,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Issues a Mutate command on the server
@@ -74,12 +76,51 @@ public class MutationCommand implements Command {
         MutationMessageImpl.Builder mutationMessageBuilder = MutationMessageImpl.Builder.create();
 
         String[] querySplits = query.split(",");
+        List<Json.PropertyValue> mergeProperties = null;
+        boolean isMergeQuery = false;
+        String mergeKey = null;
 
-        for(String querySplit : querySplits){
-            String[] keyValueSplits = querySplit.split(":");
-            String key = keyValueSplits[0];
-            String value = keyValueSplits[1];
-            mutationMessageBuilder.withReplace(queryParam, key, new Json.StringValue(value));
+        for (String querySplit : querySplits) {
+            if (!querySplit.contains("|") && !isMergeQuery) {
+                String[] keyValueSplits = querySplit.split(":");
+                mutationMessageBuilder.withReplace(queryParam, keyValueSplits[0], new Json.StringValue(keyValueSplits[1]));
+                continue;
+            }
+
+            if (querySplit.contains("|") && !isMergeQuery) {
+                isMergeQuery = true;
+                mergeProperties = new ArrayList<>();
+                String[] splits = querySplit.split(":");
+                mergeKey = splits[0].split("[|]")[0];
+            }
+
+            if (isMergeQuery) {
+                String value = null;
+                if (querySplit.contains("[") && querySplit.contains("]")) {
+                    value = querySplit.split("\\[")[1].split("]")[0];
+                    mergeProperties.add(new Json.StringValue(value));
+                    mutationMessageBuilder.withMerge(queryParam, mergeKey, new Json.ArrayValue(mergeProperties));
+                    mergeProperties = null;
+                    mergeKey = null;
+                    isMergeQuery = false;
+                    continue;
+                }
+                if (querySplit.contains("]")) {
+                    mergeProperties.add(new Json.StringValue(querySplit.split("[]]")[0]));
+                    mutationMessageBuilder.withMerge(queryParam, mergeKey, new Json.ArrayValue(mergeProperties));
+                    mergeProperties = null;
+                    mergeKey = null;
+                    isMergeQuery = false;
+                    continue;
+                }
+                if(querySplit.contains("[")){
+                    mergeProperties.add(new Json.StringValue(querySplit.split("\\[")[1]));
+                    continue;
+                }
+
+                mergeProperties.add(new Json.StringValue(querySplit));
+                continue;
+            }
         }
 
         return mutationMessageBuilder.finish();
