@@ -112,6 +112,7 @@ public class KVServer implements Runnable {
     }
 
     public void stop() throws IOException {
+        logger.info("Shutting down");
         for (Socket s : openConnections) {
             SocketUtil.tryClose(s);
         }
@@ -129,6 +130,7 @@ public class KVServer implements Runnable {
         state.runningState = RunningState.SHUTTINGDOWN;
         if (state.dbProvider != null)
             state.dbProvider.shutdown();
+        System.exit(0);
     }
 
     /** Only use in Tests! */
