@@ -1,9 +1,9 @@
 package server.threads.handler.admin;
 
-import lib.message.admin.FullReplicationMsg;
-import lib.message.admin.ReplicateMsg;
-import lib.message.admin.KVAdminMessage;
 import lib.message.Messaging;
+import lib.message.admin.FullReplicationMsg;
+import lib.message.admin.KVAdminMessage;
+import lib.message.admin.ReplicateMsg;
 import lib.metadata.KVServerNotFoundException;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -47,34 +47,43 @@ public final class AdminMessageHandler {
                 gst.start();
                 state.serverThreads.add(gst);
 
+                logger.info("New State: " + state.runningState.name());
+
                 return new KVAdminMessage(KVAdminMessage.StatusType.CONFIGURE_SUCCESS);
             case START:
                 if (state.runningState == RunningState.UNCONFIGURED)
                     return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
                 state.runningState = RunningState.RUNNING;
+                logger.info("New State: " + state.runningState.name());
                 return new KVAdminMessage(KVAdminMessage.StatusType.START_SUCCESS);
             case STOP:
                 if (!Arrays.asList(RunningState.RUNNING, RunningState.READONLY).contains(state.runningState))
                     return new KVAdminMessage(KVAdminMessage.StatusType.START_ERROR);
                 state.runningState = RunningState.IDLE;
+                logger.info("New State: " + state.runningState.name());
                 return new KVAdminMessage(KVAdminMessage.StatusType.STOP_SUCCESS);
             case SHUT_DOWN:
                 state.runningState = RunningState.SHUTTINGDOWN;
+                logger.info("New State: " + state.runningState.name());
                 return new KVAdminMessage(KVAdminMessage.StatusType.SHUT_DOWN_SUCCESS);
             case STATUS:
                 return new KVAdminMessage(KVAdminMessage.StatusType.STATUS_RESPONSE, state.runningState);
             case MOVE:
                 state.runningState = RunningState.READONLY;
+                logger.info("New State: " + state.runningState.name());
                 return moveData(state, message.serverData, false);
             case MOVE_SOFT:
                 state.runningState = RunningState.READONLY;
+                logger.info("New State: " + state.runningState.name());
                 return moveData(state, message.serverData, true);
             case DATA_MOVE:
                 state.dbProvider.getDb(state.currentServerServerData.getName()).
                         put(message.key, message.value);
+                logger.info("New State: " + state.runningState.name());
                 return new KVAdminMessage(KVAdminMessage.StatusType.DATA_MOVE_SUCCESS);
             case MAKE_READONLY:
                 state.runningState = RunningState.READONLY;
+                logger.info("New State: " + state.runningState.name());
                 return new KVAdminMessage(KVAdminMessage.StatusType.MAKE_SUCCESS);
             case GOSSIP_STATUS:
                 RunningStates.combineMapsInto(state.stateOfAllServers, message.timedServerStates, state.stateOfAllServers);
