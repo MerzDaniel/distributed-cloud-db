@@ -83,7 +83,8 @@ public class InitCommand implements Command {
             if (!serverCanBeReached) {
                 try {
                     startKvServer(sd);
-                } catch (JSchException | IOException | SftpException e) {
+                    Thread.sleep(3000);
+                } catch (JSchException | IOException | SftpException | InterruptedException e) {
                     universeIsOk = false;
                     logger.warn("Error", e);
                     System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
@@ -93,14 +94,13 @@ public class InitCommand implements Command {
 
             KVAdminMessage response = null;
             try {
-                Thread.sleep(3000);
                 response = configure(sd, state.storeMeta, index);
                 if (!response.status.equals(KVAdminMessage.StatusType.CONFIGURE_SUCCESS)) {
                     universeIsOk = false;
                     System.out.println(String.format("Error while init the server %s:%d : %s", sd.getHost(), sd.getPort(), response.status));
                 }
                 System.out.println(String.format("configured %s:%d : %s", sd.getHost(), sd.getPort(), sd.getName()));
-            } catch (IOException | MarshallingException | InterruptedException e) {
+            } catch (IOException | MarshallingException e) {
                 universeIsOk = false;
                 logger.warn("Error", e);
                 System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
