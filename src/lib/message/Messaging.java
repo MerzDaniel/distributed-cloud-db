@@ -83,6 +83,7 @@ public class Messaging implements AutoCloseable{
     public void disconnect() {
         if (con == null) return;
         con.disconnect();
+        executorService.shutdown();
     }
 
     private IMessage readMessageWithSpecificTimeout(long timeout) throws IOException {
