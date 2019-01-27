@@ -1,6 +1,8 @@
 package client.store;
 
 import lib.message.IMessage;
+import lib.message.graph.GraphDbMessage;
+import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
 import lib.message.kv.KVMessage;
@@ -15,9 +17,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A client for the KeyValueStoreServer. It can connect to the server and do GET/PUT/DELETE requests
@@ -129,21 +128,18 @@ public class KVStore implements KVCommInterface {
      * @throws MarshallingException if any error happens during the unmarshall process of response query
      */
     public ResponseMessageImpl query(QueryMessageImpl queryMessage) throws IOException, MarshallingException {
+        return sendGraphMessage(queryMessage);
+    }
 
-        ServerData kvServer = kvStoreMetaData.getKvServerList().get(0);
-        boolean connectSuccess = this.connect(kvServer.getHost(), kvServer.getPort());
-
-        if (!connectSuccess) return new ResponseMessageImpl("Connection error!");
-
-        this.messaging.sendMessage(queryMessage);
-        IMessage response = this.messaging.readMessage();
-
-        //errors SERVER_STOPPED and SERVER_WRITE_LOCK
-        if (response instanceof KVMessage) {
-             return new ResponseMessageImpl(((KVMessage) response).getStatus().name());
-        }
-
-        return (ResponseMessageImpl) response;
+    /**
+     * Get the ResponseMessageImpl for the {@code mutationMessage} from backend
+     *
+     * @return ResponseMessageImpl with information about operation success or failure
+     * @throws IOException          if any I/O error happens
+     * @throws MarshallingException if any error happens during the unmarshall process of response query
+     */
+    public ResponseMessageImpl mutate(MutationMessageImpl mutationMessage) throws IOException, MarshallingException {
+        return sendGraphMessage(mutationMessage);
     }
 
     private void applyNewMetadata(KVMessage response) {
@@ -154,5 +150,23 @@ public class KVStore implements KVCommInterface {
         } catch (MarshallingException e) {
             logger.error("Error occurred during unmarshalling storeMeta data", e);
         }
+    }
+
+    private ResponseMessageImpl sendGraphMessage(GraphDbMessage message) throws IOException, MarshallingException{
+
+        ServerData kvServer = kvStoreMetaData.getKvServerList().get(0);
+        boolean connectSuccess = this.connect(kvServer.getHost(), kvServer.getPort());
+
+        if (!connectSuccess) return new ResponseMessageImpl("Connection error!");
+
+        this.messaging.sendMessage(message);
+        IMessage response = this.messaging.readMessage();
+
+        //errors SERVER_STOPPED and SERVER_WRITE_LOCK
+        if (response instanceof KVMessage) {
+            return new ResponseMessageImpl(((KVMessage) response).getStatus().name());
+        }
+
+        return (ResponseMessageImpl) response;
     }
 }
