@@ -1,8 +1,8 @@
 package lib.message;
 
 import lib.communication.Connection;
-import lib.message.kv.KVMessage;
 import lib.message.exception.MarshallingException;
+import lib.message.kv.KVMessage;
 import lib.metadata.ServerData;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,6 +25,9 @@ public class Messaging {
     }
     public Messaging(ServerData sd) throws IOException {
         connect(sd);
+    }
+    public Messaging(String server, int port) throws IOException {
+        connect(server, port);
     }
 
     public synchronized boolean connect(ServerData sd) throws IOException {

@@ -1,10 +1,13 @@
 package tools;
 
+import lib.message.Messaging;
 import lib.message.graph.mutation.MutationMessageImpl;
+import lib.message.graph.response.ResponseMessageImpl;
 import org.jetbrains.annotations.NotNull;
 import tools.util.EnroneBenchmarkDataLoader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,20 +34,37 @@ public final class EnroneGraphDataLoader {
 
      */
 
-    public static void main(@NotNull String[] args) {
+    public static void main(@NotNull String[] args) throws IOException {
         if (args.length != 1) System.out.println("loader.jar <path-to-enrone-test-data-set>");
 
-        File dataDirectory = new File(args[0]);
+        int index = 0;
+        int dataLimit = 5;
+        boolean writeToServer = false;
+        File dataDirectory = new File(args[index++]);
+
 
         Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
                 EnroneBenchmarkDataLoader.loadData(dataDirectory, true);
 
-        dataStream.limit(5)
+        Stream<MutationMessageImpl> mutationMessageStream = dataStream.limit(dataLimit)
                 .map(v -> parseMessageFile(v.getKey(), v.getValue().Load()))
                 .map(msgs -> msgs.stream().map(m -> createMutations(m)))
-                .flatMap(s -> s)
-                .forEach(EnroneGraphDataLoader::print);
+                .flatMap(s -> s);
 
+        if (!writeToServer) {
+            mutationMessageStream.forEach(EnroneGraphDataLoader::print);
+            return;
+        }
+
+        Messaging messaging = new Messaging("localhost", 50000);
+        mutationMessageStream.map(m -> {
+            try {
+                messaging.sendMessage(m);
+                return ((ResponseMessageImpl)messaging.readMessage()).errorMsg;
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+        }).forEach(System.out::println);
     }
 
     private static void print(MutationMessageImpl m) {

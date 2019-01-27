@@ -61,9 +61,18 @@ public final class CommandParser {
         } else if (tokens[0].equals("failover"))
             command = new FailOverCommand();
 
-        else if (tokens[0].equals("init") && tokens.length == 4)
+        else if (tokens[0].equals("init") && (tokens.length == 4 || tokens.length == 2))
             try {
-                command = new InitCommand(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]), CacheType.valueOf(tokens[3]));
+                int cacheSize;
+                CacheType cacheType;
+                if (tokens.length == 2) {
+                    cacheSize = 100;
+                    cacheType = CacheType.LRU;
+                } else {
+                    cacheSize = Integer.parseInt(tokens[2]);
+                    cacheType = CacheType.valueOf(tokens[3]);
+                }
+                command = new InitCommand(Integer.parseInt(tokens[1]), cacheSize, cacheType);
             } catch (Exception e) {
             }
 
