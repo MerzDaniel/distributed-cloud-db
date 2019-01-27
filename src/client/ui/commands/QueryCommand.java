@@ -63,19 +63,19 @@ public class QueryCommand implements Command {
 
 
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_STOPPED.name())) {
-            logger.info(KVMessage.StatusType.SERVER_STOPPED + String.format("The server is stopped so cannot perform the request query<%s>", this.toString()));
+            logger.info(KVMessage.StatusType.SERVER_STOPPED + String.format("The server is stopped so cannot perform the request query<%s>", queryMessage.prettyPrint()));
             writeLine("The server is stopped so cannot perform the request");
             return;
         }
 
         if (graphMessageResponse.errorMsg.equals(KVMessage.StatusType.SERVER_WRITE_LOCK.name())) {
-            logger.info(KVMessage.StatusType.SERVER_WRITE_LOCK + String.format("The server is locked for writing so cannot perform the request query<%s>", this.toString()));
+            logger.info(KVMessage.StatusType.SERVER_WRITE_LOCK + String.format("The server is locked for writing so cannot perform the request query<%s>", queryMessage.prettyPrint()));
             writeLine("The server is locked for writing. Please try again later");
             return;
         }
 
-        writeLine(String.format("Query >> : '%s'", queryMessage));
-        writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.serialize(), t.time()));
+        writeLine(String.format("Query >> : '%s'", queryMessage.prettyPrint()));
+        writeLine(String.format("Query Result >>: '%s' (%d ms)", graphMessageResponse.data.prettyPrint(), t.time()));
     }
 
     @Override
