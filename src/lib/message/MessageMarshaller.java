@@ -4,10 +4,10 @@ import lib.Constants;
 import lib.message.admin.FullReplicationMsg;
 import lib.message.admin.KVAdminMessage;
 import lib.message.admin.ReplicateMsg;
+import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KVMessageImpl;
-import lib.message.exception.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -206,8 +206,12 @@ public final class MessageMarshaller {
     }
 
     private static boolean isGraphMessage(String msgType) {
-        return msgType.equals(GraphDbMessage.GraphMessageType.QUERY.name()) ||
-                msgType.equals(GraphDbMessage.GraphMessageType.MUTATION.name());
+        try{
+            GraphDbMessage.GraphMessageType.valueOf(msgType);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private static IMessage unmarshallKvMessage(String[] kvMessageComponents) {

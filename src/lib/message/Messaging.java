@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 public class Messaging {
     public static final int CONNECT_RETRIES = 3;
-    public static long READ_MESSAGE_TIMEOUT = 1000;
+    public static long READ_MESSAGE_TIMEOUT = 7000;
 
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
@@ -23,9 +23,11 @@ public class Messaging {
 
     public Messaging() {
     }
+
     public Messaging(ServerData sd) throws IOException {
         connect(sd);
     }
+
     public Messaging(String server, int port) throws IOException {
         connect(server, port);
     }
@@ -49,7 +51,7 @@ public class Messaging {
                 lastException = e;
             }
         }
-        throw new IOException("Failed to connect after " + CONNECT_RETRIES + " retries", lastException);
+        throw new IOException(String.format("Failed to connect to %s:%d after %d retries", host, port, CONNECT_RETRIES), lastException);
     }
 
     public synchronized boolean connect(Socket s) throws IOException {
@@ -104,7 +106,7 @@ public class Messaging {
             try {
                 return messageFuture.get(READ_MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (ExecutionException executionException) {
-                throw new IOException("Exception after second try. Before Messaging was connected: "+ isConnected, executionException.getCause());
+                throw new IOException("Exception after second try. Before Messaging was connected: " + isConnected, executionException.getCause());
             } catch (Exception e1) {
                 throw new IOException(e1);
             }
