@@ -1,6 +1,7 @@
 package server.threads.handler;
 
-import lib.message.*;
+import lib.message.IMessage;
+import lib.message.Messaging;
 import lib.message.admin.KVAdminMessage;
 import lib.message.graph.GraphDbMessage;
 import lib.message.kv.KVMessage;
@@ -76,6 +77,7 @@ public class ConnectionHandler extends AbstractServerThread {
                         logger.warn("Error occured!", e1);
                     }
                 }
+                return;
             }
         } finally {
             tryClose(s);
