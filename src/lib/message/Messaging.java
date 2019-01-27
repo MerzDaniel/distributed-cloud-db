@@ -12,8 +12,8 @@ import java.net.Socket;
 import java.util.concurrent.*;
 
 public class Messaging {
-    public static final int CONNECT_RETRIES = 10;
-    public static long READ_MESSAGE_TIMEOUT = 15000;
+    public static final int CONNECT_RETRIES = 3;
+    public static long READ_MESSAGE_TIMEOUT = 1000;
 
     private static Logger logger = LogManager.getLogger(Messaging.class);
     private Connection con;
