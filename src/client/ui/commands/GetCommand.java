@@ -27,7 +27,7 @@ public class GetCommand implements Command {
 
     @Override
     public void execute(ApplicationState state) {
-        if (false && !isValidKey(key)) {
+        if (!isValidKey(key)) {
             writeLine("Key is too long. Only 20characters are allowed.");
             return;
         }

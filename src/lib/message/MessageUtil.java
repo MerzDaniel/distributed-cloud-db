@@ -13,7 +13,7 @@ public class MessageUtil {
      */
     public static boolean isValidKey(String key) {
         if (key == null) return false;
-        return key.length() <= 20;
+        return key.length() <= 50;
     }
 
     /**
