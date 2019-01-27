@@ -128,9 +128,7 @@ public class KVStore implements KVCommInterface {
      * @throws IOException          if any I/O error happens
      * @throws MarshallingException if any error happens during the unmarshall process of response query
      */
-    public ResponseMessageImpl query() throws IOException, MarshallingException {
-        //todo create the query message
-        QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create("").finish();
+    public ResponseMessageImpl query(QueryMessageImpl queryMessage) throws IOException, MarshallingException {
 
         ServerData kvServer = kvStoreMetaData.getKvServerList().get(0);
         boolean connectSuccess = this.connect(kvServer.getHost(), kvServer.getPort());
