@@ -113,13 +113,14 @@ public class MutationCommand implements Command {
                     isMergeQuery = false;
                     continue;
                 }
-                if(querySplit.contains("[")){
+                if (querySplit.contains("[")){
                     mergeProperties.add(new Json.StringValue(querySplit.split("\\[")[1]));
                     continue;
                 }
-
-                mergeProperties.add(new Json.StringValue(querySplit));
-                continue;
+                if (!querySplit.contains("[") && querySplit.contains("]")) {
+                    mergeProperties.add(new Json.StringValue(querySplit));
+                    continue;
+                }
             }
         }
 
