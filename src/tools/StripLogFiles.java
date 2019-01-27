@@ -14,6 +14,9 @@ public class StripLogFiles {
         for (String f : files) {
             File file = new File(Paths.get("C:\\Users\\daniel\\git\\gr10\\logs", f).toString());
 //            r.seek(r.length() - 10000000);
+            if (!file.exists()) continue;
+            if (file.length() < TARGET_FILE_SIZE) continue;
+
             FileInputStream fileInputStream = new FileInputStream(file);
             fileInputStream.skip(file.length() - TARGET_FILE_SIZE);
             byte buf[] = new byte[TARGET_FILE_SIZE];
