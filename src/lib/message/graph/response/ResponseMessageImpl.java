@@ -30,6 +30,13 @@ public class ResponseMessageImpl extends GraphDbMessage {
         return errorMsg == null || errorMsg.equals("");
     }
 
+    public String prettyPrint() {
+        String result =  GraphMessageType.RESPONSE.name() + "\n";
+        if (errorMsg != null && !errorMsg.equals("")) result += "Errors: " + errorMsg + "\n";
+        if (data != null) result += "Data: " + data.prettyPrint();
+        return result;
+    }
+
     @Override
     public String marshall() throws MarshallingException {
         return String.join(RECORD_SEPARATOR,

@@ -23,6 +23,10 @@ public class QueryMessageImpl extends GraphDbMessage {
         this.request = request;
     }
 
+    public String prettyPrint() {
+        return GraphMessageType.QUERY.name() + "|" + queryType.name()+ " " + request.prettyPrint();
+    }
+
     @Override
     public String marshall() throws MarshallingException {
         return String.join(RECORD_SEPARATOR,
