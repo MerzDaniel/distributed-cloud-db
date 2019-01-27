@@ -38,10 +38,9 @@ public final class EnroneGraphDataLoader {
         if (args.length != 1) System.out.println("loader.jar <path-to-enrone-test-data-set>");
 
         int index = 0;
-        int dataLimit = 5;
-        boolean writeToServer = false;
+        int dataLimit = Integer.parseInt(args[index++]);
+        boolean writeToServer = true;
         File dataDirectory = new File(args[index++]);
-
 
         Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
                 EnroneBenchmarkDataLoader.loadData(dataDirectory, true);
@@ -133,6 +132,5 @@ public final class EnroneGraphDataLoader {
         String subject;
         String fromUser;
         List<String> toUsers;
-
     }
 }

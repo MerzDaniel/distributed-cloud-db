@@ -25,12 +25,6 @@ public final class AdminMessageHandler {
     static Logger logger = LogManager.getLogger(AdminMessageHandler.class);
 
     public static KVAdminMessage handleKvAdminMessage(KVAdminMessage message, ServerState state) throws DbError {
-        logger.debug(String.format(
-                "Got a message: %s with storeMeta '%s' and serverData '%s'",
-                message.status,
-                message.meta != null ? message.meta.marshall() : "",
-                message.serverData != null ? message.serverData.marshall() : "")
-        );
 
         switch (message.status) {
             case CONFIGURE:

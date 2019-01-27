@@ -36,11 +36,6 @@ public final class KvMessageHandler {
             return KvMessageFactory.createServerWriteLock();
         }
 
-        logger.debug(String.format(
-                "Got a message: %s <%s,%s>",
-                kvMessage.getStatus(), kvMessage.getKey(), kvMessage.getValue()
-        ));
-
         if (!isValidKeyValueLength(kvMessage)) {
             logger.info(String.format("Key or Value are too long. Only a size for key/value of 20/120kb is allowed. key=%S | value=%s", kvMessage.getKey(), kvMessage.getValue()));
             return KvMessageFactory.createInvalidMessage();

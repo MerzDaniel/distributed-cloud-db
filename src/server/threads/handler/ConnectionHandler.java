@@ -1,5 +1,6 @@
 package server.threads.handler;
 
+import lib.TimeWatch;
 import lib.message.IMessage;
 import lib.message.Messaging;
 import lib.message.admin.KVAdminMessage;
@@ -15,6 +16,7 @@ import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 import static lib.SocketUtil.tryClose;
 
@@ -53,6 +55,8 @@ public class ConnectionHandler extends AbstractServerThread {
                 boolean gotRequest = false;
                 try {
                     IMessage request = messaging.readMessageWithoutTimeout();
+                    TimeWatch t = TimeWatch.start();
+                    logger.debug("REQUEST: " + request.marshall());
                     gotRequest = true;
                     IMessage response;
                     if (request instanceof KVMessage)
@@ -64,6 +68,7 @@ public class ConnectionHandler extends AbstractServerThread {
                     else
                         throw new Exception("Unknown Msg");
 
+                    logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS) , response.marshall()));
                     messaging.sendMessage(response);
                     continue;
                 } catch (Exception e) {
