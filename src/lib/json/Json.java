@@ -16,6 +16,18 @@ public class Json {
 
         return p.value;
     }
+    public void set(String key, PropertyValue value) {
+        set(new Property(key, value));
+    }
+    public void set(Property p) {
+        for (Property property : properties) {
+            if (property.key.equals(p.key)){
+                properties.remove(property);
+                break;
+            }
+        }
+        properties.add(p);
+    }
 
     public String prettyPrint() {
         return "{\n" +

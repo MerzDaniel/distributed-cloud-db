@@ -14,12 +14,14 @@ import org.junit.Test;
 import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
+import server.service.Document;
 import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.GetHandler;
 import server.threads.handler.kv.PutHandler;
 import util.TestServerState;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static junit.framework.Assert.*;
 
@@ -99,7 +101,7 @@ public class GraphHandlerTest {
     }
 
     @Test
-    public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException  {
+    public void writeToNonExistingDoc() throws MarshallingException, IOException, DbError, KVServerNotFoundException, KeyNotFoundException {
         final String nonExistDocId = "nonExisitingDocId";
         GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withReplace(
                 nonExistDocId,
@@ -201,6 +203,7 @@ public class GraphHandlerTest {
         assertEquals(String.format("[{%s:%s},{%s:%s},{\"key001\":\"val001\"}]", e(propKey), e(propVal), e(innerJsonPropKey), e(innerJsonPropVal)), newDoc.get(propKey).serialize());
     }
 
+
     @Test
     //the document has an array property and the message also an array
     public void testMergeMsgArrayWithArray() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
@@ -220,5 +223,21 @@ public class GraphHandlerTest {
         Json newDoc = Json.deserialize(response.getValue());
 
         assertEquals(String.format("[{%s:%s},{%s:%s},{\"key001\":\"val001\"},{\"key002\":\"val002\"}]", e(propKey), e(propVal), e(innerJsonPropKey), e(innerJsonPropVal)), newDoc.get(propKey).serialize());
+    }
+
+    @Test
+    //the document has an array property and the message also an array
+    public void testMergeArrayIfNotExistingOnDoc() throws MarshallingException, IOException, UnsupportedJsonStructureFoundException, DbError, KVServerNotFoundException, KeyNotFoundException {
+
+        GraphDbMessage mutationMsg = MutationMessageImpl.Builder.create().withStringArrayMerge(
+                docIdWithArray,
+                newPropKey,
+                Arrays.asList(newPropVal)).finish();
+        ResponseMessageImpl iMessage = (ResponseMessageImpl) GraphMessageHandler.handle(mutationMsg, state);
+        assertTrue(iMessage.success());
+
+        Json newDoc = Document.loadJsonDocument(docIdWithArray, state);
+        assertEquals("[\"" + newPropVal + "\"]", newDoc.get(newPropKey).serialize());
+
     }
 }

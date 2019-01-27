@@ -102,7 +102,7 @@ public final class GraphMessageHandler {
                     break;
 
                 case MERGE:
-                    handleMerge(doc, p);
+                    handleMerge(doc, propertyKey, p.value);
                     break;
 
                 case NESTED:
@@ -210,24 +210,29 @@ public final class GraphMessageHandler {
         return resultBuilder.finish();
     }
 
-    private static void handleMerge(Json doc, Json.Property msgProp) throws UnsupportedJsonStructureFoundException {
-        String key = msgProp.key.split("[|]")[0];
+    private static void handleMerge(Json doc, String key, Json.PropertyValue value) throws UnsupportedJsonStructureFoundException {
         Json.PropertyValue docProp = doc.get(key);
-        if (docProp instanceof Json.JsonValue && msgProp.value instanceof Json.JsonValue) {
+
+        if (docProp == null) {
+            doc.set(key, value);
+            return;
+        }
+
+        if (docProp instanceof Json.JsonValue && value instanceof Json.JsonValue) {
             Json.JsonValue docPropJv = (Json.JsonValue) docProp;
-            ((Json.JsonValue) msgProp.value).value.properties.stream().forEach(it -> docPropJv.value.setProperty(new Json.Property(it.key, it.value)));
+            ((Json.JsonValue) value).value.properties.stream().forEach(it -> docPropJv.value.setProperty(new Json.Property(it.key, it.value)));
             return;
         }
 
-        if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.JsonValue) {
+        if (docProp instanceof Json.ArrayValue && value instanceof Json.JsonValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            docPropJv.values.add(msgProp.value);
+            docPropJv.values.add(value);
             return;
         }
 
-        if (docProp instanceof Json.ArrayValue && msgProp.value instanceof Json.ArrayValue) {
+        if (docProp instanceof Json.ArrayValue && value instanceof Json.ArrayValue) {
             Json.ArrayValue docPropJv = (Json.ArrayValue) docProp;
-            docPropJv.values.addAll((((Json.ArrayValue) msgProp.value).values));
+            docPropJv.values.addAll((((Json.ArrayValue) value).values));
             return;
         }
 

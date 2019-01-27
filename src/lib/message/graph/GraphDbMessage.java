@@ -29,17 +29,18 @@ public abstract class GraphDbMessage implements IMessage {
     public static GraphDbMessage deserialize(String message) throws MarshallingException {
         try {
             String split[] = message.split(Constants.RECORD_SEPARATOR);
-            if (GraphMessageType.QUERY.equals(split[0])) {
-                return new QueryMessageImpl(QueryType.valueOf(split[1]), split[2], Json.deserialize(split[3]));
-            }
-            if (GraphMessageType.MUTATION.equals(split[0])) {
-                return new MutationMessageImpl(Json.deserialize(split[1]));
-            }
-            if (GraphMessageType.RESPONSE.equals(split[0])) {
-                // data
-                if (split[1].length() == 0) return new ResponseMessageImpl(Json.deserialize(split[2]));
-                // error
-                return new ResponseMessageImpl(split[1]);
+            switch (GraphMessageType.valueOf(split[0])) {
+                case QUERY:
+                    return new QueryMessageImpl(QueryType.valueOf(split[1]), split[2], Json.deserialize(split[3]));
+                case MUTATION:
+                    return new MutationMessageImpl(Json.deserialize(split[1]));
+                case RESPONSE:
+                    // data
+                    if (split[1].length() == 0) return new ResponseMessageImpl(Json.deserialize(split[2]));
+                    // error
+                    return new ResponseMessageImpl(split[1]);
+
+
             }
         } catch (Exception e) {
             throw new MarshallingException(e);
