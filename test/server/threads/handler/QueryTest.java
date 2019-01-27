@@ -77,7 +77,7 @@ public class QueryTest {
         QueryMessageImpl queryMessage = QueryMessageImpl.Builder.create(docId).withProperty(stringPropKey).finish();
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
-        assertEquals(stringPropVal, response.data.get(stringPropKey).serialize());
+        assertEquals(e(stringPropVal), response.data.get(stringPropKey).serialize());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class QueryTest {
         ResponseMessageImpl response = (ResponseMessageImpl) GraphMessageHandler.handle(queryMessage, state);
 
         assertEquals(3, response.data.properties.size());
-        assertEquals(stringPropVal, response.data.get(stringPropKey).serialize());
+        assertEquals(e(stringPropVal), response.data.get(stringPropKey).serialize());
     }
 
     @Test
@@ -106,6 +106,10 @@ public class QueryTest {
         Json.JsonValue val = (Json.JsonValue) response.data.get(refPropKey);
 
         assertTrue(val != null);
-        assertEquals(referencedPropVal, val.value.get(referencedPropKey).serialize());
+        assertEquals(e(referencedPropVal), val.value.get(referencedPropKey).serialize());
+    }
+
+    private String e(String s) {
+        return "\"" + s + "\"";
     }
 }
