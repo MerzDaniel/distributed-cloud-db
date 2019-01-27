@@ -35,6 +35,8 @@ public class Connection {
     public void use(Socket s) throws IOException {
         logger.debug(String.format("Use %s:%d", s.getInetAddress(), s.getPort()));
 
+        disconnect();
+
         socket = s;
         in = socket.getInputStream();
         out = socket.getOutputStream();
@@ -52,12 +54,6 @@ public class Connection {
      */
     public void disconnect() {
         if (socket == null) return;
-        logger.debug(
-                String.format(
-                        "Closing connection from %s:%d",
-                        socket.getInetAddress(), socket.getPort()
-                )
-        );
         tryClose(in);
         tryClose(out);
         tryClose(socket);
