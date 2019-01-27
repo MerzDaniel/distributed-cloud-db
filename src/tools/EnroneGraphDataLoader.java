@@ -55,11 +55,26 @@ public final class EnroneGraphDataLoader {
 
         MutationMessageImpl.Builder builder = MutationMessageImpl.Builder.create();
         builder
+                // message
                 .withReplace(m.id, "id", m.id)
                 .withReplace(m.id, "date", m.date)
                 .withReplace(m.id, "fromUser", m.fromUser)
                 .withReplace(m.id, "subject", m.subject)
-                .withMerge(m.id, "toUsers", m.toUsers);
+                .withReplace(m.id, "type", "message")
+                .withMerge(m.id, "toUsers", m.toUsers)
+                // from user
+                .withReplace(m.fromUser, "id", m.fromUser)
+                .withReplace(m.fromUser, "type", "user")
+                .withStringArrayMerge(m.fromUser, "messages", Arrays.asList(m.id))
+        ;
+        // to users
+        m.toUsers.stream().forEach(u ->
+                builder
+                        .withReplace(u, "id", u)
+                        .withReplace(u, "type", "user")
+                        .withStringArrayMerge(u, "messagesReceived", Arrays.asList(m.id))
+        );
+
         return builder.finish();
     }
 

@@ -198,9 +198,15 @@ public class Json {
             return this;
         }
 
-        public Builder withArrayProperty(String arrPropKey, List<PropertyValue> arrPropVal) {
+        public Builder withStringArrayProperty(String arrPropKey, List<String> list) {
 
-            json.setProperty(new Property(arrPropKey, new ArrayValue(arrPropVal)));
+            json.setProperty(new Property(
+                    arrPropKey,
+                    new ArrayValue(list.stream()
+                            .map(s -> new StringValue(s))
+                            .collect(Collectors.toList())
+                    )
+            ));
             return this;
         }
 

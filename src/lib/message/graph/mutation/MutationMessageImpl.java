@@ -83,6 +83,11 @@ public class MutationMessageImpl extends GraphDbMessage {
             return this;
         }
 
+        public Builder withStringArrayMerge(String docId, String propKey, List<String> list) {
+            getMutationBuilder(docId).withStringArrayProperty(propKey + OPERATION_SEPARATOR + Operations.MERGE.name(), list);
+            return this;
+        }
+
         private Json.Builder getMutationBuilder(String docId) {
             if (docMutationBuilders.get(docId) == null) docMutationBuilders.put(docId, Json.Builder.create());
             return docMutationBuilders.get(docId);
