@@ -3,6 +3,7 @@ package client.ui.commands;
 import client.ui.ApplicationState;
 import client.ui.Command;
 import lib.TimeWatch;
+import lib.json.Json;
 import lib.message.exception.MarshallingException;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
@@ -11,7 +12,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 import static client.ui.Util.writeLine;
 
@@ -20,13 +20,13 @@ import static client.ui.Util.writeLine;
  */
 public class QueryCommand implements Command {
     private String queryParam;
-    private List<String> queryProps;
+    private String query;
 
     private final Logger logger = LogManager.getLogger(QueryCommand.class);
 
-    public QueryCommand(String queryParam, List<String> queryProps) {
+    public QueryCommand(String queryParam, String query) {
         this.queryParam = queryParam;
-        this.queryProps = queryProps;
+        this.query = query;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class QueryCommand implements Command {
         TimeWatch t = TimeWatch.start();
         QueryMessageImpl queryMessage = null;
         try {
-            queryMessage = QueryMessageImpl.Builder.create(queryParam).withProperties(queryProps).finish();
+            queryMessage = constructQueryMsg();
             graphMessageResponse = state.kvStore.query(queryMessage);
         } catch (IOException e) {
             logger.error("error", e);
@@ -67,6 +67,40 @@ public class QueryCommand implements Command {
 
     @Override
     public String toString() {
-        return "QUERY<" + queryParam + " " + String.join(",", queryProps) + ">";
+        return "QUERY<" + queryParam + " " + query + ">";
+    }
+
+    private QueryMessageImpl constructQueryMsg() {
+        QueryMessageImpl.Builder queryMessageBuilder = QueryMessageImpl.Builder.create(queryParam);
+
+        String[] querySplits = query.split(",");
+        Json.Builder jsonBuilder = null;
+        boolean isFollowQuery = false;
+        String followKey = null;
+
+        for (String querySplit : querySplits) {
+            if (!querySplit.contains("|") && !isFollowQuery) {
+                queryMessageBuilder.withProperty(querySplit);
+            }
+            if (!querySplit.contains("|") && isFollowQuery) {
+                if (querySplit.contains("}")) {
+                    jsonBuilder.withUndefinedProperty(querySplit.split("}")[0]);
+                    queryMessageBuilder.withFollowReferenceProperty(followKey, jsonBuilder.finish());
+                    jsonBuilder = null;
+                    isFollowQuery = false;
+                    followKey = null;
+                } else {
+                    jsonBuilder.withUndefinedProperty(querySplit);
+                }
+            }
+            if (querySplit.contains("|")) {
+                isFollowQuery = true;
+                jsonBuilder = Json.Builder.create();
+                jsonBuilder.withUndefinedProperty(querySplit.split("[{]")[1]);
+                followKey = querySplit.split("[|]")[0];
+            }
+        }
+
+        return queryMessageBuilder.finish();
     }
 }
