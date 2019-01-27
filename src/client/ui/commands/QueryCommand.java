@@ -12,7 +12,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static client.ui.Util.writeLine;
 
@@ -72,23 +71,36 @@ public class QueryCommand implements Command {
     }
 
     private QueryMessageImpl constructQueryMsg() {
-        QueryMessageImpl queryMessage = null;
         QueryMessageImpl.Builder queryMessageBuilder = QueryMessageImpl.Builder.create(queryParam);
-        //FOLLOW query
-        if (query.contains("|")) {
-            String[] queryValues = query.split("[|]");
-            String[] followProps = queryValues[1].substring(7, queryValues[1].length() - 1).split(",");
 
-            Json.Builder jsonBuilder = Json.Builder.create();
-            for (String split : followProps) {
-                jsonBuilder.withUndefinedProperty(split);
+        String[] querySplits = query.split(",");
+        Json.Builder jsonBuilder = null;
+        boolean isFollowQuery = false;
+        String followKey = null;
+
+        for (String querySplit : querySplits) {
+            if (!querySplit.contains("|") && !isFollowQuery) {
+                queryMessageBuilder.withProperty(querySplit);
             }
-
-            queryMessage = queryMessageBuilder.withFollowReferenceProperty(queryValues[0], jsonBuilder.finish()).finish();
-
-        } else {
-            queryMessage = queryMessageBuilder.withProperties(Arrays.asList(query.split(","))).finish();
+            if (!querySplit.contains("|") && isFollowQuery) {
+                if (querySplit.contains("}")) {
+                    jsonBuilder.withUndefinedProperty(querySplit.split("}")[0]);
+                    queryMessageBuilder.withFollowReferenceProperty(followKey, jsonBuilder.finish());
+                    jsonBuilder = null;
+                    isFollowQuery = false;
+                    followKey = null;
+                } else {
+                    jsonBuilder.withUndefinedProperty(querySplit);
+                }
+            }
+            if (querySplit.contains("|")) {
+                isFollowQuery = true;
+                jsonBuilder = Json.Builder.create();
+                jsonBuilder.withUndefinedProperty(querySplit.split("[{]")[1]);
+                followKey = querySplit.split("[|]")[0];
+            }
         }
-        return queryMessage;
+
+        return queryMessageBuilder.finish();
     }
 }
