@@ -20,6 +20,8 @@ public class CommandParser {
             return new GetCommand(tokens[1]);
         if (commandName.equalsIgnoreCase("query") && tokens.length == 3)
             return new QueryCommand(tokens[1], tokens[2]);
+        if (commandName.equalsIgnoreCase("mutate") && tokens.length == 3)
+            return new MutationCommand(tokens[1], tokens[2]);
         if (commandName.equals("put") && tokens.length >= 2)
             return new PutCommand(tokens[1], Arrays.asList(tokens).subList(2, tokens.length).stream().collect(Collectors.joining(" ")));
         if (commandName.equals("connect")
