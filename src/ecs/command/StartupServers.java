@@ -30,7 +30,7 @@ public class StartupServers implements Command {
 
             try {
                 System.out.format("Starting up %s ...\n", sd.toString());
-                startKvServer(sd);
+                startKvServer(sd, state.sshUsername);
             } catch (Exception e) {
                 System.out.format("Could not start server %s : %s\n", sd.toString(), e.getMessage());
             }

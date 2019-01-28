@@ -52,7 +52,7 @@ public class AddServerCommand implements Command {
             // ## start server
             System.out.println("Starting up the server process (waiting for 15s)...");
             try {
-                SshService.startKvServer(newServer);
+                SshService.startKvServer(newServer, state.sshUsername);
                 Thread.sleep(15000);
                 newServerState = KvService.getStatus(newServer);
             } catch (Exception ex) {
