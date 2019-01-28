@@ -86,7 +86,7 @@ public final class GraphMessageHandler {
         Json doc;
         try {
             doc = Document.loadJsonDocument(docId, state);
-        } catch (KeyNotFoundException notFoundErr) {
+        } catch (Exception notFoundErr) {
             doc = new Json();
         }
 
