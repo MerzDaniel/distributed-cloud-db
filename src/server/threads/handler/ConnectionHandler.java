@@ -59,15 +59,7 @@ public class ConnectionHandler extends AbstractServerThread {
                     TimeWatch t = TimeWatch.start();
                     logger.debug("REQUEST: " + request.marshall());
                     gotRequest = true;
-                    IMessage response;
-                    if (request instanceof KVMessage)
-                        response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
-                    else if (request instanceof KVAdminMessage)
-                        response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
-                    else if (request instanceof GraphDbMessage)
-                        response = GraphMessageHandler.handle((GraphDbMessage) request, state);
-                    else
-                        throw new Exception("Unknown Msg");
+                    IMessage response = handleRequest(request);
 
                     logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS) , response.marshall()));
                     messaging.sendMessage(response);
@@ -88,6 +80,19 @@ public class ConnectionHandler extends AbstractServerThread {
         } finally {
             tryClose(s);
         }
+    }
+
+    private IMessage handleRequest(IMessage request) throws Exception {
+        IMessage response;
+        if (request instanceof KVMessage)
+            response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
+        else if (request instanceof KVAdminMessage)
+            response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
+        else if (request instanceof GraphDbMessage)
+            response = GraphMessageHandler.handle((GraphDbMessage) request, state);
+        else
+            throw new Exception("Unknown Msg");
+        return response;
     }
 }
 
