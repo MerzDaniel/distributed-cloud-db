@@ -25,7 +25,7 @@ public class QueryMessageImpl extends GraphDbMessage {
 
     @Override
     public String prettyPrint() {
-        return GraphMessageType.QUERY.name() + "|" + queryType.name()+ " " + request.prettyPrint();
+        return GraphMessageType.QUERY.name() + "|" + queryType.name() + "|" + queryParam + " " + request.prettyPrint();
     }
 
     @Override
