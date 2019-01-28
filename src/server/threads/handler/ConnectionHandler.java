@@ -4,7 +4,6 @@ import lib.TimeWatch;
 import lib.message.IMessage;
 import lib.message.Messaging;
 import lib.message.admin.KVAdminMessage;
-import lib.message.exception.MarshallingException;
 import lib.message.graph.GraphDbMessage;
 import lib.message.graph.query.QueryMessageImpl;
 import lib.message.kv.KVMessage;
@@ -18,7 +17,6 @@ import server.threads.handler.admin.AdminMessageHandler;
 import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -58,33 +56,30 @@ public class ConnectionHandler extends AbstractServerThread {
             while (messaging.isConnected() &&
                     !shouldStop) {
 
-                IMessage request;
+                boolean gotRequest = false;
                 try {
-                    request = messaging.readMessageWithoutTimeout();
-                } catch (IOException e) {
-                    return;
-                }
-                TimeWatch t = TimeWatch.start();
-                try {
+                    IMessage request = messaging.readMessageWithoutTimeout();
+                    TimeWatch t = TimeWatch.start();
                     logger.debug("REQUEST: " + request.marshall());
-                } catch (MarshallingException e) {
-                }
-                IMessage response;
-                try {
-                    response = handleRequest(request);
+                    gotRequest = true;
+                    IMessage response = handleRequest(request);
+
+                    logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS), response.marshall()));
+                    messaging.sendMessage(response);
+                    continue;
                 } catch (Exception e) {
-                    response = KvMessageFactory.createServerError();
-                    logger.warn("SERVVER ERROR", e);
+                    logger.info("Error occured!", e);
                 }
 
-                logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS), response.marshall()));
-                messaging.sendMessage(response);
-                continue;
+                if (gotRequest) {
+                    try {
+                        messaging.sendMessage(KvMessageFactory.createServerError());
+                    } catch (Exception e1) {
+                        logger.info("Error occured!", e1);
+                    }
+                }
+                return;
             }
-        } catch (MarshallingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             tryClose(s);
         }
