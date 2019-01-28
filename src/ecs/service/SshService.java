@@ -8,8 +8,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public final class SshService {
-    public static void startKvServer(ServerData sd) throws JSchException, IOException, SftpException {
-        String userName = "clouddb";
+    public static void startKvServer(ServerData sd, String userName) throws JSchException, IOException, SftpException {
         String host = sd.getHost();
 
         Session session = connect(userName, host);
