@@ -1,5 +1,6 @@
 package tools;
 
+import lib.message.IMessage;
 import lib.message.Messaging;
 import lib.message.graph.mutation.MutationMessageImpl;
 import lib.message.graph.response.ResponseMessageImpl;
@@ -44,25 +45,28 @@ public final class EnroneGraphDataLoader {
         Stream<AbstractMap.SimpleEntry<String, EnroneBenchmarkDataLoader.Loader>> dataStream =
                 EnroneBenchmarkDataLoader.loadData(dataDirectory, true);
 
-        Stream<MutationMessageImpl> mutationMessageStream = dataStream.limit(dataLimit)
+        List<MutationMessageImpl> mutationMessages = dataStream.limit(dataLimit)
                 .map(v -> parseMessageFile(v.getKey(), v.getValue().Load()))
                 .map(msgs -> msgs.stream().map(m -> createMutations(m)))
-                .flatMap(s -> s);
+                .flatMap(s -> s).collect(Collectors.toList());
 
-        if (!writeToServer) {
-            mutationMessageStream.forEach(EnroneGraphDataLoader::print);
-            return;
-        }
+        System.out.println(mutationMessages.get(0).prettyPrint());
 
         Messaging messaging = new Messaging("localhost", 50000);
-        mutationMessageStream.map(m -> {
+        mutationMessages.stream().map(m -> {
             try {
+                Thread.sleep(30);
                 messaging.sendMessage(m);
-                return ((ResponseMessageImpl)messaging.readMessage()).errorMsg;
+                IMessage iMessage = messaging.readMessage();
+                if (!(iMessage instanceof ResponseMessageImpl)) {
+                    return iMessage.prettyPrint();
+                }
+                if (((ResponseMessageImpl) iMessage).errorMsg == null) return null;
+                return ((ResponseMessageImpl) iMessage).errorMsg;
             } catch (Exception e) {
                 return e.getMessage();
             }
-        }).forEach(System.out::println);
+        }).filter(x -> x != null).forEach(System.out::println);
     }
 
     private static void print(MutationMessageImpl m) {
