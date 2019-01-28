@@ -55,6 +55,7 @@ public class RemoveNodeCommand implements Command {
 
         try {
             KvService.removeNode(removedNode, state.storeMeta);
+            System.out.println(String.format("The %s is removed", removedNode.toString()));
         } catch (KVServerNotFoundException | IOException | MarshallingException e) {
             logger.error("There was an error while re-configure the system", e);
             System.out.println("There was an error while re-configure the system");

@@ -50,7 +50,7 @@ public class MutationCommand implements Command {
         }
 
         if (graphMessageResponse.success()) {
-            System.out.println(String.format("Data save successfully (%d ms)", t.time()));
+            System.out.println(String.format("Data saved successfully (%d ms)", t.time()));
             return;
         }
 

@@ -82,7 +82,7 @@ public class InitCommand implements Command {
             boolean serverCanBeReached = KvService.serverCanBeReached(sd);
             if (!serverCanBeReached) {
                 try {
-                    startKvServer(sd);
+                    startKvServer(sd, state.sshUsername);
                     Thread.sleep(3000);
                 } catch (JSchException | IOException | SftpException | InterruptedException e) {
                     universeIsOk = false;

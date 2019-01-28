@@ -10,4 +10,5 @@ public class State {
     public KVStoreMetaData storeMeta = new KVStoreMetaData();
     public KVStoreMetaData poolMeta = new KVStoreMetaData();
     public TimedRunningStateMap timedRunningStateMap = new TimedRunningStateMap();
+    public String sshUsername = "";
 }
