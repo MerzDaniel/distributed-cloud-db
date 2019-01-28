@@ -129,6 +129,8 @@ public class Json {
             this.values = Arrays.asList(values);
         }
 
+        public ArrayValue() { this.values = new LinkedList<>(); }
+
         @Override
         public String serialize() {
             return String.format("[%s]", String.join(",", values.stream().map(v -> v.serialize()).collect(Collectors.toList())));

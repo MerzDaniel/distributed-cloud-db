@@ -16,7 +16,6 @@ import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.service.Document;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -150,7 +149,7 @@ public final class GraphMessageHandler {
      * query ID { doc1: { key, refKey|FOLLOW: { key } } }
      * response { key: value , refKey: { key: value2 }}
      */
-    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException  {
+    private static ResponseMessageImpl handleQuery(QueryMessageImpl msg, ServerState state) throws MarshallingException, DbError, IOException, KVServerNotFoundException {
         if (msg.queryType != QueryType.ID) new ResponseMessageImpl("QueryType not supported");
 
         LinkedList<String> errors = new LinkedList();
@@ -185,19 +184,49 @@ public final class GraphMessageHandler {
             }
             if (op == QueryOperation.FOLLOW) {
                 if (queryPropValue instanceof Json.JsonValue) {
-                    if (!(docPropVal instanceof Json.StringValue)) throw new NotImplementedException();
 
-                    String referencedDocId = ((Json.StringValue) docPropVal).value;
-                    Json referencedDoc = null;
-                    try {
-                        referencedDoc = Document.loadJsonDocument(referencedDocId, state);
-                        Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
-                        responseBuilder.withJsonProperty(propKey, result);
-                    } catch (KeyNotFoundException e) {
-                        responseBuilder.withStringProperty(propKey, "ERR_NOT_FOUND");
+                    if (docPropVal instanceof Json.JsonValue) {
+                        responseBuilder.withStringProperty(propKey, "ERR_JSON_NOT_SUPPORTED");
+                        continue;
                     }
+                    if (docPropVal instanceof Json.StringValue) {
+                        String referencedDocId = ((Json.StringValue) docPropVal).value;
+                        Json referencedDoc = null;
+                        try {
+                            referencedDoc = Document.loadJsonDocument(referencedDocId, state);
+                            Json result = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
+                            responseBuilder.withJsonProperty(propKey, result);
+                        } catch (KeyNotFoundException e) {
+                            responseBuilder.withStringProperty(propKey, "ERR_NOT_FOUND");
+                        }
+                        continue;
+                    }
+                    if (docPropVal instanceof Json.ArrayValue) {
+                        Json.ArrayValue result = new Json.ArrayValue();
+                        for (Json.PropertyValue value : ((Json.ArrayValue) docPropVal).values) {
+                            if (!(value instanceof Json.StringValue)) {
+                                result = null;
+                                break;
+                            }
+                            try {
+                                Json referencedDoc = null;
+                                referencedDoc = Document.loadJsonDocument(((Json.StringValue) value).value, state);
+                                Json nestedDoc = loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, referencedDoc);
+                                result.values.add(new Json.JsonValue(loadPropsFromDoc(((Json.JsonValue) queryPropValue).value, nestedDoc)));
+                            } catch (KeyNotFoundException e) {
+                                result.values.add(new Json.StringValue("ERR_NOT_FOUND_" + ((Json.StringValue) value).value));
+                            }
+                        }
+                        if (result == null)
+                            responseBuilder.withStringProperty(propKey, "ERR_NOT_FOUND");
+                        else
+                            responseBuilder.withProperty(propKey, result);
+                        continue;
+                    }
+
                 } else {
                     errors.add("Follow prop operation must have a json value");
+                    responseBuilder.withStringProperty(propKey, "FOLLOW_PROP_MUST_HAVE_JSON_VALUE");
                 }
             }
         }
