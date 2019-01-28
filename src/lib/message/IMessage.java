@@ -7,4 +7,5 @@ import lib.message.exception.MarshallingException;
  */
 public interface IMessage {
     public String marshall() throws MarshallingException;
+    public String prettyPrint();
 }

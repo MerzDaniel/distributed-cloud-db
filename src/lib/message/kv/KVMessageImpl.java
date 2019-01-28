@@ -1,7 +1,7 @@
 package lib.message.kv;
 
-import lib.message.exception.MarshallingException;
 import lib.message.MessageMarshaller;
+import lib.message.exception.MarshallingException;
 
 /**
  * The representation of the data passed between the client and the server
@@ -95,5 +95,10 @@ public class KVMessageImpl implements KVMessage {
     @Override
     public String marshall() throws MarshallingException {
         return MessageMarshaller.marshall(this);
+    }
+
+    @Override
+    public String prettyPrint() {
+        return toString();
     }
 }

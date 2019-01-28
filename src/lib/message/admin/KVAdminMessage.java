@@ -1,8 +1,8 @@
 package lib.message.admin;
 
 import lib.message.IMessage;
-import lib.message.exception.MarshallingException;
 import lib.message.MessageMarshaller;
+import lib.message.exception.MarshallingException;
 import lib.metadata.KVStoreMetaData;
 import lib.metadata.ServerData;
 import lib.server.RunningState;
@@ -110,5 +110,10 @@ public class KVAdminMessage implements IMessage {
     @Override
     public String marshall() throws MarshallingException {
         return MessageMarshaller.marshall(this);
+    }
+
+    @Override
+    public String prettyPrint() {
+        return status.name() + " " + runningState.name();
     }
 }

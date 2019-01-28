@@ -5,8 +5,10 @@ import lib.message.IMessage;
 import lib.message.Messaging;
 import lib.message.admin.KVAdminMessage;
 import lib.message.graph.GraphDbMessage;
+import lib.message.graph.query.QueryMessageImpl;
 import lib.message.kv.KVMessage;
 import lib.message.kv.KvMessageFactory;
+import lib.server.RunningState;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import server.ServerState;
@@ -16,6 +18,7 @@ import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static lib.SocketUtil.tryClose;
@@ -59,17 +62,9 @@ public class ConnectionHandler extends AbstractServerThread {
                     TimeWatch t = TimeWatch.start();
                     logger.debug("REQUEST: " + request.marshall());
                     gotRequest = true;
-                    IMessage response;
-                    if (request instanceof KVMessage)
-                        response = KvMessageHandler.handleKvMessage((KVMessage) request, state);
-                    else if (request instanceof KVAdminMessage)
-                        response = AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
-                    else if (request instanceof GraphDbMessage)
-                        response = GraphMessageHandler.handle((GraphDbMessage) request, state);
-                    else
-                        throw new Exception("Unknown Msg");
+                    IMessage response = handleRequest(request);
 
-                    logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS) , response.marshall()));
+                    logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS), response.marshall()));
                     messaging.sendMessage(response);
                     continue;
                 } catch (Exception e) {
@@ -88,6 +83,48 @@ public class ConnectionHandler extends AbstractServerThread {
         } finally {
             tryClose(s);
         }
+    }
+
+    private IMessage handleRequest(IMessage request) throws Exception {
+        if (request instanceof KVAdminMessage)
+            return AdminMessageHandler.handleKvAdminMessage((KVAdminMessage) request, state);
+
+        IMessage msgNotAllowedResponse = createMessageNotAllowedResponse(request);
+        if (msgNotAllowedResponse != null) return msgNotAllowedResponse;
+
+        if (request instanceof KVMessage)
+            return KvMessageHandler.handleKvMessage((KVMessage) request, state);
+        if (request instanceof GraphDbMessage)
+            return GraphMessageHandler.handle((GraphDbMessage) request, state);
+
+        throw new Exception("Unknown Msg");
+    }
+
+    private IMessage createMessageNotAllowedResponse(IMessage request) {
+        if (
+                !Arrays.asList(RunningState.RUNNING, RunningState.READONLY).contains(state.runningState)) {
+            logger.info(String.format("Client issued following msg while server is in state %s: %s",
+                    state.runningState.toString(), request.prettyPrint())
+            );
+            return KvMessageFactory.creatServerStopped();
+        }
+
+        if (state.runningState == RunningState.READONLY && !(isReadingMsg(request))) {
+            logger.info(String.format("Client issued msg while server is in state %s: %s",
+                    state.runningState.toString(), request.prettyPrint())
+            );
+            return KvMessageFactory.createServerWriteLock();
+        }
+
+        return null;
+    }
+
+    private boolean isReadingMsg(IMessage request) {
+        if (request instanceof KVMessage)
+            return ((KVMessage) request).getStatus().equals(KVMessage.StatusType.GET);
+
+        return request instanceof QueryMessageImpl;
+
     }
 }
 
