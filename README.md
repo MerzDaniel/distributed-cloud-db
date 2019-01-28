@@ -39,7 +39,7 @@ The datastore is extended as a graph database which could store structured data 
 - We can create new data using `MUTATE` command
      
     The syntax
-    ```
+    ```ruby
         MUTATE <documentId> <key1>:<property1>,<key2>,<property2>,.....
     ```
     
