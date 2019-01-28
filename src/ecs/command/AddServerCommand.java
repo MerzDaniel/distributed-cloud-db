@@ -48,7 +48,7 @@ public class AddServerCommand implements Command {
             newServerCon.connect(newServer.getHost(), newServer.getPort());
             newServerState = KvService.getStatus(newServer);
         } catch (Exception e) {
-            System.out.println("Could not connect to server: " + newServer.toString());
+            //System.out.println("Could not connect to server: " + newServer.toString());
             // ## start server
             System.out.println("Starting up the server process (waiting for 15s)...");
             try {
@@ -114,5 +114,6 @@ public class AddServerCommand implements Command {
         }
 
         System.out.println("Move relevant data to the new node!");
+        System.out.println(String.format("The %s is added", newServer,toString()));
     }
 }
