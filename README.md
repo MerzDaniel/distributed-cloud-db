@@ -26,9 +26,9 @@ Run the ECS (make sure `ecs.config` file is available in the root folder)
 - `docs` contains the performance evaluation
 - `tools` contains performance tools
 
-## Graph Database Extension
+## Milestone 5 - Graph Database Extension
 
-The datastore is extended as a graph database which could store structured data and maintain associations among data. This gives the ability to perform powerful queries over data which was not possible with the previous simple keyValue store. The existing KVClient is extended with two command `MUTATE` to save/modify data and `QUERY` to query data
+The datastore is extended as a graph database which could store structured data and maintain associations between them. This gives the ability to perform powerful queries over data which was not possible with the previous simple keyValue store. The existing KVClient is extended with two command `MUTATE` to save/modify data and `QUERY` to query data
 
 - run the server  
 `java -jar server.jar --port 50000 --cache-type LFU --cache-size 10 --log-level WARN`
@@ -64,7 +64,7 @@ The datastore is extended as a graph database which could store structured data 
     ```
     
     Example :  
-    ```  
+    ```
         MUTATE john@wiz.com lastName:Davidson,age:45
     ```
     The above query would modify the existing property `lastName` and also add a new property `age`
@@ -96,7 +96,7 @@ The datastore is extended as a graph database which could store structured data 
     
     The Syntax
     ```
-        MUTATE <documentId> <key>:<documetIdOfTheAssociatedObject>
+        MUTATE <documentId> <key>:<associatedDocumentId>
     ```
     
     Example : Consider we have below data already in the database
