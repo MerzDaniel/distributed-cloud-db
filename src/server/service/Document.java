@@ -11,6 +11,7 @@ import server.ServerState;
 import server.kv.DbError;
 import server.kv.KeyNotFoundException;
 import server.kv.KeyValueStore;
+import server.threads.handler.kv.PutHandler;
 
 import java.io.IOException;
 
@@ -43,26 +44,25 @@ public final class Document {
     }
 
     public static boolean writeDocument(String key, String value, ServerState state) throws KVServerNotFoundException, DbError, IOException, MarshallingException {
+        KVMessage putMessage = KvMessageFactory.createPutMessage(key, value);
+        KVMessage response;
         if (!isResponsible(state, key, KVMessage.StatusType.PUT)) {
-            KVMessage getMessage = KvMessageFactory.createPutMessage(key, value);
             ServerData responsibleServer = state.meta.findKVServerForKey(key);
-            KVMessage response;
-            response = sendMessage(getMessage, responsibleServer);
-            if (!response.isSuccess()) {
-                throw new IOException("Could not write data: " + response.getStatus());
-            }
-
-            return true;
+            response = sendMessage(putMessage, responsibleServer);
+        } else {
+            response = new PutHandler().handleRequest(putMessage, state);
         }
-        ServerData responsible = state.meta.findKVServerForKey(key);
-        KeyValueStore db = state.dbProvider.getDb(responsible.getName());
-        return db.put(key, value);
+        if (!response.isSuccess()) {
+            throw new IOException("Could not write data: " + response.getStatus());
+        }
+
+        return true;
     }
 
     private static KVMessage sendMessage(KVMessage getMessage, ServerData responsibleServer) throws IOException, MarshallingException {
         KVMessage response;
 
-        try(Messaging messaging = new Messaging(responsibleServer);) {
+        try (Messaging messaging = new Messaging(responsibleServer);) {
             messaging.sendMessage(getMessage);
             response = (KVMessage) messaging.readMessage();
         } catch (Exception e) {
