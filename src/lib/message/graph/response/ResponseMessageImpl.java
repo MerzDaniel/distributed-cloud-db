@@ -30,6 +30,7 @@ public class ResponseMessageImpl extends GraphDbMessage {
         return errorMsg == null || errorMsg.equals("");
     }
 
+    @Override
     public String prettyPrint() {
         String result =  GraphMessageType.RESPONSE.name() + "\n";
         if (errorMsg != null && !errorMsg.equals("")) result += "Errors: " + errorMsg + "\n";

@@ -28,6 +28,7 @@ public class MutationMessageImpl extends GraphDbMessage {
         );
     }
 
+    @Override
     public String prettyPrint() {
         return GraphMessageType.MUTATION.name() + " " + mutations.prettyPrint();
     }
