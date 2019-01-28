@@ -39,7 +39,7 @@ The datastore is extended as a graph database which could store structured data 
 - We can create new data using `MUTATE` command
      
     The syntax
-    ```ruby
+    ```
         MUTATE <documentId> <key1>:<property1>,<key2>,<property2>,.....
     ```
     
@@ -49,22 +49,22 @@ The datastore is extended as a graph database which could store structured data 
     ```
     
     The query for storing data
-    ```ruby
+    ```
         MUTATE john@wiz.com firstName:John,lastName:Doe,Occupation:Engineer
     ```
     You can also specify JSON objects as properties 
-    ```ruby
+    ```
         MUTATE philip@gmail.com age:30,name:{firstName:Philip,lastName:Crow}
     ```
 - `MUTATE` command also can be used to add new properties or modify existing properties
 
     The Syntax
-    ```ruby
+    ```
         MUTATE <documentIdToModify> <existingkey1>:<modifiedProperty1>,<newKey02>:<newProperty2>,....
     ```
     
     Example :  
-    ```  ruby
+    ```
         MUTATE john@wiz.com lastName:Davidson,age:45
     ```
     The above query would modify the existing property `lastName` and also add a new property `age`
@@ -72,7 +72,7 @@ The datastore is extended as a graph database which could store structured data 
 - We can query data using `QUERY` command
 
     The Syntax
-    ```ruby
+    ```
         QUERY <documentId> <key1>,<key2>,...
     ```
     Example : Consider following data already in the graph database with a documentId `john@wiz.com`
@@ -81,7 +81,7 @@ The datastore is extended as a graph database which could store structured data 
     ```
     
     The query to retrieve `firstName` and `lastName`
-    ```ruby
+    ```
         QUERY john@wiz.com firstName,lastName
     ```    
     The result
@@ -95,7 +95,7 @@ The datastore is extended as a graph database which could store structured data 
 - Creating associations between data
     
     The Syntax
-    ```ruby
+    ```
         MUTATE <documentId> <key>:<documetIdOfTheAssociatedObject>
     ```
     
@@ -106,12 +106,12 @@ The datastore is extended as a graph database which could store structured data 
     ```
     
     Associate `anna@gmail.com` as John's best friend
-    ```ruby
+    ```
         MUTATE john@wiz.com bestFriend:anna@gmail.com
     ```
     
     Now we can query this data
-    ```ruby
+    ```
         QUERY john@wiz.com bestFriend
     ```
     The result would be
@@ -123,7 +123,7 @@ The datastore is extended as a graph database which could store structured data 
     We can query the properties of associated objects using `FOLLOW`
     
     Example :
-    ```ruby
+    ```
         QUERY john@wiz.com bestFriend|FOLLOW{firstName,age}
     ```
     Which would give
