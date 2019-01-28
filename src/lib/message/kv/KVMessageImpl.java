@@ -16,6 +16,7 @@ public class KVMessageImpl implements KVMessage {
         this.value = value;
         this.statusType = statusType;
     }
+
     public KVMessageImpl(KVMessage.StatusType statusType) {
         this.key = null;
         this.value = null;
@@ -51,6 +52,7 @@ public class KVMessageImpl implements KVMessage {
 
     /**
      * Returns whether the message is an error
+     *
      * @return true if this message has an error status
      */
     @Override
@@ -71,6 +73,7 @@ public class KVMessageImpl implements KVMessage {
 
     /**
      * Returns whether this message is a success
+     *
      * @return true if this message has an success status
      */
     @Override
@@ -81,6 +84,8 @@ public class KVMessageImpl implements KVMessage {
             case PUT_SUCCESS:
                 return true;
             case DELETE_SUCCESS:
+                return true;
+            case PUT_UPDATE:
                 return true;
             default:
                 return false;
