@@ -48,7 +48,7 @@ class KVTestClient implements Callable {
 
         TimeWatch wholeTime = TimeWatch.start();
 
-        dataStream.limit(Main.ROUNDS).forEach(data -> {
+        dataStream.limit(PerformanceMesurement.ROUNDS).forEach(data -> {
             String key = data.getKey(), value = data.getValue().Load();
             String command = new Random().nextDouble() > percentageWrites ? "GET" : "PUT";
             Command c = new Command(key, value, command);

@@ -85,7 +85,8 @@ public class KVStoreMetaData {
 
     public ServerData findRandomResponsibleForGet(String key) throws KVServerNotFoundException {
         List<ServerData> responsibleServers = findReplicaKVServers(key);
-        responsibleServers.add(findKVServerForKey(key));
+        ServerData kvServerForKey = findKVServerForKey(key);
+        responsibleServers.add(kvServerForKey);
         return responsibleServers.get((int) (Math.random() * responsibleServers.size()));
     }
 

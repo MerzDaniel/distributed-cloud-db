@@ -67,6 +67,10 @@ public final class EnroneBenchmarkDataLoader {
                 return "no value...";
             }
         }
+
+        public long getSize() {
+            return file.length();
+        }
     }
 
 }
