@@ -38,6 +38,7 @@ public class EcsAdminConsole {
     public void start() throws IOException {
         logger.info("Started");
 
+        state.configPath = configPath;
         Properties appProps = new Properties();
         appProps.load(new FileInputStream(sshConfigPath));
 

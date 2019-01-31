@@ -28,6 +28,8 @@ public class LoadConfiguration implements Command {
     public LoadConfiguration(String configPath) {
         this.configPath = new File(configPath);
     }
+    public LoadConfiguration() {
+    }
 
     /**
      * Execute the commamnd
@@ -36,6 +38,7 @@ public class LoadConfiguration implements Command {
      */
     @Override
     public void execute(State state) {
+        if (configPath == null) configPath = new File(state.configPath);
         if (!configPath.exists()) {
             System.out.println("Config was not found at " + configPath.getAbsolutePath());
             return;

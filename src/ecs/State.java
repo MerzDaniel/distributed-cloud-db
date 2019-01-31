@@ -11,4 +11,5 @@ public class State {
     public KVStoreMetaData poolMeta = new KVStoreMetaData();
     public TimedRunningStateMap timedRunningStateMap = new TimedRunningStateMap();
     public String sshUsername = "";
+    public String configPath = "";
 }

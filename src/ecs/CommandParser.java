@@ -60,8 +60,12 @@ public final class CommandParser {
 
         } else if (tokens[0].equals("failover"))
             command = new FailOverCommand();
+        else if (tokens[0].equals("load"))
+            command = new LoadConfiguration();
 
-        else if (tokens[0].equals("init") && (tokens.length == 4 || tokens.length == 2))
+        else if (tokens[0].
+
+                equals("init") && (tokens.length == 4 || tokens.length == 2))
             try {
                 int cacheSize;
                 CacheType cacheType;
@@ -73,11 +77,14 @@ public final class CommandParser {
                     cacheType = CacheType.valueOf(tokens[3]);
                 }
                 command = new InitCommand(Integer.parseInt(tokens[1]), cacheSize, cacheType);
-            } catch (Exception e) {
+            } catch (
+                    Exception e) {
             }
 
         else if (tokens[0].equals("fillupdb") && tokens.length == 2)
-            command = new FillupDbCommand(Integer.parseInt(tokens[1]));
+            command = new
+
+                    FillupDbCommand(Integer.parseInt(tokens[1]));
 
         if (command == null) {
             System.out.println("Unknown Command.");
