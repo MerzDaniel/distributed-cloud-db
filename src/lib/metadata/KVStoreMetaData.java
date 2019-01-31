@@ -2,11 +2,14 @@ package lib.metadata;
 
 import lib.hash.HashUtil;
 import lib.message.exception.MarshallingException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ import static lib.Constants.RECORD_SEPARATOR;
 public class KVStoreMetaData {
 
     private List<ServerData> kvServerList = new ArrayList<>();
+    private static Logger logger = LogManager.getLogger(KVStoreMetaData.class);
 
     /**
      * Create a {@link KVStoreMetaData} instance
@@ -69,6 +73,13 @@ public class KVStoreMetaData {
             serverDataList.add(serverData);
         }
 
+        if (serverDataList.contains(null)) {
+            logger.warn("EMPTY SERVER DATA after deserialize");
+            logger.warn(kvStoreMetaData);
+            serverDataList.forEach(x -> {if (x != null) System.out.println(x.toString());});
+        }
+
+
         return new KVStoreMetaData(serverDataList);
     }
 
@@ -84,7 +95,7 @@ public class KVStoreMetaData {
     }
 
     public ServerData findRandomResponsibleForGet(String key) throws KVServerNotFoundException {
-        List<ServerData> responsibleServers = findReplicaKVServers(key);
+        List<ServerData> responsibleServers = new LinkedList<>(findReplicaKVServers(key));
         ServerData kvServerForKey = findKVServerForKey(key);
         responsibleServers.add(kvServerForKey);
         return responsibleServers.get((int) (Math.random() * responsibleServers.size()));
@@ -119,7 +130,7 @@ public class KVStoreMetaData {
         if (noOfServers == 2) return Arrays.asList(this.findNextKvServerByHash(hash));
 
         for (int i = 0; i < kvServerList.size(); i++) {
-            if (kvServerList.get(i).getFromHash().compareTo(hash) > 0){
+            if (kvServerList.get(i).getFromHash().compareTo(hash) > 0) {
                 return Arrays.asList(kvServerList.get(i), kvServerList.get((i + 1) % noOfServers));
             }
         }
@@ -142,7 +153,7 @@ public class KVStoreMetaData {
         if (noOfServers == 2) return Arrays.asList(this.findPreviousKvServer(serverData));
 
         for (int i = noOfServers - 1; i >= 0; i--) {
-            if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0){
+            if (kvServerList.get(i).getFromHash().compareTo(serverData.getFromHash()) < 0) {
                 if (i == 0) return Arrays.asList(kvServerList.get(0), kvServerList.get(noOfServers - 1));
                 return kvServerList.subList(i - 1, i + 1);
             }
@@ -182,6 +193,7 @@ public class KVStoreMetaData {
         }
         return kvServerList.get(noOfServers - 1);
     }
+
     public ServerData findNextKvServer(ServerData serverData) throws KVServerNotFoundException {
         int index = kvServerList.indexOf(serverData);
         return kvServerList.get((index + 1) % kvServerList.size());
