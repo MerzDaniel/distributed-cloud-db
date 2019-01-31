@@ -37,7 +37,7 @@ public class Messaging implements AutoCloseable{
     }
 
     public synchronized boolean connect(String host, int port) throws IOException {
-        if (this.host.equals(host) && this.port == port && isConnected()) return true;
+        if (this.host != null && this.host.equals(host) && this.port == port && isConnected()) return true;
 
         this.host = host;
         this.port = port;
@@ -79,6 +79,7 @@ public class Messaging implements AutoCloseable{
     }
 
     public boolean isConnected() {
+        if (con == null) return false;
         return con.isConnected();
     }
 
