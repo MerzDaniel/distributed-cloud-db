@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * This class is only used for getting performance measures for KVClient
  */
-public class Main {
+public class PerformanceMesurement {
     static {
         System.setProperty("log4j.configurationFile", "log4j2-tools.properties.xml");
     }
