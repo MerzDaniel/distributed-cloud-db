@@ -17,6 +17,7 @@ import server.threads.handler.admin.AdminMessageHandler;
 import server.threads.handler.graph.GraphMessageHandler;
 import server.threads.handler.kv.KvMessageHandler;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +68,8 @@ public class ConnectionHandler extends AbstractServerThread {
                     logger.debug(String.format("RESPONSE (%d ms): %s", t.time(TimeUnit.MILLISECONDS), response.marshall()));
                     messaging.sendMessage(response);
                     continue;
+                } catch (IOException e) {
+                    logger.debug("Error", e);
                 } catch (Exception e) {
                     logger.info("Error occured!", e);
                 }
