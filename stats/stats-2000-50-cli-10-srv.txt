@@ -1,0 +1,22 @@
+Performance Test Measures 2019-01-31T21:11:39.022
+===================================================================
+No of parallel clients : 50
+No of rounds for each client : 40
+Percentiles of ALL requests: [0.99, 0.95, 0.9, 0.8, 0.5] : [1907, 999, 696, 390, 134]
+Performance Measured on GET
+------------------------------------------------------
+Total 1642 GET requests executed with average response time 153,456760 [977, 452, 319, 226, 106]
+Total 327 GET_SUCCESS responses received with average response time 134,211009 [507, 362, 298, 205, 111]
+Total 1315 GET_NOT_FOUND responses received with average response time 158,242586 [1000, 489, 334, 230, 105]
+Total 0 GET_ERROR responses received with average response time 0,000000 []
+Total 0 GET_SERVER_NOT_FOUND responses received with average response time 0,000000 []
+Total 0 GET_EXCEPTION responses received with average response time 0,000000 []
+Performance Measured on PUT
+------------------------------------------------------
+Total 358 PUT requests executed with average response time 814,435754 [2915, 2078, 1572, 1163, 654]
+Total 283 PUT_SUCCESS responses received with average response time 855,540636 [3057, 2124, 1709, 1304, 663]
+Total 75 PUT_UPDATE responses received with average response time 659,333333 [2875, 1413, 1113, 867, 636]
+Total 0 PUT_ERROR responses received with average response time 0,000000 []
+Total 0 PUT_SERVER_NOT_FOUND responses received with average response time 0,000000 []
+Total 0 PUT_EXCEPTION responses received with average response time 0,000000 []
+
