@@ -1,6 +1,14 @@
 # Practical Course Cloud Databases
 
-A distributed key-value database for the master seminar "Cloud Databases"
+A distributed key-value database system for the master seminar "Cloud Databases". 
+
+Consists of three main parts:
+- distributed, replicated graph DB Servers
+- configuration service that monitors health state of DB's to take action on failure
+- a client to query and mutate data (query style inspired by GraphQL)
+
+*NO PRODUCTION USAGE*
+Implemented for a seminar in a hackthon like way. Should only be used as a reference for a refactoring session.
 
 ## SETUP
 Run tests: 
